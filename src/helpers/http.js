@@ -1,4 +1,3 @@
-
 export const HTTP_MESSAGE = {
   SUCCESS: 'Success',
   BAD_REQUEST: 'Bad request',
@@ -10,108 +9,62 @@ export const HTTP_MESSAGE = {
   CANNOT_DELETE: `This Record Can't Deleted, It Contain References to other data`,
   GATEWAY_TIMEOUT: 'Gateway timeout',
   UNKNOWN_ERROR: 'Unknown error',
-  ACCOUNT_STATUS:"Account status",
-  WRONG_OTP:"Enter Wrong Otp",
-  SUCCESSFULL_OTP:"OTP successFull"
+  ACCOUNT_STATUS: "Account status",
+  WRONG_OTP: "Enter Wrong Otp",
+  SUCCESSFULL_OTP: "OTP successFull"
+};
+
+const handleResponse = (res, status, success, message, data) => {
+  const response = { status: status, success: success, data: data, message: message };
+  if (res) {
+    return res.status(status).json(response);
+  } else {
+    return response;
+  }
 };
 
 const SuccessResponse = (res, message = HTTP_MESSAGE.SUCCESS, data) => {
-  const response = { status: 200, success: true, data: data, message: message };
-  if (res) {
-    return res.status(200).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 200, true, message, data);
 };
 
 const FailedResponse = (res, message = HTTP_MESSAGE.SUCCESS, data) => {
-  const response = { status: 200, success: false, data: data, message: message };
-  if (res) {
-    return res.status(200).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 200, false, message, data);
 };
 
 const BadRequestResponse = (res, message = HTTP_MESSAGE.BAD_REQUEST, data) => {
-  const response = { status: 400, success: false, data: data, message: message };
-  if (res) {
-    return res.status(400).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 400, false, message, data);
 };
 
 const UnauthorizedResponse = (res, message = HTTP_MESSAGE.UNAUTHORIZED, data) => {
-  const response = { status: 401, success: false, data: data, message: message };
-  if (res) {
-    return res.status(401).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 401, false, message, data);
 };
 
 const InvalidTokenResponse = (res, message = HTTP_MESSAGE.UNAUTHORIZED, data) => {
-  const response = { status: 498, success: false, data: data, message: message };
-  if (res) {
-    return res.status(498).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 498, false, message, data);
 };
 
 const ConflictRequestResponse = (res, message = HTTP_MESSAGE.CONFLICT, data) => {
-  const response = { status: 409, success: false, data: data, message: message };
-  if (res) {
-    return res.status(409).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 409, false, message, data);
 };
 
 const NotFoundResponse = (res, message = HTTP_MESSAGE.NOT_FOUND, data) => {
-  const response = { status: 404, success: false, data: data, message: message };
-  if (res) {
-    return res.status(404).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 404, false, message, data);
 };
 
 const ForbiddenResponse = (res, message = HTTP_MESSAGE.FORBIDDEN, data) => {
-  const response = { status: 403, success: false, data: data, message: message };
-  if (res) {
-    return res.status(403).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 403, false, message, data);
 };
 
 const InternalServerErrorResponse = (res, message = HTTP_MESSAGE.INTERNAL_SERVER_ERROR, data) => {
-  const response = { status: 500, success: false, data: data, message: message };
-
-  if (res) {
-    return res.status(500).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 500, false, message, data);
 };
 
 const CannotDeleteResponse = (res, message = HTTP_MESSAGE.CANNOT_DELETE, data) => {
-  const response = { status: 422, success: false, data: data, message: message };
-  if (res) {
-    return res.status(422).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 422, false, message, data);
 };
+
 const UnprocessableResponse = (res, message = null, data) => {
-  const response = { status: 422, success: false, data: data, message: message };
-  if (res) {
-    return res.status(422).json(response);
-  } else {
-    return response;
-  }
+  return handleResponse(res, 422, false, message, data);
 };
 
 export {
@@ -127,4 +80,3 @@ export {
   FailedResponse,
   InvalidTokenResponse
 };
-

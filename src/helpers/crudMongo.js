@@ -3,51 +3,53 @@ import "../models/schemaRegister.js";
 
 const deleteQuery = async (modelName, condition, queryType = "default") => {
   try {
-    const groupModel = mongoose.model(modelName);
-    let deleteData;
+    const model = mongoose.model(modelName);
+    let deleteResult;
     switch (queryType) {
       case "deleteOne":
-        deleteData = await groupModel.deleteOne(condition);
+        deleteResult = await model.deleteOne(condition);
         break;
       default:
-        deleteData = await groupModel.deleteMany(condition);
+        deleteResult = await model.deleteMany(condition);
         break;
     }
-    return deleteData;
+    return deleteResult;
   } catch (error) {
-    console.error(error);
+    console.error("Error in deleteQuery:", error);
+    throw error;
   }
 };
 
 const insertQuery = async (modelName, data, queryType = "default") => {
   try {
-    const groupModel = mongoose.model(modelName);
-    let insert;
+    const model = mongoose.model(modelName);
+    let insertResult;
     switch (queryType) {
       case "insertMany":
-        insert = await groupModel.insertMany(data);
+        insertResult = await model.insertMany(data);
         break;
       default:
-        insert = await groupModel.create(data);
+        insertResult = await model.create(data);
         break;
     }
-    return insert;
+    return insertResult;
   } catch (error) {
-    console.error(error);
+    console.error("Error in insertQuery:", error);
+    throw error;
   }
 };
 
-const distinctQuery = async (modelName, distinctName, where) => {
+const distinctQuery = async (modelName, distinctName, where = {}) => {
   try {
-    const groupModel = mongoose.model(modelName);
-    const distinctData = await groupModel.distinct(distinctName, where);
+    const model = mongoose.model(modelName);
+    const distinctData = await model.distinct(distinctName, where);
     return distinctData;
   } catch (error) {
-    console.error(error);
+    console.error("Error in distinctQuery:", error);
+    throw error;
   }
 };
 
-//findAll("users", {}, {}, [], { createdAt: 1 });
 const findAll = async (
   modelName,
   where = {},
@@ -58,8 +60,8 @@ const findAll = async (
   skip = 0
 ) => {
   try {
-    const groupModel = mongoose.model(modelName);
-    return await groupModel
+    const model = mongoose.model(modelName);
+    return await model
       .find(where, select)
       .populate(populationFields)
       .sort(sort)
@@ -67,20 +69,23 @@ const findAll = async (
       .skip(skip)
       .lean();
   } catch (error) {
-    console.error(error);
+    console.error("Error in findAll:", error);
+    throw error;
   }
 };
 
-const findOne = async (modelName,
+const findOne = async (
+  modelName,
   where = {},
   select = {},
   populationFields = [],
   sort = {},
   limit = 0,
-  skip = 0,) => {
+  skip = 0
+) => {
   try {
-    const groupModel = mongoose.model(modelName);
-    return await groupModel
+    const model = mongoose.model(modelName);
+    return await model
       .findOne(where, select)
       .populate(populationFields)
       .sort(sort)
@@ -88,100 +93,92 @@ const findOne = async (modelName,
       .skip(skip)
       .lean();
   } catch (error) {
-    console.error(error);
+    console.error("Error in findOne:", error);
+    throw error;
   }
 };
 
-const update = async (modelName, where, updateData, queryType) => {
+const update = async (modelName, where, updateData, queryType = "default") => {
   try {
-    const groupModel = mongoose.model(modelName);
-    let update;
+    const model = mongoose.model(modelName);
+    let updateResult;
     switch (queryType) {
       case "updateOne":
-        update = await groupModel.updateOne(where, updateData, { new: true });  
+        updateResult = await model.updateOne(where, updateData, { new: true });
         break;
       case "updateMany":
-        update = await groupModel.updateMany(where, updateData, { new: true });
+        updateResult = await model.updateMany(where, updateData, { new: true });
         break;
       default:
-        update = await groupModel.findOneAndUpdate(where, updateData, {
+        updateResult = await model.findOneAndUpdate(where, updateData, {
           upsert: true,
           new: true,
         });
         break;
     }
-    return update;
+    return updateResult;
   } catch (error) {
-    console.error(error);
+    console.error("Error in update:", error);
+    throw error;
   }
 };
 
 const countRecords = async (modelName, condition = {}) => {
   try {
-    const groupModel = mongoose.model(modelName);
-    return await groupModel.countDocuments(condition);
+    const model = mongoose.model(modelName);
+    return await model.countDocuments(condition);
   } catch (error) {
-    console.error(error);
+    console.error("Error in countRecords:", error);
+    throw error;
   }
 };
 
 const findRaw = async (modelName, where = {}) => {
   try {
-    return await mongoose.collection(modelName).find(where.condition).toArray();
+    const collection = mongoose.connection.collection(modelName);
+    return await collection.find(where).toArray();
   } catch (error) {
-    console.error(error);
-  }
-};
-
-const findDistinct = async (modelName, distinctKey, where = {}) => {
-  try {
-    return await mongoose.model(modelName).distinct(distinctKey, where);
-  } catch (error) {
-    console.error(error);
+    console.error("Error in findRaw:", error);
+    throw error;
   }
 };
 
 const groupBy = async (modelName, where = {}, groupData = {}) => {
   try {
-    const groupModel = mongoose.model(modelName);
-    const data1 = await groupModel.aggregate([
-      {
-        $match: where,
-      },
-      {
-        $group: groupData,
-      },
+    const model = mongoose.model(modelName);
+    return await model.aggregate([
+      { $match: where },
+      { $group: groupData },
     ]);
-    return data1;
   } catch (error) {
-    console.error(error);
+    console.error("Error in groupBy:", error);
+    throw error;
   }
 };
 
 const projectAggregate = async (modelName, lookup, project = {}, match = {}) => {
   try {
-    const groupModel = mongoose.model(modelName);
-    const data = await groupModel.aggregate([
-      { $lookup: lookup},
+    const model = mongoose.model(modelName);
+    return await model.aggregate([
+      { $lookup: lookup },
       { $match: match },
-      // { $project: project },
+      { $project: project },
     ]);
-    return data;
   } catch (error) {
-    console.error(error);
+    console.error("Error in projectAggregate:", error);
+    throw error;
   }
 };
 
 export {
   deleteQuery,
   insertQuery,
+  distinctQuery,
   findAll,
   findOne,
   update,
   countRecords,
   findRaw,
-  findDistinct,
   groupBy,
   projectAggregate,
-  distinctQuery,
 };

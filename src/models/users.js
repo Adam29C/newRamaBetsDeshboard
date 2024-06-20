@@ -3,181 +3,98 @@ import bcrypt from "bcryptjs";
 
 const { Schema } = mongoose;
 
+// Utility function to get current month and year in string format
 const currentMonthAndYearInString = () => {
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
   ];
   const today = new Date();
-  const formattedDate = `${
-    monthNames[today.getMonth()]
-  } ${today.getFullYear()}`;
-  return formattedDate;
+  return `${monthNames[today.getMonth()]} ${today.getFullYear()}`;
 };
 
+// Schema for mobile number with validation fields
 const MobileNumberValidator = {
   value: {
     type: Number,
   },
   verified: {
     type: Boolean,
-    trim: true,
+    default: false,
   },
-  otp: { type: Number, select: false },
-};
-
-const UserDocsData = {
-  aadharCard: {
-    type: String,
-    // required: true,
-  },
-  panCard: {
-    type: String,
-    // required: true,
-  },
-  photo: {
-    type: String,
-    // required: true,
+  otp: {
+    type: Number,
+    select: false
   },
 };
 
-const common = {
-  value: {
+const BankDetailSchema = new Schema({
+  bankName: {
     type: String,
   },
-  listNumber: {
+  branchName: {
+    type: String,
+  },
+  accountNumber: {
     type: Number,
   },
-};
-
-const generalDetailSchema = new Schema({
-  occupation: [common],
-  qualification: [common],
-  annualIncome: [common],
-});
-
-const BookmarkedUserMedia = {
-  shortVideos: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'shortVideos'
+  holderName: {
+    type: String,
   },
-  mediaDocuments: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'mediaDocuments'
-  },
-};
-let bankDetailSchema = new Schema({
-  bankName:{
-    type:String,
-  },
-  branchName:{
-    type:String,
-  },
-  accountNumber:{
-    type:Number,
-  },
-  holderName:{
-    type:String,
-  },
-  ifscCode:{
-    type:String,
-  },
-  upiId:{
-    type:String,
-  },
-  chequeImage:{
-    type:String,
+  ifscCode: {
+    type: String,
   }
 });
-const User = new Schema(
-  {
-    emailId: {
-      type: String,
-      trim: true,
-    },
-    name:{
-      typr:String,
-    },
-    mobileNumber: MobileNumberValidator,
-    roles: {
-      type: String,
-      default: "USER",
-    },
-    countrycode: {
-      type: String,
-    },
-    fcmToken: {
-      type: String,
-    },
-    status: {
-      type: String,
-      enum:["pending","active","deactived"],
-      default:"pending",
-    },
-    loginStatus: {
-      type: String,
-      enum: ["loggedIn", "loggedOut"],
-    },
-    appInstalledStatus: {
-      type: String,
-    },
-    memberSince: { type: String, default: currentMonthAndYearInString() },
-    gstNumber: {
-      type: String,
-    },
-    occupation: {
-      type: String,
-    },
-    qualification: {
-      type: String,
-    },
-    annualIncome: {
-      type: String,
-    },
-    pinCode: {
-      type: String,
-    },
-    dob: {
-      type: Date,
-    },
-    bankDetails:{
-      type: bankDetailSchema,
-    },
-    userDocs: UserDocsData,
-    bookmarkedUserMedia: BookmarkedUserMedia,
-  },
-  {
-    collection: "users",
-  },
-  {
-    timestamps: true
-  }
-);
 
-User.methods.correctPassword = async function (clientPassword, savedPassword) {
+const UserSchema = new Schema({
+  userName: {
+    type: String,
+  },
+  mobileNumber: MobileNumberValidator,
+  roles: {
+    type: String,
+    enum: ["USER", "ADMIN"],
+    default: "USER",
+  },
+  fcmToken: {
+    type: String,
+  },
+  status: {
+    type: String,
+    enum: ["pending", "active", "deactivate"],
+    default: "pending",
+  },
+  loginStatus: {
+    type: String,
+    enum: ["loggedIn", "loggedOut"],
+  },
+  appInstalledStatus: {
+    type: String,
+  },
+  memberSince: {
+    type: String,
+    default: currentMonthAndYearInString
+  },
+  bankDetails: {
+    type: BankDetailSchema,
+  },
+}, {
+  collection: "users",
+  timestamps: true
+});
+
+UserSchema.methods.correctPassword = async function (clientPassword, savedPassword) {
   return await bcrypt.compare(clientPassword, savedPassword);
 };
 
-User.methods.changedPasswordAfter = function (JWTTimestamp) {
+UserSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   if (this.pinChangedAt) {
     const changedTimestamp = parseInt(this.pinChangedAt.getTime() / 1000, 10);
-
     return JWTTimestamp < changedTimestamp;
   }
   return false;
 };
 
-const UserBasicInfo = mongoose.model("userBasicInfo", generalDetailSchema);
-const Users = mongoose.model("users", User);
+const Users = mongoose.model("users", UserSchema);
 
-export { Users, UserBasicInfo };
+export { Users };
