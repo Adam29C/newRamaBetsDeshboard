@@ -1,18 +1,24 @@
-import { roleList } from "../../../test/src/consts/authorization.js";
-import { UnauthorizedResponse } from "../../../test/src/helpers/http.js";
+import { roleList } from "../consts/authorization.js";
+import { UnauthorizedResponse } from "../helpers/http.js";
+import { HTTP_MESSAGE } from "../helpers/http.js";
 
-const verifyRoles = (...allowedRoles)=>{ 
-    return (req,res,next)=>{
-        if(!req?.roles){
-            return UnauthorizedResponse(res, req.t("failure_status"));
+const verifyRoles = (...allowedRoles) => {
+    return (req, res, next) => {
+        try {
+            if (!req?.roles) {
+                return UnauthorizedResponse(res, HTTP_MESSAGE.UNAUTHORIZED);
+            }
+            const rolesArray = [...allowedRoles];
+            const isAdmin = allowedRoles.includes(roleList.ADMIN);
+            let result = req.roles.some(role => rolesArray.includes(role)) || isAdmin;
+            if (!result) {
+                return UnauthorizedResponse(res, HTTP_MESSAGE.UNAUTHORIZED);
+            }
+            next();
+        } catch (error) {
+            return UnauthorizedResponse(res, HTTP_MESSAGE.UNAUTHORIZED, error);
         }
-        const rolesArray = [...allowedRoles];
-        let result = req?.roles.map(role => rolesArray.includes(role))
-                    || allowedRoles.includes(roleList.ADMIN);
-        if(!result) return UnauthorizedResponse(res, req.t("failure_message_3"));
-        next();
-    }
-}
+    };
+};
 
 export { verifyRoles };
-

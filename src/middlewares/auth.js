@@ -3,21 +3,17 @@ import { Users } from "../models/users.js";
 import { TokenData } from "../models/token.js";
 import { InvalidTokenResponse, BadRequestResponse, InternalServerErrorResponse, HTTP_MESSAGE } from './../helpers/http.js';
 import { JWT_SECRET } from "../config/env.config.js";
+
 const authMiddleware = async (req, res, next) => {
-  let token;
-  console.log("test")
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-  // verify token
-  if (token) {
-    try {
+  try {
+    let token;
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+    if (token) {
       const decoded = jwt.verify(token, JWT_SECRET);
       if (!decoded) {
-        return InvalidTokenResponse(res, req.t("failure_message_3")); // use response function
+        return InvalidTokenResponse(res, HTTP_MESSAGE.UNKNOWN_ERROR);
       }
       if (decoded.info.id) {
         if (decoded.info.roles === "USER") {
@@ -30,21 +26,20 @@ const authMiddleware = async (req, res, next) => {
             userId: decoded.info.id,
           });
           if (!data) {
-            return InvalidTokenResponse(res, req.t("failure_message_4")); // use response function
+            return InvalidTokenResponse(res, HTTP_MESSAGE.UNKNOWN_ERROR);
           }
-
           const currentUser = await Users.findById(decoded.info.id);
           if (!currentUser) {
-            return BadRequestResponse(res, req.t("failure_message_5")); // use response function
+            return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
           }
-          if (currentUser.status == "deactivated") {
-            return BadRequestResponse(res, req.t("failure_message_6")); // use response function
+          if (currentUser.status === "deactivated") {
+            return BadRequestResponse(res, HTTP_MESSAGE.ACCOUNT_STATUS);
           }
         }
         if (decoded.info.roles === "ADMIN") {
           let adminDetails = await admin.findOne({ _id: decoded.info.id });
-          if (adminDetails) {
-            return BadRequestResponse(res, req.t("failure_message_5")); // use response function
+          if (!adminDetails) {
+            return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
           }
         }
         req.user = decoded.info.id;
@@ -55,17 +50,19 @@ const authMiddleware = async (req, res, next) => {
           deviceId: decoded.info.deviceId,
         });
         if (!data) {
-          return BadRequestResponse(res, req.t("failure_message_3")); // use response function
+          return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
         }
         req.roles = decoded.info.roles;
       }
-    } catch (err) {
-      console.log(err)
-      return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err); // use response function
     }
+  } catch (err) {
+
+    console.error("Error in authMiddleware:", err);
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
+
+
   next();
 };
 
 export { authMiddleware };
-

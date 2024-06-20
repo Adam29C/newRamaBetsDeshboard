@@ -1,19 +1,17 @@
-// src/config/env.config.js
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-dotenv.config({ path: '../.env'});
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export const SERVER_URL = process.env.SERVER_URL || "http://localhost:3009";
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-export const SERVER_KEY = process.env.SERVER_KEY || "";
-export const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || 43200000;
-export const PORT = process.env.PORT || 3009;
-export const DB =
-  process.env.DB ||
-  "";
-export const JWT_SECRET =
-  process.env.JWT_SECRET ||
-  "";
+const {
+  PORT = 3009,
+  DB = '',
+  JWT_SECRET = '',
+  JWT_EXPIRES_IN = 43200000
+} = process.env;
 
-  
-
+export { PORT, DB, JWT_SECRET, JWT_EXPIRES_IN };
