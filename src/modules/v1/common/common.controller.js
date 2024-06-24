@@ -7,15 +7,15 @@ import {
   BadRequestResponse,
 } from "./../../../helpers/http.js";
 import { JWT_EXPIRES_IN, JWT_SECRET } from "./../../../config/env.config.js";
-import admin from "../../../models/admin.js"
+import admin from "../../../models/admin.js";
 import mongoose from "mongoose";
+import createToken from "../../../helpers/token.js";
 
 const generateAuthToken = async (req, res) => {
   try {
     const { id, deviceId } = req.body;
     let query;
     let details;
-    let token;
     let roles = "USER"; 
 
     if (id) {
@@ -30,38 +30,8 @@ const generateAuthToken = async (req, res) => {
     if (deviceId) {
       query = { deviceId: deviceId };
     }
-
-    token = jwt.sign(
-      {
-        info: {
-          id: id ? id : "",
-          deviceId: deviceId ? deviceId : "",
-          roles: roles,
-        },
-        date: Date.now(),
-      },
-      JWT_SECRET,
-      {
-        expiresIn: JWT_EXPIRES_IN,
-      }
-    );
-
-    let data = await findOne("TokenData", query);
-    if (data) {
-      await update("TokenData", { _id: data._id }, { token: token });
-    } else {
-      const tokenData = {
-        token: token,
-        deviceId: deviceId ? deviceId : "",
-      };
-
-      if (id && mongoose.Types.ObjectId.isValid(id)) {
-        tokenData.userId = id;
-      }
-
-      await insertQuery("TokenData", tokenData);
-    }
-
+    // Create the token
+    const token =await  createToken(id, deviceId, roles,query);
     return SuccessResponse(res, req.t("success_status"), { token });
   } catch (err) {
     return InternalServerErrorResponse(
