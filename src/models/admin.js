@@ -1,7 +1,6 @@
 import  mongoose from "mongoose";
-// const uniqueValidator = require("mongoose-unique-validator");
 
-const adminModel = new mongoose.Schema(
+const adminSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -70,4 +69,4 @@ const adminModel = new mongoose.Schema(
     }
 );
 
-module.exports = mongoose.model("admin", adminModel);
+export default mongoose.model("admin", adminSchema);

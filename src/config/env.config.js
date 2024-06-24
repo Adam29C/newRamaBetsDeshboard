@@ -9,9 +9,9 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const {
   PORT = 3009,
-  DB = '',
+  MONGO_DB_URI = '',
   JWT_SECRET = '',
   JWT_EXPIRES_IN = 43200000
 } = process.env;
 
-export { PORT, DB, JWT_SECRET, JWT_EXPIRES_IN };
+export { PORT, MONGO_DB_URI, JWT_SECRET, JWT_EXPIRES_IN };
