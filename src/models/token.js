@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-
 const { Schema } = mongoose;
 
 const tokenDataSchema = new Schema(
@@ -12,13 +11,11 @@ const tokenDataSchema = new Schema(
     },
     userId: {
       type: Schema.Types.ObjectId,
-      ref: 'User', // Reference to the User model assuming it's defined
+      ref: 'admin', // Reference to the User model assuming it's defined
       required: false,
     },
     deviceId: {
       type: String,
-      required: false,
-      trim: true,
     },
   },
   {

@@ -7,6 +7,8 @@ import {
   BadRequestResponse,
 } from "./../../../helpers/http.js";
 import { JWT_EXPIRES_IN, JWT_SECRET } from "./../../../config/env.config.js";
+import { TokenData } from "../../../models/token.js";
+import admin from "../../../models/admin.js";
 
 const generateAuthToken = async (req, res) => {
   try {
@@ -14,23 +16,20 @@ const generateAuthToken = async (req, res) => {
     let query;
     let details;
     let token;
-
     if (id) {
       if (role === "ADMIN") {
-        details = await findOne("admin", { _id: id }, { roles: 1 });
+        details = await findOne("admin", { _id: id },);
       } else {
-        details = await findOne("users", { _id: id }, { roles: 1 });
+        details = await findOne("users", { _id: id },);
       }
       if (!details) {
         return BadRequestResponse(res, req.t("failure_message_2"));
       }
       query = { id: id };
     }
-
     if (deviceId) {
       query = { deviceId: deviceId };
     }
-
     let rol = {};
     if (role.toUpperCase() === "ADMIN") {
       rol = { ADMIN: "ADMIN" };
@@ -39,9 +38,7 @@ const generateAuthToken = async (req, res) => {
     } else {
       rol = { USER: "USER" };
     }
-
     let roles = Object.keys(rol);
-
     token = jwt.sign(
       {
         info: {
@@ -56,12 +53,11 @@ const generateAuthToken = async (req, res) => {
         expiresIn: JWT_EXPIRES_IN,
       }
     );
-
-    let data = await findOne("tokenData", query);
+    let data = await findOne("TokenData", query);
     if (data) {
-      await update("tokenData", { _id: data._id }, { token: token });
+      await update("TokenData", { _id: data._id }, { token: token });
     } else {
-      await insertQuery("tokenData", {
+      await insertQuery("TokenData", {
         token: token,
         userId: id ? id : "",
         deviceId: deviceId ? deviceId : "",
