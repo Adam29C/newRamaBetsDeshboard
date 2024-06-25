@@ -26,27 +26,18 @@ const adminSchema = new mongoose.Schema(
         },
         username: {
             type: String,
-            required: true,
             max: 1024,
             min: 4,
         },
         role: {
             type: String,
-            default: "ADMIN"
         },
 
-        user_counter: {
-            type: Number,
-            required: true,
+        isBlock: {
+            type: Boolean,
+            default:false
         },
-        banned: {
-            type: Number,
-            required: true,
-        },
-        CtreatedAt: {
-            type: Date,
-            default: Date.now(),
-        },
+
         loginStatus: {
             type: String,
             required: true,
@@ -56,16 +47,12 @@ const adminSchema = new mongoose.Schema(
             required: true,
         },
         col_view_permission: {
-            type: Array,
-            required: true,
-        },
-        loginFor: {
-            type: Number,
-            required: true,
+            type: Object,
+            default:{}
         },
     },
     {
-        versionKey: false,
+        timestamps:true
     }
 );
 
