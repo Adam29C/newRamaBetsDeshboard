@@ -40,7 +40,6 @@ const verifyToken = async (req, res, next) => {
             token: token,
             id: decoded.info.id,
           });
-          console.log(data,"ggggg")
           if (!data) {
             return res.status(401).send({
               statusCode: 401,
