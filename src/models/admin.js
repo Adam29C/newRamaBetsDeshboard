@@ -24,6 +24,9 @@ const adminSchema = new mongoose.Schema(
             max: 1024,
             min: 6,
         },
+        knowPassword:{
+            type:String
+        },
         username: {
             type: String,
             max: 1024,
@@ -56,4 +59,4 @@ const adminSchema = new mongoose.Schema(
     }
 );
 
-export default mongoose.model("admin", adminSchema);
+export default mongoose.model("Admin", adminSchema);

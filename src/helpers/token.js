@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { JWT_EXPIRES_IN, JWT_SECRET } from "./../config/env.config.js";
-import { findOne, update } from "../helpers/crudMongo.js";
+import { findOne, update,insertQuery } from "../helpers/crudMongo.js";
 import { TokenData } from "../models/token.js";
 import admin from "../models/admin.js";
 

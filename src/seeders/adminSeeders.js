@@ -19,6 +19,7 @@ async function seedAdmin() {
             mobile: "1234567890",
             username: "superadmin",
             password: "superAdmin123",
+            knowPassword:"superAdmin123",
             role: "admin",
             isBlock: false,
             loginStatus: "active",
