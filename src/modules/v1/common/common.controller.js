@@ -9,7 +9,7 @@ import {
 import { JWT_EXPIRES_IN, JWT_SECRET } from "./../../../config/env.config.js";
 import admin from "../../../models/admin.js";
 import mongoose from "mongoose";
-import createToken from "../../../helpers/token.js";
+import { createToken } from "../../../helpers/token.js";
 
 const generateAuthToken = async (req, res) => {
   try {
