@@ -2,57 +2,56 @@ import  mongoose from "mongoose";
 
 const adminSchema = new mongoose.Schema(
     {
-        name: {
+        employeeName: {
             type: String,
             required: true,
             min: 3,
             max: 255,
         },
-        email: {
-            type: String,
-            required: false,
-            max: 255,
-            min: 6,
-        }, 
-        mobile: {
-            type: String,
-            required: false,
-        },
+        username: {
+			type: String,
+			required: true,
+			unique: true,
+			max: 1024,
+			min: 4,
+		},
         password: {
             type: String,
             required: true,
             max: 1024,
             min: 6,
         },
+        designation: {
+			type: String,
+			required: true,
+			max: 1024,
+			min: 4,
+		},
+        loginPermission: {
+            type: Object,
+            default:{}
+        }, 
+        mobile: {
+            type: String,
+            required: false,
+        },
         knowPassword:{
             type:String
-        },
-        username: {
-            type: String,
-            max: 1024,
-            min: 4,
         },
         role: {
             type: String,
         },
-
         isBlock: {
             type: Boolean,
             default:false
         },
-
         loginStatus: {
             type: String,
-            required: true,
         },
         last_login: {
             type: String,
-            required: true,
         },
-        col_view_permission: {
-            type: Object,
-            default:{}
-        },
+
     },
     {
         timestamps:true
