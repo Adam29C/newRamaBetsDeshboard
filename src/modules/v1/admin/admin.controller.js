@@ -38,7 +38,7 @@ const adminLogin = async (req, res) => {
 //Function For Admin View Profile Api
 const adminProfile = async (req, res) => {
   try {
-    const { adminId } = req.body;
+    const { adminId } = req.query;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
       return BadRequestResponse(res, req.t("failure_message_2"));
