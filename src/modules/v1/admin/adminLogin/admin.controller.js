@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse } from '../../../helpers/http.js';
-import { JWT_EXPIRES_IN, JWT_SECRET } from '../../../config/env.config.js';
-import Admin from '../../../models/admin.js';
-import { createToken } from '../../../helpers/token.js';
-import { findOne, insertQuery, update } from '../../../helpers/crudMongo.js';
+import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse } from '../../../../helpers/http.js';
+import { JWT_EXPIRES_IN, JWT_SECRET } from '../../../../config/env.config.js';
+import Admin from '../../../../models/admin.js';
+import { createToken } from '../../../../helpers/token.js';
+import { findOne, insertQuery, update } from '../../../../helpers/crudMongo.js';
 
 //Function For Admin Login Api 
 const adminLogin = async (req, res) => {
@@ -28,7 +28,6 @@ const adminLogin = async (req, res) => {
     return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token });
 
   } catch (err) {
-    console.error("Internal Server Error:", err);
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };

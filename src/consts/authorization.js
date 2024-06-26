@@ -1,6 +1,6 @@
 const roleList = {
     "ADMIN" : "ADMIN",
-    "SUB_ADMIN":"SUB_ADMIN",
+    "SUBADMIN":"SUBADMIN",
     "USER" :"USER",
 }
 

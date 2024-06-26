@@ -33,7 +33,7 @@ const generateAuthToken = async (req, res) => {
 
     // Create the token
     const token = await createToken(id, deviceId, roles, query);
-    return SuccessResponse(res, HTTP_MESSAGE.Token_Created, { token });
+    return SuccessResponse(res, HTTP_MESSAGE.TOKEN_CREATED, { token });
   } catch (err) {
     return InternalServerErrorResponse(
       res,

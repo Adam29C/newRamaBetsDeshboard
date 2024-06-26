@@ -46,7 +46,7 @@ const verifyToken = async (req, res, next) => {
           { ipAddress: req.connection.remoteAddress }
         );
 
-        if (details.role !== 0) {
+        if (details.role !== "ADMIN") {
           let data = await TokenData.findOne({
             token: token,
             id: decoded.info.id,
@@ -59,7 +59,7 @@ const verifyToken = async (req, res, next) => {
             });
           }
         }
-        req.decoded = decoded;
+        
       } else {
         let data = await TokenData.findOne({
           token: token,
@@ -72,8 +72,10 @@ const verifyToken = async (req, res, next) => {
             msg: "Token Not Found In Database",
           });
         }
-        req.decoded = decoded;
-      }
+        
+      }  
+      req.decoded = decoded;
+      req.roles=[decoded.info.roles];
       next();
     } else {
       return res.status(400).send({
