@@ -11,9 +11,8 @@ const tokenDataSchema = new Schema(
       unique: true,
       trim: true,
     },
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'admin', // Reference to the User model assuming it's defined
+    id: {
+     type:String,
       required: false,
     },
     deviceId: {

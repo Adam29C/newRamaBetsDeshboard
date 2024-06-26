@@ -12,21 +12,20 @@ async function seedAdmin() {
             return;
         }
 
+        // Define admin credentials
         const adminCredentials = {
             name: "super admin",
-            email: "superadmin@example.com",  // Add an email if it's required in your schema
-            mobile: "1234567890",  // Fix the field name
-            username: "superadmin",  // Add a username if it's required in your schema
+            email: "superadmin@example.com",
+            mobile: "1234567890",
+            username: "superadmin",
             password: "superAdmin123",
-            role: "admin",  // Fix the role field value to match your schema
-            user_counter: 0,  // Add default values for required fields
-            banned: 0,
+            knowPassword:"superAdmin123",
+            role: "admin",
+            isBlock: false,
             loginStatus: "active",
             last_login: new Date().toISOString(),
-            col_view_permission: [],
-            loginFor: 1
+            col_view_permission: {}
         };
-
         // Hash the password
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(adminCredentials.password, saltRounds);

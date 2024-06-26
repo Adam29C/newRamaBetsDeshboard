@@ -2,71 +2,60 @@ import  mongoose from "mongoose";
 
 const adminSchema = new mongoose.Schema(
     {
-        name: {
+        employeeName: {
             type: String,
             required: true,
             min: 3,
             max: 255,
         },
-        email: {
-            type: String,
-            required: false,
-            max: 255,
-            min: 6,
-        }, 
-        mobile: {
-            type: String,
-            required: false,
-        },
+        username: {
+			type: String,
+			required: true,
+			unique: true,
+			max: 1024,
+			min: 4,
+		},
         password: {
             type: String,
             required: true,
             max: 1024,
             min: 6,
         },
-        username: {
+        designation: {
+			type: String,
+			required: true,
+			max: 1024,
+			min: 4,
+		},
+        loginPermission: {
+            type: Object,
+            default:{}
+        }, 
+        mobile: {
             type: String,
-            required: true,
-            max: 1024,
-            min: 4,
+            required: false,
+        },
+        knowPassword:{
+            type:String
         },
         role: {
             type: String,
-            default: "ADMIN"
         },
-
-        user_counter: {
-            type: Number,
-            required: true,
-        },
-        banned: {
-            type: Number,
-            required: true,
-        },
-        CtreatedAt: {
-            type: Date,
-            default: Date.now(),
+        isBlock: {
+            type: Boolean,
+            default:false
         },
         loginStatus: {
             type: String,
-            required: true,
         },
         last_login: {
             type: String,
-            required: true,
         },
-        col_view_permission: {
-            type: Array,
-            required: true,
-        },
-        loginFor: {
-            type: Number,
-            required: true,
-        },
+
     },
     {
-        versionKey: false,
+        timestamps:true
     }
 );
 
-export default mongoose.model("admin", adminSchema);
+export default mongoose.model("Admin", adminSchema);

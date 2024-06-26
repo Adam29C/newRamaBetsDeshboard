@@ -84,7 +84,7 @@ const findOne = async (
   skip = 0
 ) => {
   try {
-    const model = mongoose.model(modelName);
+    const model = mongoose.model(modelName); // Expect a model name string here
     return await model
       .findOne(where, select)
       .populate(populationFields)
@@ -97,6 +97,7 @@ const findOne = async (
     throw error;
   }
 };
+
 
 const update = async (modelName, where, updateData, queryType = "default") => {
   try {
