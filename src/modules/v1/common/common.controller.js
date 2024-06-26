@@ -21,7 +21,7 @@ const generateAuthToken = async (req, res) => {
       // Check if ID exists in admin or users collections
       details = await findOne("Admin", { _id: id }) || await findOne("users", { _id: id });
       if (!details) {
-        return BadRequestResponse(res, req.t("failure_message_2"));
+        return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
       }
       roles = details.role; // Set roles from found details
       query = { id: id };
@@ -33,7 +33,7 @@ const generateAuthToken = async (req, res) => {
 
     // Create the token
     const token = await createToken(id, deviceId, roles, query);
-    return SuccessResponse(res, req.t("success_status"), { token });
+    return SuccessResponse(res, HTTP_MESSAGE.Token_Created, { token });
   } catch (err) {
     return InternalServerErrorResponse(
       res,

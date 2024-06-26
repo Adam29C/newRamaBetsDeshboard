@@ -7,13 +7,21 @@ import admin from "../models/admin.js";
 // Middleware to verify the token
 const verifyToken = async (req, res, next) => {
   try {
+    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
 
-    if (
-      req.headers.authorization &&
-      req.headers.authorization.startsWith("Bearer")
-    ) {
       const token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, JWT_SECRET);
+      let decoded;
+
+      try {
+        decoded = jwt.verify(token, JWT_SECRET);
+      } catch (err) {
+        return res.status(400).send({
+          statusCode: 400,
+          status: "Failure",
+          msg: "Token Expired or Invalid",
+        });
+      }
+
       if (!decoded) {
         return res.status(400).send({
           statusCode: 400,
@@ -21,6 +29,7 @@ const verifyToken = async (req, res, next) => {
           msg: "Token Expired or Invalid",
         });
       }
+
       if (decoded.info.id !== "") {
         let details = await admin.findOne({ _id: decoded.info.id });
 
@@ -36,6 +45,7 @@ const verifyToken = async (req, res, next) => {
           { _id: decoded.info.id },
           { ipAddress: req.connection.remoteAddress }
         );
+
         if (details.role !== 0) {
           let data = await TokenData.findOne({
             token: token,
@@ -80,6 +90,7 @@ const verifyToken = async (req, res, next) => {
     });
   }
 };
+
 
 // Function to create a new token
 const createToken = async (id, deviceId, roles, query) => {
