@@ -138,5 +138,27 @@ const empList = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+// logo,fabIcon,backgrountImage
+//Function For List Of Employee api
+const updateSystemInfo = async (req, res) => {
+  try {
+    console.log("9999")
+    const {adminId,text} = req.body;
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList };
+    const details = await findOne("Admin", { _id: adminId });
+    if (!details) {
+      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    }
+    const updateData = {
+      adminId:adminId,
+      text:text
+    };
+    const updatedDetails = await update("System", { _id: adminId}, updateData, "findOneAndUpdate");
+    return SuccessResponse(res, HTTP_MESSAGE.EMP_LIST, { details: updatedDetails });
+
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, updateSystemInfo};

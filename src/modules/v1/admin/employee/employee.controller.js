@@ -124,7 +124,7 @@ const blockEmployee = async (req, res) => {
 //Function For List Of Employee api
 const empList = async (req, res) => {
   try {
-    const { adminId } = req.body;
+    const { adminId } = req.query;
 
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
