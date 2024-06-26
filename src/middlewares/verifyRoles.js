@@ -2,7 +2,7 @@ import { roleList } from "../consts/authorization.js";
 import { UnauthorizedResponse } from "../helpers/http.js";
 import { HTTP_MESSAGE } from "../helpers/http.js";
 
-const verifyRoles = (...allowedRoles) => {
+const verifyRoles = (...allowedRoles) => { 
     return (req, res, next) => {
         try {
             if (!req?.roles) {

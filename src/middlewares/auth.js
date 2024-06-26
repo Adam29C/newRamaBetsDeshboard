@@ -56,8 +56,6 @@ const authMiddleware = async (req, res, next) => {
       }
     }
   } catch (err) {
-
-    console.error("Error in authMiddleware:", err);
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 
