@@ -17,7 +17,8 @@ export const HTTP_MESSAGE = {
   PASSWORD_CHANGE:"Password Chang Successfully",
   CREATED_EMPLOGEE:"New Employee Created Successfully",
   BLOCK_EMPLOYEE:"Employee Block Successfully",
-  EMP_LIST:"Employee List Show Successfully"
+  EMP_LIST:"Employee List Show Successfully",
+  LOGIN:"Login Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {

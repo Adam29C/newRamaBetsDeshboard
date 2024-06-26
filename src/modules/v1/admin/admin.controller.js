@@ -25,7 +25,7 @@ const adminLogin = async (req, res) => {
     const roles = details.role;
     const query = { id };
     const token = await createToken(id, deviceId, roles, query);
-    return SuccessResponse(res, HTTP_MESSAGE.SUCCESS, { token });
+    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token });
 
   } catch (err) {
     console.error("Internal Server Error:", err);
@@ -62,8 +62,10 @@ const changePassword = async (req, res) => {
       password: hashedPassword,
       knowPassword: password,
     };
+
     const updatedDetails = await update("Admin", { _id: adminId }, updateData, "findOneAndUpdate");
     return SuccessResponse(res, HTTP_MESSAGE.PASSWORD_CHANGE, { details: updatedDetails });
+
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
@@ -77,6 +79,7 @@ const createEmployee = async (req, res) => {
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
     }
+
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const employeeDetails = {
@@ -89,6 +92,7 @@ const createEmployee = async (req, res) => {
     };
     await insertQuery("Admin", employeeDetails);
     return SuccessResponse(res, HTTP_MESSAGE.CREATED_EMPLOGEE, { details: employeeDetails });
+    
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
