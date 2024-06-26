@@ -9,6 +9,7 @@ import { findOne, insertQuery, update } from '../../../helpers/crudMongo.js';
 //Function For Admin Login Api 
 const adminLogin = async (req, res) => {
   try {
+    console.log("11")
     const { username, password } = req.body;
     const details = await findOne("Admin", { username: username });
     if (!details) {

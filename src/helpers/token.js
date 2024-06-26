@@ -7,6 +7,7 @@ import admin from "../models/admin.js";
 // Middleware to verify the token
 const verifyToken = async (req, res, next) => {
   try {
+
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer")
