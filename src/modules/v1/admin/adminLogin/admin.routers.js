@@ -60,7 +60,7 @@ adminRouter.post(
   verifyRoles(roleList.ADMIN),
   systemInformition.fields([
     { name: "logo" },
-    { name: "fabIcon" },
+    { name: "favIcon" },
     { name: "backgroundImage" },
   ]),  // Change to array and set max count
   validator(updateSystemInfoSchema, ValidationSource.BODY),
@@ -73,7 +73,7 @@ adminRouter.put(
   verifyRoles(roleList.ADMIN),
   systemInformition.fields([
     {name:"logo"},
-    {name:"fabIcon"},
+    {name:"favIcon"},
     {name:"backgroundImage"},
     
   ]),

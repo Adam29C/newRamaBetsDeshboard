@@ -144,7 +144,6 @@ const empList = async (req, res) => {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
     }
 
-    // Aggregate pipeline to exclude documents with role 'ADMIN' and exclude password and knowPassword fields
     const list = await Admin.aggregate([
       { $match: { role: { $ne: 'ADMIN' } } },
       { $project: { password: 0, knowPassword: 0 } }
@@ -160,26 +159,26 @@ const empList = async (req, res) => {
 //First Time Add The System Info
 const addSystemInfo = async (req, res) => {
   try {
-    const { adminId, text } = req.body;
+    const { adminId, title } = req.body;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
     }
-
+    
     const logo = req.files?.logo ? req.files.logo[0].location : null;
-    const fabIcon = req.files?.fabIcon ? req.files.fabIcon[0].location : null;
+    const favIcon = req.files?.favIcon ? req.files.favIcon[0].location : null;
     const backgroundImage = req.files?.backgroundImage ? req.files.backgroundImage[0].location : null;
 
     const newData = {
       adminId,
-      text,
+      title,
       logo,
-      fabIcon,
+      favIcon,
       backgroundImage,
     };
 
     const newDetails = await insertQuery("System", newData);
-    return SuccessResponse(res, HTTP_MESSAGE.EMP_ADDED, { details: newDetails });
+    return SuccessResponse(res, HTTP_MESSAGE.ADD_SYSINFO, { details: newDetails });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -188,31 +187,41 @@ const addSystemInfo = async (req, res) => {
 
 //Update System Info
 const updateSystemInfo = async (req, res) => {
+  const { adminId, systemInfoId, title } = req.body;
+
   try {
-    const { adminId,systemInfoId,text } = req.body;
-    const details = await findOne("Admin", { _id: adminId });
-    if (!details) {
+    const adminDetails = await findOne("Admin", { _id: adminId });
+    if (!adminDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
     }
-    const systemInfo =await findOne("System", { _id: systemInfoId });
+
+    const systemInfo = await findOne("System", { _id: systemInfoId });
     if (!systemInfo) {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
     }
-    const logo = req.files?.logo ? req.files.logo[0].location : null;
-    const fabIcon = req.files?.fabIcon ? req.files.fabIcon[0].location : null;
-    const backgroundImage = req.files?.backgroundImage ? req.files.backgroundImage[0].location : null;
 
-    
-    const updateData = {
-      adminId,
-      text,
-      logo,
-      fabIcon,
-      backgroundImage,
-    };
+    const updateData = {};
+    if (req.files?.logo) {
+      updateData.logo = req.files.logo[0].location;
+    }
+    if (req.files?.fabIcon) {
+      updateData.fabIcon = req.files.fabIcon[0].location;
+    }
+    if (req.files?.backgroundImage) {
+      updateData.backgroundImage = req.files.backgroundImage[0].location;
+    }
+    if (title) {
+      updateData.title = title;
+    }
 
-    const updatedDetails = await update("System", { _id: systemInfoId }, updateData, "findOneAndUpdate");
-    return SuccessResponse(res, HTTP_MESSAGE.EMP_LIST, { details: updatedDetails });
+    const options = { new: true };
+    const updatedDetails = await update("System", { _id: systemInfoId }, updateData, "findOneAndUpdate", options);
+
+    if (!Object.keys(updateData).length) {
+      return BadRequestResponse(res, HTTP_MESSAGE.BAD_REQUEST, "No valid fields to update.");
+    }
+
+    return SuccessResponse(res, HTTP_MESSAGE.UPDATE_SYSINFO, { details: updatedDetails });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
