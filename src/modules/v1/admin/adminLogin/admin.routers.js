@@ -5,7 +5,7 @@ import {
   } from "../../../../middlewares/validator.js";
 const adminRouter = express.Router();
 import { verifyToken } from "../../../../helpers/token.js";
-import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,updateSystemInfo} from "./admin.controller.js";
+import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo} from "./admin.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import {verifyRoles} from "../../../../middlewares/verifyRoles.js";
 import  getMulterStorage from "../../../../helpers/fileUpload.js";
@@ -54,16 +54,29 @@ adminRouter.get(
   empList
 );
 
+adminRouter.post(
+  "/addSystemInfo",
+  verifyToken,
+  verifyRoles(roleList.ADMIN),
+  systemInformition.fields([
+    { name: "logo" },
+    { name: "fabIcon" },
+    { name: "backgroundImage" },
+  ]),  // Change to array and set max count
+  validator(updateSystemInfoSchema, ValidationSource.BODY),
+  addSystemInfo
+);
+
 adminRouter.put(
   "/updateSystemInfo",
   verifyToken,
   verifyRoles(roleList.ADMIN),
   systemInformition.fields([
-    { name: "logo", maxCount: 1 },
-    { name: "fabIcon", maxCount: 1 },
-    { name: "backgroundImage", maxCount: 1 }
+    {name:"logo"},
+    {name:"fabIcon"},
+    {name:"backgroundImage"},
+    
   ]),
-  validator(updateSystemInfoSchema, ValidationSource.BODY),
   updateSystemInfo
 );
 

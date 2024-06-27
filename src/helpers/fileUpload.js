@@ -9,7 +9,6 @@ const s3 = new S3Client({
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
     }
 });
-
 const getMulterStorage = (storagePath) => {
     const s3Storage = multerS3({
         s3: s3,

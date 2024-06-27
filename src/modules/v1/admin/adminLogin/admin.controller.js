@@ -128,6 +128,7 @@ const empList = async (req, res) => {
     const { adminId } = req.body;
 
     const details = await findOne("Admin", { _id: adminId });
+    console.log(details,"gggg")
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
     }
@@ -141,26 +142,60 @@ const empList = async (req, res) => {
 };
 
 //First Time Add The System Info
-const updateSystemInfo = async (req, res) => {
+const addSystemInfo = async (req, res) => {
   try {
     const { adminId, text } = req.body;
-
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
     }
-    let imageUrl = null;
-    if (req.file) {
-      imageUrl = req.file.location;
-    }
 
-    const updateData = {
-      adminId: adminId,
-      text: text,
-      logo: imageUrl
+    const logo = req.files?.logo ? req.files.logo[0].location : null;
+    const fabIcon = req.files?.fabIcon ? req.files.fabIcon[0].location : null;
+    const backgroundImage = req.files?.backgroundImage ? req.files.backgroundImage[0].location : null;
+
+    const newData = {
+      adminId,
+      text,
+      logo,
+      fabIcon,
+      backgroundImage,
     };
 
-    const updatedDetails = await update("System", { _id: adminId }, updateData, "findOneAndUpdate");
+    const newDetails = await insertQuery("System", newData);
+    return SuccessResponse(res, HTTP_MESSAGE.EMP_ADDED, { details: newDetails });
+
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+//Update System Info
+const updateSystemInfo = async (req, res) => {
+  try {
+    const { adminId,systemInfoId,text } = req.body;
+    const details = await findOne("Admin", { _id: adminId });
+    if (!details) {
+      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    }
+    const systemInfo =await findOne("System", { _id: systemInfoId });
+    if (!systemInfo) {
+      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    }
+    const logo = req.files?.logo ? req.files.logo[0].location : null;
+    const fabIcon = req.files?.fabIcon ? req.files.fabIcon[0].location : null;
+    const backgroundImage = req.files?.backgroundImage ? req.files.backgroundImage[0].location : null;
+
+    
+    const updateData = {
+      adminId,
+      text,
+      logo,
+      fabIcon,
+      backgroundImage,
+    };
+
+    const updatedDetails = await update("System", { _id: systemInfoId }, updateData, "findOneAndUpdate");
     return SuccessResponse(res, HTTP_MESSAGE.EMP_LIST, { details: updatedDetails });
 
   } catch (err) {
@@ -168,4 +203,4 @@ const updateSystemInfo = async (req, res) => {
   }
 };
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, updateSystemInfo };
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo };
