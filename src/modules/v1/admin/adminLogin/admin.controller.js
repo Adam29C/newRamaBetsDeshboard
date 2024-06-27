@@ -60,7 +60,7 @@ const changePassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const updateData = {
       password: hashedPassword,
-      knowPassword: password,
+      knowPassword: password, 
     };
 
     const updatedDetails = await update("Admin", { _id: adminId }, updateData, "findOneAndUpdate");
@@ -83,15 +83,27 @@ const createEmployee = async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const employeeDetails = {
-      employeeName: employeeName,
-      username: username,
+      employeeName,
+      username,
       password: hashedPassword,
       knowPassword: password,
-      designation: designation,
-      permission: permission
+      designation,
+      permission,
+      role: "SUBADMIN"
     };
+
     await insertQuery("Admin", employeeDetails);
-    return SuccessResponse(res, HTTP_MESSAGE.CREATED_EMPLOGEE, { details: employeeDetails });
+
+    // Exclude password and knowPassword from the response
+    const responseDetails = {
+      employeeName,
+      username,
+      designation,
+      permission,
+      role: "SUBADMIN"
+    };
+
+    return SuccessResponse(res, HTTP_MESSAGE.CREATED_EMPLOGEE, { details: responseDetails });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -128,12 +140,16 @@ const empList = async (req, res) => {
     const { adminId } = req.query;
 
     const details = await findOne("Admin", { _id: adminId });
-    console.log(details,"gggg")
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
     }
 
-    const list = await Admin.find({});
+    // Aggregate pipeline to exclude documents with role 'ADMIN' and exclude password and knowPassword fields
+    const list = await Admin.aggregate([
+      { $match: { role: { $ne: 'ADMIN' } } },
+      { $project: { password: 0, knowPassword: 0 } }
+    ]);
+
     return SuccessResponse(res, HTTP_MESSAGE.EMP_LIST, { details: list });
 
   } catch (err) {
