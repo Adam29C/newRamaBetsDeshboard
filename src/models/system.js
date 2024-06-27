@@ -6,7 +6,7 @@ const systemSchema = new mongoose.Schema(
             type: String,
         },
 
-        text: {
+        title: {
 			type: String,
 		},
 
@@ -14,7 +14,7 @@ const systemSchema = new mongoose.Schema(
             type: String,
         },
 
-        fabIcon: {
+        favIcon: {
 			type: String,
 		},
         

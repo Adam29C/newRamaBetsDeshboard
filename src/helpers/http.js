@@ -18,7 +18,9 @@ export const HTTP_MESSAGE = {
   CREATED_EMPLOGEE:"New Employee Created Successfully",
   BLOCK_EMPLOYEE:"Employee Block Successfully",
   EMP_LIST:"Employee List Show Successfully",
-  LOGIN:"Login Successfully"
+  LOGIN:"Login Successfully",
+  ADD_SYSINFO:"System Informition Added Successfully",
+  UPDATE_SYSINFO:"System Informition Updated Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {

@@ -33,5 +33,5 @@ export const empListSchema = Joi.object({
 
 export const updateSystemInfoSchema = Joi.object({
   adminId: Joi.string().required(),
-  text:Joi.string().required()
+  title:Joi.string().required()
 });
