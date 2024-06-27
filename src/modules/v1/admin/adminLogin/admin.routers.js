@@ -5,7 +5,7 @@ import {
   } from "../../../../middlewares/validator.js";
 const adminRouter = express.Router();
 import { verifyToken } from "../../../../helpers/token.js";
-import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo,deleteEmp} from "./admin.controller.js";
+import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo,deleteEmployee} from "./admin.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import {verifyRoles} from "../../../../middlewares/verifyRoles.js";
 import  getMulterStorage from "../../../../helpers/fileUpload.js";
@@ -60,7 +60,7 @@ adminRouter.get(
   verifyToken,
   verifyRoles(roleList.ADMIN),
   validator(empListSchema,ValidationSource.PARAM),
-  deleteEmp
+  deleteEmployee
 );
 
 adminRouter.post(
