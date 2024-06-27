@@ -27,7 +27,7 @@ const adminSchema = new mongoose.Schema(
 			max: 1024,
 			min: 4,
 		},
-        Permission: {
+        permission: {
             type: Object,
             default:{}
         }, 
