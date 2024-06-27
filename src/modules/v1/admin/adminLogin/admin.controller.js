@@ -26,7 +26,7 @@ const adminLogin = async (req, res) => {
     const roles = details.role;
     const query = { id };
     const token = await createToken(id, deviceId, roles, query);
-    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token:token,roles:details.role });
+    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token:token,roles:details.role,id:id });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
