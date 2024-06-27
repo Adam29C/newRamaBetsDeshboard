@@ -105,10 +105,10 @@ adminRouter.put(
 );
 
 adminRouter.get(
-  "/getPermission",
+  "/getPermission/:id",
   verifyToken,
   verifyRoles(roleList.ADMIN),
-  validator(getPermissionSchema,ValidationSource.QUERY),
+  validator(getPermissionSchema,ValidationSource.PARAM),
   getPermission
 );
 

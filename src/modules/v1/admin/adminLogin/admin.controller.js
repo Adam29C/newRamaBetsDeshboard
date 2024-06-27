@@ -26,7 +26,7 @@ const adminLogin = async (req, res) => {
     const roles = details.role;
     const query = { id };
     const token = await createToken(id, deviceId, roles, query);
-    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token:token,roles:details.role,id:id });
+    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token:token,roles:details.role,id:id,isBlock:details.isBlock });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -309,14 +309,17 @@ const updateEmployeeInformition = async (req, res) => {
 //Function For Get getPermission
 const getPermission = async (req, res) => {
   try {
-    const id = req.params.empId;
-    const details = await findOne("Admin", { _id: adminId });
+    const id = req.params.id;
+    const details = await findOne("Admin", { _id: id }, { permission: 1 });
+
     if (!details) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
-    return SuccessResponse(res, HTTP_MESSAGE.ADMIN_PROFILE, { details });
+
+    return SuccessResponse(res, HTTP_MESSAGE.GET_PERMISSION, { permission: details.permission });
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+
 export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission };

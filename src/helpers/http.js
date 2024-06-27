@@ -24,7 +24,8 @@ export const HTTP_MESSAGE = {
   DELETE_EMPLOYEE:"Employee Delete Successfully",
   USER_NOT_FOUND:"User Not Found",
   EMPLOYEE_NOT_FOUND:"Employee Not Found",
-  EMP_UPDATE:"Employee Informition Update successfully"
+  EMP_UPDATE:"Employee Informition Update successfully",
+  GET_PERMISSION:"Get All Permissions"
 };
 
 const handleResponse = (res, status, success, message, data) => {
