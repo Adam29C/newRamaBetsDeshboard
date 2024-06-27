@@ -47,4 +47,11 @@ export const updateEmployeeInformitionSchema = Joi.object({
   username : Joi.string().required(),
   permission : Joi.object().required()
 });
+
+export const getPermissionSchema = Joi.object({
+  adminId : Joi.string().required(),
+  empId : Joi.string().required(),
+  username : Joi.string().required(),
+  permission : Joi.object().required()
+});
 //adminId,empId,username,permission 

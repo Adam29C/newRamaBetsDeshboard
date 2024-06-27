@@ -306,4 +306,17 @@ const updateEmployeeInformition = async (req, res) => {
   }
 };
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition };
+//Function For Get getPermission
+const getPermission = async (req, res) => {
+  try {
+    const id = req.params.empId;
+    const details = await findOne("Admin", { _id: adminId });
+    if (!details) {
+      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    }
+    return SuccessResponse(res, HTTP_MESSAGE.ADMIN_PROFILE, { details });
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission };
