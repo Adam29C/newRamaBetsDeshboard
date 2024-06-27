@@ -13,7 +13,7 @@ const adminLogin = async (req, res) => {
     const { username, password } = req.body;
     const details = await findOne("Admin", { username: username });
     if (!details) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
     const match = await bcrypt.compare(password, details.password);
@@ -156,6 +156,25 @@ const empList = async (req, res) => {
   }
 };
 
+const deleteEmployee = async (req, res) => {
+  try {
+    let { empId } = req.params;
+
+    const empDetails = await findOne("Admin", { _id: empId });
+    if (!empDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    }
+
+    const deleteResponse = await deleteQuery(
+      "Admin",
+      { _id: empId },
+      "deleteOne"
+    );
+    return SuccessResponse(res, HTTP_MESSAGE.DELETE_EMPLOYEE, deleteResponse);
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR);
+  }
+};
 //First Time Add The System Info
 const addSystemInfo = async (req, res) => {
   try {
@@ -228,4 +247,6 @@ const updateSystemInfo = async (req, res) => {
   }
 };
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo };
+
+
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee };
