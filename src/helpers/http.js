@@ -14,7 +14,7 @@ export const HTTP_MESSAGE = {
   SUCCESSFUL_OTP: "OTP Successful",
   TOKEN_CREATED:"Token Created SuccessFully",
   ADMIN_PROFILE:"Admin Profile Show Successfully",
-  PASSWORD_CHANGE:"Password Chang Successfully",
+  PASSWORD_CHANGE:"Password Change Successfully",
   CREATED_EMPLOGEE:"New Employee Created Successfully",
   BLOCK_EMPLOYEE:"Employee Block Successfully",
   EMP_LIST:"Employee List Show Successfully",
@@ -22,7 +22,9 @@ export const HTTP_MESSAGE = {
   ADD_SYSINFO:"System Informition Added Successfully",
   UPDATE_SYSINFO:"System Informition Updated Successfully",
   DELETE_EMPLOYEE:"Employee Delete Successfully",
-  USER_NOT_FOUND:"User Not Found"
+  USER_NOT_FOUND:"User Not Found",
+  EMPLOYEE_NOT_FOUND:"Employee Not Found",
+  EMP_UPDATE:"Employee Informition Update successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {

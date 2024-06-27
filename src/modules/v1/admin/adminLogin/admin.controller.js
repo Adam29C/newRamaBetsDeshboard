@@ -5,7 +5,7 @@ import { JWT_EXPIRES_IN, JWT_SECRET } from '../../../../config/env.config.js';
 import Admin from '../../../../models/admin.js';
 import System from '../../../../models/system.js';
 import { createToken } from '../../../../helpers/token.js';
-import { findOne, insertQuery, update } from '../../../../helpers/crudMongo.js';
+import { findOne, insertQuery, update,deleteQuery } from '../../../../helpers/crudMongo.js';
 
 //Function For Admin Login Api 
 const adminLogin = async (req, res) => {
@@ -26,7 +26,79 @@ const adminLogin = async (req, res) => {
     const roles = details.role;
     const query = { id };
     const token = await createToken(id, deviceId, roles, query);
-    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token });
+    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token:token,roles:details.role });
+
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+//First Time Add The System Info
+const addSystemInfo = async (req, res) => {
+  try {
+    const { adminId, title } = req.body;
+    const details = await findOne("Admin", { _id: adminId });
+    if (!details) {
+      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    }
+    
+    const logo = req.files?.logo ? req.files.logo[0].location : null;
+    const favIcon = req.files?.favIcon ? req.files.favIcon[0].location : null;
+    const backgroundImage = req.files?.backgroundImage ? req.files.backgroundImage[0].location : null;
+
+    const newData = {
+      adminId,
+      title,
+      logo,
+      favIcon,
+      backgroundImage,
+    };
+
+    const newDetails = await insertQuery("System", newData);
+    return SuccessResponse(res, HTTP_MESSAGE.ADD_SYSINFO, { details: newDetails });
+
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+//Update System Info
+const updateSystemInfo = async (req, res) => {
+  const { adminId, systemInfoId, title } = req.body;
+
+  try {
+    const adminDetails = await findOne("Admin", { _id: adminId });
+    if (!adminDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    }
+
+    const systemInfo = await findOne("System", { _id: systemInfoId });
+    if (!systemInfo) {
+      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    }
+
+    const updateData = {};
+    if (req.files?.logo) {
+      updateData.logo = req.files.logo[0].location;
+    }
+    if (req.files?.fabIcon) {
+      updateData.fabIcon = req.files.fabIcon[0].location;
+    }
+    if (req.files?.backgroundImage) {
+      updateData.backgroundImage = req.files.backgroundImage[0].location;
+    }
+    if (title) {
+      updateData.title = title;
+    }
+
+    const options = { new: true };
+    const updatedDetails = await update("System", { _id: systemInfoId }, updateData, "findOneAndUpdate", options);
+
+    if (!Object.keys(updateData).length) {
+      return BadRequestResponse(res, HTTP_MESSAGE.BAD_REQUEST, "No valid fields to update.");
+    }
+
+    return SuccessResponse(res, HTTP_MESSAGE.UPDATE_SYSINFO, { details: updatedDetails });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -156,9 +228,10 @@ const empList = async (req, res) => {
   }
 };
 
+//Function For Delete Employee Api
 const deleteEmployee = async (req, res) => {
   try {
-    let { empId } = req.params;
+    const empId = req.params.empId;
 
     const empDetails = await findOne("Admin", { _id: empId });
     if (!empDetails) {
@@ -175,78 +248,62 @@ const deleteEmployee = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR);
   }
 };
-//First Time Add The System Info
-const addSystemInfo = async (req, res) => {
+
+//Function For Admin Change Employee Password Api
+const changeEmployeePassword = async (req, res) => {
   try {
-    const { adminId, title } = req.body;
+    const { adminId,empId,password } = req.body;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
-    
-    const logo = req.files?.logo ? req.files.logo[0].location : null;
-    const favIcon = req.files?.favIcon ? req.files.favIcon[0].location : null;
-    const backgroundImage = req.files?.backgroundImage ? req.files.backgroundImage[0].location : null;
 
-    const newData = {
-      adminId,
-      title,
-      logo,
-      favIcon,
-      backgroundImage,
+    const empDetails = await findOne("Admin", { _id: empId });
+    if (!empDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.EMPLOYEE_NOT_FOUND);
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const updateData = {
+      password: hashedPassword,
+      knowPassword: password, 
     };
 
-    const newDetails = await insertQuery("System", newData);
-    return SuccessResponse(res, HTTP_MESSAGE.ADD_SYSINFO, { details: newDetails });
+    const updatedDetails = await update("Admin", { _id: empId }, updateData, "findOneAndUpdate");
+    return SuccessResponse(res, HTTP_MESSAGE.PASSWORD_CHANGE, { details: updatedDetails });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
 
-//Update System Info
-const updateSystemInfo = async (req, res) => {
-  const { adminId, systemInfoId, title } = req.body;
-
+//Function For Admin Update Employee Informition Api
+const updateEmployeeInformition = async (req, res) => {
   try {
-    const adminDetails = await findOne("Admin", { _id: adminId });
-    if (!adminDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    console.log("gggg")
+    const { adminId,empId,username,permission } = req.body;
+    const details = await findOne("Admin", { _id: adminId });
+    if (!details) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
-    const systemInfo = await findOne("System", { _id: systemInfoId });
-    if (!systemInfo) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    const empDetails = await findOne("Admin", { _id: empId });
+    if (!empDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.EMPLOYEE_NOT_FOUND);
     }
 
-    const updateData = {};
-    if (req.files?.logo) {
-      updateData.logo = req.files.logo[0].location;
-    }
-    if (req.files?.fabIcon) {
-      updateData.fabIcon = req.files.fabIcon[0].location;
-    }
-    if (req.files?.backgroundImage) {
-      updateData.backgroundImage = req.files.backgroundImage[0].location;
-    }
-    if (title) {
-      updateData.title = title;
-    }
+    const updateData = {
+      username: username,
+      permission: permission, 
+    };
 
-    const options = { new: true };
-    const updatedDetails = await update("System", { _id: systemInfoId }, updateData, "findOneAndUpdate", options);
-
-    if (!Object.keys(updateData).length) {
-      return BadRequestResponse(res, HTTP_MESSAGE.BAD_REQUEST, "No valid fields to update.");
-    }
-
-    return SuccessResponse(res, HTTP_MESSAGE.UPDATE_SYSINFO, { details: updatedDetails });
+    const updatedDetails = await update("Admin", { _id: empId }, updateData, "findOneAndUpdate");
+    return SuccessResponse(res, HTTP_MESSAGE.EMP_UPDATE, { details: updatedDetails });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
 
-
-
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee };
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition };

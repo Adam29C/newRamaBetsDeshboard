@@ -11,6 +11,7 @@ export const adminProfileSchema = Joi.object({
 
 export const changePasswordSchema = Joi.object({
   adminId: Joi.string().required(),
+  empId:Joi.string().required(),
   password:Joi.string().required()
 });
 
@@ -35,3 +36,15 @@ export const updateSystemInfoSchema = Joi.object({
   adminId: Joi.string().required(),
   title:Joi.string().required()
 });
+
+export const deleteEmployeeSchema = Joi.object({
+  empId : Joi.string().required()
+});
+
+export const updateEmployeeInformitionSchema = Joi.object({
+  adminId : Joi.string().required(),
+  empId : Joi.string().required(),
+  username : Joi.string().required(),
+  permission : Joi.object().required()
+});
+//adminId,empId,username,permission 
