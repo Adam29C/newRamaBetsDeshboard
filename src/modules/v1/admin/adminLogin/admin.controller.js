@@ -26,7 +26,7 @@ const adminLogin = async (req, res) => {
     const roles = details.role;
     const query = { id };
     const token = await createToken(id, deviceId, roles, query);
-    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token });
+    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token:token,roles:details.role });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -278,4 +278,32 @@ const changeEmployeePassword = async (req, res) => {
   }
 };
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword };
+//Function For Admin Update Employee Informition Api
+const updateEmployeeInformition = async (req, res) => {
+  try {
+    console.log("gggg")
+    const { adminId,empId,username,permission } = req.body;
+    const details = await findOne("Admin", { _id: adminId });
+    if (!details) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
+
+    const empDetails = await findOne("Admin", { _id: empId });
+    if (!empDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.EMPLOYEE_NOT_FOUND);
+    }
+
+    const updateData = {
+      username: username,
+      permission: permission, 
+    };
+
+    const updatedDetails = await update("Admin", { _id: empId }, updateData, "findOneAndUpdate");
+    return SuccessResponse(res, HTTP_MESSAGE.EMP_UPDATE, { details: updatedDetails });
+
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition };
