@@ -5,7 +5,7 @@ import {
   } from "../../../../middlewares/validator.js";
 const adminRouter = express.Router();
 import { verifyToken } from "../../../../helpers/token.js";
-import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo} from "./admin.controller.js";
+import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo,deleteEmp} from "./admin.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import {verifyRoles} from "../../../../middlewares/verifyRoles.js";
 import  getMulterStorage from "../../../../helpers/fileUpload.js";
@@ -46,12 +46,21 @@ adminRouter.post(
    validator(blockEmployeeSchema,ValidationSource.BODY),
    blockEmployee
 );
+
 adminRouter.get(
   "/empList",
   verifyToken,
   verifyRoles(roleList.ADMIN),
   validator(empListSchema,ValidationSource.QUERY),
   empList
+);
+
+adminRouter.get(
+  "/deleteEmp",
+  verifyToken,
+  verifyRoles(roleList.ADMIN),
+  validator(empListSchema,ValidationSource.PARAM),
+  deleteEmp
 );
 
 adminRouter.post(
@@ -62,7 +71,7 @@ adminRouter.post(
     { name: "logo" },
     { name: "favIcon" },
     { name: "backgroundImage" },
-  ]),  // Change to array and set max count
+  ]),
   validator(updateSystemInfoSchema, ValidationSource.BODY),
   addSystemInfo
 );
@@ -75,7 +84,6 @@ adminRouter.put(
     {name:"logo"},
     {name:"favIcon"},
     {name:"backgroundImage"},
-    
   ]),
   updateSystemInfo
 );

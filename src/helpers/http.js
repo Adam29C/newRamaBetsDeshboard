@@ -20,7 +20,9 @@ export const HTTP_MESSAGE = {
   EMP_LIST:"Employee List Show Successfully",
   LOGIN:"Login Successfully",
   ADD_SYSINFO:"System Informition Added Successfully",
-  UPDATE_SYSINFO:"System Informition Updated Successfully"
+  UPDATE_SYSINFO:"System Informition Updated Successfully",
+  DELETE_EMPLOYEE:"Employee Delete Successfully",
+  USER_NOT_FOUND:"User Not Found"
 };
 
 const handleResponse = (res, status, success, message, data) => {
