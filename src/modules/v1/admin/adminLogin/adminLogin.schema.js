@@ -35,3 +35,7 @@ export const updateSystemInfoSchema = Joi.object({
   adminId: Joi.string().required(),
   title:Joi.string().required()
 });
+
+export const deleteEmployeeSchema = Joi.object({
+  empId : Joi.string().required()
+});

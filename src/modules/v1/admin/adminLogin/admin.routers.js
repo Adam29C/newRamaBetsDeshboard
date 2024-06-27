@@ -11,7 +11,7 @@ import {verifyRoles} from "../../../../middlewares/verifyRoles.js";
 import  getMulterStorage from "../../../../helpers/fileUpload.js";
 const systemInformition = getMulterStorage("uploads/systemInfo");
 
-import { loginSchema,adminProfileSchema,changePasswordSchema,createEmployeeSchema,blockEmployeeSchema,empListSchema,updateSystemInfoSchema } from "./adminLogin.schema.js";
+import { loginSchema,adminProfileSchema,changePasswordSchema,createEmployeeSchema,blockEmployeeSchema,empListSchema,updateSystemInfoSchema,deleteEmployeeSchema } from "./adminLogin.schema.js";
 adminRouter.post(
   "/adminLogin",
   verifyToken,
@@ -55,11 +55,11 @@ adminRouter.get(
   empList
 );
 
-adminRouter.get(
-  "/deleteEmp",
+adminRouter.delete(
+  "/deleteEmployee/:empId",
   verifyToken,
   verifyRoles(roleList.ADMIN),
-  validator(empListSchema,ValidationSource.PARAM),
+  validator(deleteEmployeeSchema, ValidationSource.PARAM),
   deleteEmployee
 );
 
