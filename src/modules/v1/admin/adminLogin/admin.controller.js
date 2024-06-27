@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse } from '../../../../helpers/http.js';
 import { JWT_EXPIRES_IN, JWT_SECRET } from '../../../../config/env.config.js';
 import Admin from '../../../../models/admin.js';
+import System from '../../../../models/system.js';
 import { createToken } from '../../../../helpers/token.js';
 import { findOne, insertQuery, update } from '../../../../helpers/crudMongo.js';
 
@@ -91,7 +92,7 @@ const createEmployee = async (req, res) => {
     };
     await insertQuery("Admin", employeeDetails);
     return SuccessResponse(res, HTTP_MESSAGE.CREATED_EMPLOGEE, { details: employeeDetails });
-    
+
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
@@ -138,22 +139,28 @@ const empList = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
-// logo,fabIcon,backgrountImage
-//Function For List Of Employee api
+
+//First Time Add The System Info
 const updateSystemInfo = async (req, res) => {
   try {
-    console.log("9999")
-    const {adminId,text} = req.body;
+    const { adminId, text } = req.body;
 
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
     }
+    let imageUrl = null;
+    if (req.file) {
+      imageUrl = req.file.location;
+    }
+
     const updateData = {
-      adminId:adminId,
-      text:text
+      adminId: adminId,
+      text: text,
+      logo: imageUrl
     };
-    const updatedDetails = await update("System", { _id: adminId}, updateData, "findOneAndUpdate");
+
+    const updatedDetails = await update("System", { _id: adminId }, updateData, "findOneAndUpdate");
     return SuccessResponse(res, HTTP_MESSAGE.EMP_LIST, { details: updatedDetails });
 
   } catch (err) {
@@ -161,4 +168,4 @@ const updateSystemInfo = async (req, res) => {
   }
 };
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, updateSystemInfo};
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, updateSystemInfo };

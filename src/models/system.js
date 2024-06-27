@@ -16,7 +16,11 @@ const systemSchema = new mongoose.Schema(
 
         fabIcon: {
 			type: String,
-		}
+		},
+        
+        baclgroundImage:{
+            type:String
+        }
     },
     {
         timestamps:true

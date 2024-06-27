@@ -11,7 +11,7 @@ import {verifyRoles} from "../../../../middlewares/verifyRoles.js";
 import  getMulterStorage from "../../../../helpers/fileUpload.js";
 const systemInformition = getMulterStorage("uploads/systemInfo");
 
-import { loginSchema,adminProfileSchema,changePasswordSchema,createEmployeeSchema,blockEmployeeSchema,empListSchema } from "./adminLogin.schema.js";
+import { loginSchema,adminProfileSchema,changePasswordSchema,createEmployeeSchema,blockEmployeeSchema,empListSchema,updateSystemInfoSchema } from "./adminLogin.schema.js";
 adminRouter.post(
   "/adminLogin",
   verifyToken,
@@ -56,10 +56,14 @@ adminRouter.get(
 
 adminRouter.put(
   "/updateSystemInfo",
-  // verifyToken,
-  // verifyRoles(roleList.ADMIN),
-  systemInformition.single("image"),
-  // validator(empListSchema,ValidationSource.BODY),
+  verifyToken,
+  verifyRoles(roleList.ADMIN),
+  systemInformition.fields([
+    { name: "logo", maxCount: 1 },
+    { name: "fabIcon", maxCount: 1 },
+    { name: "backgroundImage", maxCount: 1 }
+  ]),
+  validator(updateSystemInfoSchema, ValidationSource.BODY),
   updateSystemInfo
 );
 
