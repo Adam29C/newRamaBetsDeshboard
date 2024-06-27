@@ -9,25 +9,25 @@ const s3 = new S3Client({
         secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
     }
 });
-
 const getMulterStorage = (storagePath) => {
-        const s3Storage = multerS3({
-            s3: s3,
-            bucket: "ramabetsfile",
-            acl: "public-read",
-            metadata: (req, file, cb) => {
-                cb(null, { fieldname: file.fieldname });
-            },
-            key: (req, file, cb) => {
-                const fileName = `${storagePath}/${file.fieldname}_${Date.now()}_${file.originalname}`;
-                cb(null, fileName);
-            },
-        });
-        const multerInstanceForUpload = multer({
-            storage: s3Storage,
-        });
+    const s3Storage = multerS3({
+        s3: s3,
+        bucket: "ramabetsfile",
+        acl: "public-read",
+        metadata: (req, file, cb) => {
+            cb(null, { fieldname: file.fieldname });
+        },
+        key: (req, file, cb) => {
+            const fileName = `${storagePath}/${file.fieldname}_${Date.now()}_${file.originalname}`;
+            cb(null, fileName);
+        },
+    });
 
-        return multerInstanceForUpload;
+    const multerInstanceForUpload = multer({
+        storage: s3Storage,
+    });
+
+    return multerInstanceForUpload;
 };
 
 export default getMulterStorage;

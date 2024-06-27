@@ -30,3 +30,8 @@ export const blockEmployeeSchema = Joi.object({
 export const empListSchema = Joi.object({
   adminId: Joi.string().required(),
 });
+
+export const updateSystemInfoSchema = Joi.object({
+  adminId: Joi.string().required(),
+  text:Joi.string().required()
+});

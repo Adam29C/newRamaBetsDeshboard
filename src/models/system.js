@@ -2,7 +2,7 @@ import  mongoose from "mongoose";
 
 const systemSchema = new mongoose.Schema(
     {
-        userId: {
+        adminId: {
             type: String,
         },
 
@@ -16,7 +16,11 @@ const systemSchema = new mongoose.Schema(
 
         fabIcon: {
 			type: String,
-		}
+		},
+        
+        backgroundImage:{
+            type:String
+        }
     },
     {
         timestamps:true
