@@ -63,6 +63,7 @@ const addSystemInfo = async (req, res) => {
 
 //Update System Info
 const updateSystemInfo = async (req, res) => {
+  console.log("ggg")
   const { adminId, systemInfoId, title } = req.body;
 
   try {
