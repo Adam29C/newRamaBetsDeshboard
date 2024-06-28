@@ -10,6 +10,7 @@ import { JWT_EXPIRES_IN, JWT_SECRET } from "./../../../config/env.config.js";
 import Admin from "../../../models/admin.js";
 import mongoose from "mongoose";
 import { createToken } from "../../../helpers/token.js";
+import System from '../../../models/system.js';
 
 const generateAuthToken = async (req, res) => {
   try {
@@ -43,4 +44,15 @@ const generateAuthToken = async (req, res) => {
   }
 };
 
-export { generateAuthToken };
+//Function For List Of Employee api
+const systemInforList = async (req, res) => {
+  try {
+    const list = await System.find({});
+    return SuccessResponse(res, HTTP_MESSAGE.EMP_LIST, { details: list });
+  } catch (err) {
+    console.log(err.message,"gggggggggggg")
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+export { generateAuthToken, systemInforList };
