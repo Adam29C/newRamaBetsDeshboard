@@ -1,7 +1,5 @@
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse } from '../../../../helpers/http.js';
-import { JWT_EXPIRES_IN, JWT_SECRET } from '../../../../config/env.config.js';
 import Admin from '../../../../models/admin.js';
 import User from '../../../../models/users.js';
 import System from '../../../../models/system.js';
@@ -282,7 +280,6 @@ const changeEmployeePassword = async (req, res) => {
 //Function For Admin Update Employee Informition Api
 const updateEmployeeInformition = async (req, res) => {
   try {
-    console.log("gggg")
     const { adminId,empId,username,permission } = req.body;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
@@ -294,10 +291,14 @@ const updateEmployeeInformition = async (req, res) => {
       return BadRequestResponse(res, HTTP_MESSAGE.EMPLOYEE_NOT_FOUND);
     }
 
-    const updateData = {
-      username: username,
-      permission: permission, 
+    const updateData={}
+    if(username){
+      updateData.userName=username
     };
+    if(permission){
+      updateData.permission=permission
+    }
+
 
     const updatedDetails = await update("Admin", { _id: empId }, updateData, "findOneAndUpdate");
     return SuccessResponse(res, HTTP_MESSAGE.EMP_UPDATE, { details: updatedDetails });
@@ -323,7 +324,7 @@ const getPermission = async (req, res) => {
   }
 };
 
-//Function For Get getPermission
+//Function For Get userList Api
 const userList = async (req, res) => {
   try {
     const id = req.params.id;
@@ -334,9 +335,10 @@ const userList = async (req, res) => {
     
     const userDetails = await findOne("User", {});
 
-    return SuccessResponse(res, HTTP_MESSAGE.GET_PERMISSION, { details:userDetails });
+    return SuccessResponse(res, HTTP_MESSAGE.USER_LIST, { details:userDetails });
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+
 export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission,userList };
