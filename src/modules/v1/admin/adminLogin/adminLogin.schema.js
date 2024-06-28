@@ -44,8 +44,8 @@ export const deleteEmployeeSchema = Joi.object({
 export const updateEmployeeInformitionSchema = Joi.object({
   adminId : Joi.string().required(),
   empId : Joi.string().required(),
-  username : Joi.string().required(),
-  permission : Joi.object().required()
+  username : Joi.string().optional(),
+  permission : Joi.object().optional()
 });
 
 export const commonSchema = Joi.object({
