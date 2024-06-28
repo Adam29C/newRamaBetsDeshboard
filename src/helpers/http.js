@@ -10,7 +10,7 @@ export const HTTP_MESSAGE = {
   GATEWAY_TIMEOUT: 'Gateway timeout',
   UNKNOWN_ERROR: 'Unknown error',
   ACCOUNT_STATUS: "Account status",
-  WRONG_PASSWORD: "Please Provide Correct Password", // Correct message for wrong password
+  WRONG_PASSWORD: "Please Provide Correct Password",
   SUCCESSFUL_OTP: "OTP Successful",
   TOKEN_CREATED:"Token Created SuccessFully",
   ADMIN_PROFILE:"Admin Profile Show Successfully",
@@ -26,7 +26,8 @@ export const HTTP_MESSAGE = {
   EMPLOYEE_NOT_FOUND:"Employee Not Found",
   EMP_UPDATE:"Employee Informition Update successfully",
   GET_PERMISSION:"Get All Permissions",
-  USER_LIST:"All User List Show Successfully"
+  USER_LIST:"All User List Show Successfully",
+  GAME_CREATED:"Game Created Sucessfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {

@@ -3,7 +3,7 @@ import {
   ValidationSource,
     validator,
   } from "../../../../middlewares/validator.js";
-const adminRouter = express.Router();
+const adminDetailsRouters = express.Router();
 import { verifyToken } from "../../../../helpers/token.js";
 import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission,userList} from "./admin.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
@@ -12,34 +12,34 @@ import  getMulterStorage from "../../../../helpers/fileUpload.js";
 const systemInformition = getMulterStorage("uploads/systemInfo");
 
 import { loginSchema,adminProfileSchema,changePasswordSchema,createEmployeeSchema,blockEmployeeSchema,empListSchema,updateSystemInfoSchema,deleteEmployeeSchema,updateEmployeeInformitionSchema,commonSchema } from "./adminLogin.schema.js";
-adminRouter.post(
+adminDetailsRouters.post(
   "/adminLogin",
   verifyToken,
   validator(loginSchema),
   adminLogin
 );
-adminRouter.get(
+adminDetailsRouters.get(
   "/adminProfile",
   verifyToken,
   verifyRoles(roleList.ADMIN),
   validator(adminProfileSchema,ValidationSource.QUERY),
   adminProfile   
 );
-adminRouter.post(
+adminDetailsRouters.post(
   "/changePassword",
   verifyToken,
   verifyRoles(roleList.ADMIN),
   validator(changePasswordSchema,ValidationSource.BODY),
   changePassword
 );
-adminRouter.post(
+adminDetailsRouters.post(
   "/createEmployee",
    verifyToken,
    verifyRoles(roleList.ADMIN),
   //  validator(createEmployeeSchema,ValidationSource.BODY),
    createEmployee
 );
-adminRouter.post(
+adminDetailsRouters.post(
   "/blockEmployee",
    verifyToken,
    verifyRoles(roleList.ADMIN),
@@ -47,7 +47,7 @@ adminRouter.post(
    blockEmployee
 );
 
-adminRouter.get(
+adminDetailsRouters.get(
   "/empList",
   verifyToken,
   verifyRoles(roleList.ADMIN),
@@ -55,7 +55,7 @@ adminRouter.get(
   empList
 );
 
-adminRouter.delete(
+adminDetailsRouters.delete(
   "/deleteEmployee/:empId",
   verifyToken,
   verifyRoles(roleList.ADMIN),
@@ -63,7 +63,7 @@ adminRouter.delete(
   deleteEmployee
 );
 
-adminRouter.post(
+adminDetailsRouters.post(
   "/addSystemInfo",
   verifyToken,
   verifyRoles(roleList.ADMIN),
@@ -76,7 +76,7 @@ adminRouter.post(
   addSystemInfo
 );
 
-adminRouter.put(
+adminDetailsRouters.put(
   "/updateSystemInfo",
   verifyToken,
   verifyRoles(roleList.ADMIN),
@@ -88,7 +88,7 @@ adminRouter.put(
   updateSystemInfo
 );
 //changeEmployeePassword
-adminRouter.put(
+adminDetailsRouters.put(
   "/changeEmployeePassword",
   verifyToken,
   verifyRoles(roleList.ADMIN),
@@ -96,7 +96,7 @@ adminRouter.put(
   changeEmployeePassword
 );
 
-adminRouter.put(
+adminDetailsRouters.put(
   "/updateEmployeeInformition",
   verifyToken,
   verifyRoles(roleList.ADMIN),
@@ -104,7 +104,7 @@ adminRouter.put(
   updateEmployeeInformition
 );
 
-adminRouter.get(
+adminDetailsRouters.get(
   "/getPermission/:id",
   verifyToken,
   verifyRoles(roleList.ADMIN),
@@ -112,7 +112,7 @@ adminRouter.get(
   getPermission
 );
 
-adminRouter.get(
+adminDetailsRouters.get(
   "/userList/:id",
   verifyToken,
   verifyRoles(roleList.ADMIN),
@@ -120,4 +120,4 @@ adminRouter.get(
   userList
 );
 
-export { adminRouter }; 
+export { adminDetailsRouters }; 
