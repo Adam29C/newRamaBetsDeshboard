@@ -50,7 +50,6 @@ const systemInforList = async (req, res) => {
     const list = await System.find({});
     return SuccessResponse(res, HTTP_MESSAGE.EMP_LIST, { details: list });
   } catch (err) {
-    console.log(err.message,"gggggggggggg")
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
