@@ -5,13 +5,13 @@ import {
   } from "../../../../middlewares/validator.js";
 const adminRouter = express.Router();
 import { verifyToken } from "../../../../helpers/token.js";
-import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission} from "./admin.controller.js";
+import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission,userList} from "./admin.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import {verifyRoles} from "../../../../middlewares/verifyRoles.js";
 import  getMulterStorage from "../../../../helpers/fileUpload.js";
 const systemInformition = getMulterStorage("uploads/systemInfo");
 
-import { loginSchema,adminProfileSchema,changePasswordSchema,createEmployeeSchema,blockEmployeeSchema,empListSchema,updateSystemInfoSchema,deleteEmployeeSchema,updateEmployeeInformitionSchema,getPermissionSchema } from "./adminLogin.schema.js";
+import { loginSchema,adminProfileSchema,changePasswordSchema,createEmployeeSchema,blockEmployeeSchema,empListSchema,updateSystemInfoSchema,deleteEmployeeSchema,updateEmployeeInformitionSchema,commonSchema } from "./adminLogin.schema.js";
 adminRouter.post(
   "/adminLogin",
   verifyToken,
@@ -108,9 +108,16 @@ adminRouter.get(
   "/getPermission/:id",
   verifyToken,
   verifyRoles(roleList.ADMIN),
-  validator(getPermissionSchema,ValidationSource.PARAM),
+  validator(commonSchema,ValidationSource.PARAM),
   getPermission
 );
 
+adminRouter.get(
+  "/userList/:id",
+  verifyToken,
+  verifyRoles(roleList.ADMIN),
+  validator(commonSchema, ValidationSource.PARAM),
+  userList
+);
 
 export { adminRouter }; 

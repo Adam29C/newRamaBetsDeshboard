@@ -93,7 +93,6 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-
 // Function to create a new token
 const createToken = async (id, deviceId, roles, query) => {
   const token = jwt.sign(

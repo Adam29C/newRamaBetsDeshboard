@@ -95,6 +95,4 @@ UserSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   return false;
 };
 
-const Users = mongoose.model("users", UserSchema);
-
-export { Users };
+export default mongoose.model("User", UserSchema);
