@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse } from '../../../../helpers/http.js';
 import { JWT_EXPIRES_IN, JWT_SECRET } from '../../../../config/env.config.js';
 import Admin from '../../../../models/admin.js';
+import User from '../../../../models/users.js';
 import System from '../../../../models/system.js';
 import { createToken } from '../../../../helpers/token.js';
 import { findOne, insertQuery, update,deleteQuery } from '../../../../helpers/crudMongo.js';
@@ -322,4 +323,21 @@ const getPermission = async (req, res) => {
   }
 };
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission };
+//Function For Get getPermission
+const userList = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const details = await findOne("Admin", { _id: id });
+    if (!details) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
+    
+    const userDetails = await findOne("User", {});
+
+    return SuccessResponse(res, HTTP_MESSAGE.GET_PERMISSION, { details:userDetails });
+  } catch (err) {
+    console.log(err,"gggg ")
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission,userList };
