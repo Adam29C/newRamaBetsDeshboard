@@ -336,7 +336,6 @@ const userList = async (req, res) => {
 
     return SuccessResponse(res, HTTP_MESSAGE.GET_PERMISSION, { details:userDetails });
   } catch (err) {
-    console.log(err,"gggg ")
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
