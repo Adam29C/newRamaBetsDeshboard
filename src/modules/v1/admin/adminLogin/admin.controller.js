@@ -63,7 +63,6 @@ const addSystemInfo = async (req, res) => {
 
 //Update System Info
 const updateSystemInfo = async (req, res) => {
-  console.log("ggg")
   const { adminId, systemInfoId, title } = req.body;
 
   try {
@@ -76,13 +75,12 @@ const updateSystemInfo = async (req, res) => {
     if (!systemInfo) {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
     }
-
     const updateData = {};
     if (req.files?.logo) {
       updateData.logo = req.files.logo[0].location;
     }
-    if (req.files?.fabIcon) {
-      updateData.fabIcon = req.files.fabIcon[0].location;
+    if (req.files?.favIcon) {
+      updateData.favIcon = req.files.favIcon[0].location;
     }
     if (req.files?.backgroundImage) {
       updateData.backgroundImage = req.files.backgroundImage[0].location;
