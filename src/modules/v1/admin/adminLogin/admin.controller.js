@@ -80,7 +80,7 @@ const updateSystemInfo = async (req, res) => {
     if (req.files?.logo) {
       updateData.logo = req.files.logo[0].location;
     }
-    if (req.files?.fabIcon) {
+    if (req.files?.favIcon) {
       updateData.fabIcon = req.files.fabIcon[0].location;
     }
     if (req.files?.backgroundImage) {
