@@ -30,6 +30,8 @@ export const HTTP_MESSAGE = {
   GAME_CREATED:"Game Created Sucessfully",
   GAME_PROVIDER_NOT_FOUND:"Game Provider Not Found",
   GAME_PROVIDER_DELETED:"Game Provider Deleted Successfully",
+  GAME_PROVIDER_UPDATE:"Game Provider Details Update Successfully",
+  PROVIDER_INFO:"Provider Informition Show Successfully"
 
 };
 

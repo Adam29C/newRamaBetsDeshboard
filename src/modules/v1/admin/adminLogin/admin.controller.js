@@ -340,7 +340,4 @@ const userList = async (req, res) => {
   }
 };
 
-
-
-
 export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission,userList };
