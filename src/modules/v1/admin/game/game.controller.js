@@ -1,6 +1,6 @@
 import { findOne, insertQuery, deleteQuery, update, findAll } from '../../../../helpers/crudMongo.js';
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, NotFoundResponse } from '../../../../helpers/http.js';
-import GameProvider from '../../../../models/GameProvider.js'; // Ensure this matches the actual file name casing
+import {GameProvider} from "../../../../models/gameProvider.js"
 
 // Function for adding a game provider
 const addGameProvider = async (req, res) => {
@@ -117,6 +117,7 @@ const gameProviderList = async (req, res) => {
     return SuccessResponse(res, HTTP_MESSAGE.GAME_PROVIDER_DELETED, { details: responce });
 
   } catch (err) {
+    console.log(err.message,);
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
