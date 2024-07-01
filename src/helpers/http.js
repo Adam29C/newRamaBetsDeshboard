@@ -28,7 +28,9 @@ export const HTTP_MESSAGE = {
   GET_PERMISSION:"Get All Permissions",
   USER_LIST:"All User List Show Successfully",
   GAME_CREATED:"Game Created Sucessfully",
-  GAME_PROVIDER_NOT_FOUND:"Game Provider Not Found"
+  GAME_PROVIDER_NOT_FOUND:"Game Provider Not Found",
+  GAME_PROVIDER_DELETED:"Game Provider Deleted Successfully",
+
 };
 
 const handleResponse = (res, status, success, message, data) => {

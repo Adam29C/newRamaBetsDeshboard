@@ -1,16 +1,18 @@
-import { findOne, insertQuery } from '../../../../helpers/crudMongo.js';
-import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse,GAME_PROVIDER_NOT_FOUND } from '../../../../helpers/http.js';
-import GameProvider from '../../../../models/GameProvider.js';
+import { findOne, insertQuery, deleteQuery } from '../../../../helpers/crudMongo.js';
+import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, NotFoundResponse } from '../../../../helpers/http.js';
 
-//Function For Add Game Provider Api
+// Function For Add Game Provider API
 const addGameProvider = async (req, res) => {
   try {
-    const { adminId,providerName, providerResult, resultStatus,  mobile } = req.body;
-    const details = await findOne("Admin", { _id: adminId });
-    if (!details) {
+    const { adminId, providerName, providerResult, resultStatus, mobile } = req.body;
+
+    // Check if the admin exists
+    const adminDetails = await findOne("Admin", { _id: adminId });
+    if (!adminDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
+    // Prepare game provider details
     const gameDetails = {
       providerName,
       providerResult,
@@ -18,36 +20,39 @@ const addGameProvider = async (req, res) => {
       mobile
     };
 
-    const data = await insertQuery("GameProvider", gameDetails);
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_CREATED, { details: data });
+    // Insert new game provider
+    const newGameProvider = await insertQuery("GameProvider", gameDetails);
+    return SuccessResponse(res, HTTP_MESSAGE.GAME_CREATED, { details: newGameProvider });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
-//Function For Add Game Provider Api
+
+// Function For Delete Game Provider API
 const deleteGameProvider = async (req, res) => {
   try {
-    const { adminId, gameProviderId} = req.body;
-    const details = await findOne("Admin", { _id: adminId });
-    if (!details) {
+    const { adminId, gameProviderId } = req.body;
+
+    // Check if the admin exists
+    const adminDetails = await findOne("Admin", { _id: adminId });
+    if (!adminDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    };
-    const gameProviderdetails = await findOne("GameProvider", { _id: gameProviderId });
-    if (!gameProviderdetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
     }
 
-    const deleteResponse = await deleteQuery(
-      "GameProvider",
-      { _id: gameProviderId },
-      "deleteOne"
-    );
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_PROVIDER_DELETED, deleteResponse);
+    // Check if the game provider exists
+    const gameProviderDetails = await findOne("GameProvider", { _id: gameProviderId });
+    if (!gameProviderDetails) {
+      return NotFoundResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
+    }
+
+    // Delete the game provider
+    await deleteQuery("GameProvider", { _id: gameProviderId }, "deleteOne");
+    return SuccessResponse(res, HTTP_MESSAGE.GAME_PROVIDER_DELETED);
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
 
-export { addGameProvider }
+export { addGameProvider, deleteGameProvider };
