@@ -27,7 +27,12 @@ export const HTTP_MESSAGE = {
   EMP_UPDATE:"Employee Informition Update successfully",
   GET_PERMISSION:"Get All Permissions",
   USER_LIST:"All User List Show Successfully",
-  GAME_CREATED:"Game Created Sucessfully"
+  GAME_CREATED:"Game Created Sucessfully",
+  GAME_PROVIDER_NOT_FOUND:"Game Provider Not Found",
+  GAME_PROVIDER_DELETED:"Game Provider Deleted Successfully",
+  GAME_PROVIDER_UPDATE:"Game Provider Details Update Successfully",
+  PROVIDER_INFO:"Provider Informition Show Successfully"
+
 };
 
 const handleResponse = (res, status, success, message, data) => {
