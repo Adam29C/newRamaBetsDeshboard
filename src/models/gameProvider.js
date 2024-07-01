@@ -1,41 +1,39 @@
 import mongoose from "mongoose";
 const gamesSchema = new mongoose.Schema(
-	{   
-		game:{
-         type:"String"
+	{
+		game: {
+			type: "String"
 		},
 
 		providerName: {
-			type: String,
-			// required: true,
+			type: String
 		},
 
 		providerResult: {
 			type: String,
 		},
+ 
+		mobile: {
+			type: Number,
+		},
 
 		resultStatus: {
 			type: Number,
 		},
+
 		activeStatus: {
 			type: Boolean,
-			
+
 		},
-		modifiedAt: {
-			type: String,
-			required: true,
-		},
-		mobile:{
-			type: String,
-		}
+
 	},
 	{
 		versionKey: false,
 	},
-    {
-        timestamps:true
-    }	
+	{
+		timestamps: true
+	}
 );
 
-export default  mongoose.model("GameProvider", gamesSchema);
+export default mongoose.model("GameProvider", gamesSchema);
 
