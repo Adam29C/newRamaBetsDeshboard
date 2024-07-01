@@ -38,7 +38,7 @@ const addSystemInfo = async (req, res) => {
     const { adminId, title } = req.body;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
     
     const logo = req.files?.logo ? req.files.logo[0].location : null;
@@ -68,7 +68,7 @@ const updateSystemInfo = async (req, res) => {
   try {
     const adminDetails = await findOne("Admin", { _id: adminId });
     if (!adminDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
     const systemInfo = await findOne("System", { _id: systemInfoId });
@@ -109,7 +109,7 @@ const adminProfile = async (req, res) => {
     const { adminId } = req.query;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
     return SuccessResponse(res, HTTP_MESSAGE.ADMIN_PROFILE, { details });
   } catch (err) {
@@ -123,7 +123,7 @@ const changePassword = async (req, res) => {
     const { adminId, password } = req.body;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
     const saltRounds = 10;
@@ -147,7 +147,7 @@ const createEmployee = async (req, res) => {
     const { adminId, employeeName, username, password, designation, permission } = req.body;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
     const saltRounds = 10;
