@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const gamesSchema = new mongoose.Schema(
   {
@@ -7,7 +7,7 @@ const gamesSchema = new mongoose.Schema(
     },
     providerName: {
       type: String,
-	  unique: true
+      unique: true,
     },
     providerResult: {
       type: String,
@@ -24,8 +24,12 @@ const gamesSchema = new mongoose.Schema(
   },
   {
     versionKey: false,
-    timestamps: true
+    timestamps: true,
   }
 );
 
-export default mongoose.model("GameProvider", gamesSchema);
+const GameProvider= mongoose.model('GameProvider', gamesSchema);
+export {GameProvider}
+
+
+
