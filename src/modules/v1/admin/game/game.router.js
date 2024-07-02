@@ -3,15 +3,15 @@ import {
   ValidationSource,
   validator,
 } from "../../../../middlewares/validator.js";
-const gameDetailsRouters = express.Router();
 import { verifyToken } from "../../../../helpers/token.js";
 import { addGameProvider, deleteGameProvider, updateGameProvider,gameProviderList,gameProviderById } from "./game.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import { gameSchema, deleteGameProviderSchema, updateGameProviderSchema,gameProviderListSchema,gameProviderIdSchema } from "./game.schema.js";
+const gameDetailsRouters = express.Router();
 
 gameDetailsRouters.post(
-  "/addGameProvider",
+  "/gameProvider",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
   validator(gameSchema, ValidationSource.BODY),
@@ -19,7 +19,7 @@ gameDetailsRouters.post(
 );
 
 gameDetailsRouters.delete(
-  "/deleteGameProvider",
+  "/gameProvider",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
   validator(deleteGameProviderSchema, ValidationSource.BODY),
@@ -27,23 +27,24 @@ gameDetailsRouters.delete(
 );
 
 gameDetailsRouters.put(
-  "/updateGameProvider",
+  "/gameProvider",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
   validator(updateGameProviderSchema, ValidationSource.BODY),
   updateGameProvider,
 );
 
+//query
 gameDetailsRouters.get(
-  "/gameProviderList/:adminId",
+  "/gameProvider",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
-  validator(gameProviderListSchema, ValidationSource.PARAM),
+  validator(gameProviderListSchema, ValidationSource.QUERY),
   gameProviderList,
 );
 
 gameDetailsRouters.get(
-  "/gameProviderById/:gameProviderId",
+  "/gameProvider/:providerId",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
   validator(gameProviderIdSchema, ValidationSource.PARAM),

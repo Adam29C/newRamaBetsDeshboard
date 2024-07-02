@@ -29,7 +29,7 @@ export const gameProviderListSchema = Joi.object({
 });
 
 export const gameProviderIdSchema = Joi.object({
-  gameProviderId:Joi.string().required()
+  providerId:Joi.string().required()
 });
 
 

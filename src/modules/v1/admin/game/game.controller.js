@@ -104,7 +104,7 @@ const deleteGameProvider = async (req, res) => {
 // Function for all Provider game 
 const gameProviderList = async (req, res) => {
   try {
-    const adminId = req.params.adminId;
+    const {adminId} = req.query;
 
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
@@ -125,7 +125,7 @@ const gameProviderList = async (req, res) => {
 // Function for all Provider game 
 const gameProviderById = async (req, res) => {
   try {
-    const gameProviderId = req.params.gameProviderId;
+    const gameProviderId = req.params.providerId;
 
     // Check if the game provider exists
     const gameProviderDetails = await findOne("GameProvider", { _id: gameProviderId });

@@ -5,5 +5,7 @@ const adminRouter = express.Router();
 
 // adminRouter.use(adminDetailsRouters);
 adminRouter.use("/game",gameDetailsRouters);
+// adminRouter.use("/game",gameDetailsRouters);
+
 
 export { adminRouter };
