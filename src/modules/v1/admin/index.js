@@ -1,11 +1,10 @@
 import express from "express";
-import { adminDetailsRouters } from "./adminLogin/admin.routers.js";
-import {gameDetailsRouters} from "./game/game.router.js"
+import {gameDetailsRouters} from "./gameProvider/game.router.js"
+import { gameSettingRouters } from "./gameSetting/gameSetting.router.js";
 const adminRouter = express.Router();
 
-// adminRouter.use(adminDetailsRouters);
 adminRouter.use("/game",gameDetailsRouters);
-// adminRouter.use("/game",gameDetailsRouters);
+adminRouter.use("/game",gameSettingRouters);
 
 
 export { adminRouter };

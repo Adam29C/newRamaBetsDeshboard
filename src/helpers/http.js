@@ -31,7 +31,12 @@ export const HTTP_MESSAGE = {
   GAME_PROVIDER_NOT_FOUND:"Game Provider Not Found",
   GAME_PROVIDER_DELETED:"Game Provider Deleted Successfully",
   GAME_PROVIDER_UPDATE:"Game Provider Details Update Successfully",
-  PROVIDER_INFO:"Provider Informition Show Successfully"
+  PROVIDER_INFO:"Provider Informition Show Successfully",
+  GAME_SETTING_CREATED:"Game Setting Created Successfully",
+  GAME_SETTING_UPDATE:"Game Setting Update Successfully",
+  GAME_SETTING_DELETED:"Game Setting Deleted Successfully",
+  GAME_SETTING_LIST:"Game Setting List Show  Successfully",
+  GAME_SETTING_NOT_FOUND:"Game Setting Not Found"
 
 };
 

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const gamesSettingSchema = new mongoose.Schema({
 
         providerId: {
@@ -29,14 +29,11 @@ const gamesSettingSchema = new mongoose.Schema({
             type: String,
             required: true
         },
-        modifiedAt:{
-            type: String,
-            required: true
-        }
     },
     {  
         timestamps:true,
         versionKey : false
     });
 
-module.exports = mongoose.model('games_setting', gamesSettingSchema);
+const GameSetting = mongoose.model('GameSetting', gamesSettingSchema);
+export {GameSetting}
