@@ -36,7 +36,16 @@ export const HTTP_MESSAGE = {
   GAME_SETTING_UPDATE:"Game Setting Update Successfully",
   GAME_SETTING_DELETED:"Game Setting Deleted Successfully",
   GAME_SETTING_LIST:"Game Setting List Show  Successfully",
-  GAME_SETTING_NOT_FOUND:"Game Setting Not Found"
+  GAME_SETTING_NOT_FOUND:"Game Setting Not Found",
+  GAME_RATE_CREATED:"Game Rate Create Successfully",
+  GAME_RATE_NOT_FOUND:"Game Rate Not Found",
+  GAME_RATE_UPDATE:"Game Rate Update Successfully",
+  GAME_RATE_DELETED:"Game Rate Deleted Successfully",
+  GAME_RATE_LIST:"Game Rate List Show Successfully",
+  GAME_RATE_DETAILS:"Game Rate Details Show Successfully"
+
+  
+
 
 };
 

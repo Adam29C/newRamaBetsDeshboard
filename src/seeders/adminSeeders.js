@@ -20,7 +20,7 @@ async function seedAdmin() {
             username: "superadmin",
             password: "superAdmin123",
             knowPassword:"superAdmin123",
-            role: "admin",
+            role: "ADMIN",
             isBlock: false,
             loginStatus: "active",
             last_login: new Date().toISOString(),

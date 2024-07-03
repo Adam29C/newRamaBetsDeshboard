@@ -4,7 +4,6 @@ const adminSchema = new mongoose.Schema(
     {
         employeeName: {
             type: String,
-            required: true,
             min: 3,
             max: 255,
         },
@@ -23,7 +22,6 @@ const adminSchema = new mongoose.Schema(
         },
         designation: {
 			type: String,
-			required: true,
 			max: 1024,
 			min: 4,
 		},

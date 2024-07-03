@@ -6,7 +6,7 @@ import { adminDetailsRouters } from "./admin/adminLogin/admin.routers.js";
 
 const versionOneRouter = express.Router();
 
- versionOneRouter.use("/common", commonRouter);
+versionOneRouter.use("/common", commonRouter);
 versionOneRouter.use("/admin",adminRouter)
 versionOneRouter.use("/admin",adminDetailsRouters);
 
