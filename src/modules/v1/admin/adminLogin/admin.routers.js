@@ -8,16 +8,17 @@ import { verifyToken } from "../../../../helpers/token.js";
 import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission,userList} from "./admin.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import {verifyRoles} from "../../../../middlewares/verifyRoles.js";
-import  getMulterStorage from "../../../../helpers/fileUpload.js";
+import  getMulterStorage from "../../../../helpers/fileUpload.js";  
 const systemInformition = getMulterStorage("uploads/systemInfo");
-
 import { loginSchema,adminProfileSchema,changePasswordSchema,createEmployeeSchema,blockEmployeeSchema,empListSchema,updateSystemInfoSchema,deleteEmployeeSchema,updateEmployeeInformitionSchema,commonSchema } from "./adminLogin.schema.js";
+
 adminDetailsRouters.post(
   "/adminLogin",
   verifyToken,
   validator(loginSchema),
   adminLogin
 );
+
 adminDetailsRouters.get(
   "/adminProfile",
   verifyToken,
@@ -25,6 +26,7 @@ adminDetailsRouters.get(
   validator(adminProfileSchema,ValidationSource.QUERY),
   adminProfile   
 );
+
 adminDetailsRouters.post(
   "/changePassword",
   verifyToken,
@@ -32,6 +34,7 @@ adminDetailsRouters.post(
   validator(changePasswordSchema,ValidationSource.BODY),
   changePassword
 );
+
 adminDetailsRouters.post(
   "/createEmployee",
    verifyToken,
@@ -39,6 +42,7 @@ adminDetailsRouters.post(
   //  validator(createEmployeeSchema,ValidationSource.BODY),
    createEmployee
 );
+
 adminDetailsRouters.post(
   "/blockEmployee",
    verifyToken,
@@ -87,7 +91,7 @@ adminDetailsRouters.put(
   ]),
   updateSystemInfo
 );
-//changeEmployeePassword
+
 adminDetailsRouters.put(
   "/changeEmployeePassword",
   verifyToken,
