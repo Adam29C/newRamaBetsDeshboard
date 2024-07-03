@@ -34,7 +34,6 @@ gameDetailsRouters.put(
   updateGameProvider,
 );
 
-//query
 gameDetailsRouters.get(
   "/gameProvider",
   verifyToken,
