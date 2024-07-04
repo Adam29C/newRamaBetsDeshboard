@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 import mongoose from 'mongoose';
 const gamesResultSchema = new mongoose.Schema({
     providerId: {
@@ -35,4 +34,5 @@ const gamesResultSchema = new mongoose.Schema({
         versionKey: false
     });
 
-module.exports = mongoose.model('game_Result', gamesResultSchema);
+const GameResult = mongoose.model('GameResult', gamesResultSchema);
+exports ={GameResult}
