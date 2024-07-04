@@ -11,6 +11,7 @@ const adminLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
     const details = await findOne("Admin", { username: username });
+    console.log(details,"bbbbbb")
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
