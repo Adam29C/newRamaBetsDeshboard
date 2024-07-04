@@ -5,7 +5,9 @@ import i18next from "i18next";
 import Backend from "i18next-fs-backend";
 import middleware from "i18next-http-middleware";
 import { mainRouter } from './modules/index.js';
-import './conn.js'; // Assuming this connects to your MongoDB
+import './conn.js';
+
+//for first time adding admin info and default system logo,favIcon And background image
 //import './seeders/adminSeeders.js'
 
 // Initialize i18next with file system backend and HTTP middleware

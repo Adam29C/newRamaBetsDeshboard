@@ -129,4 +129,3 @@ const gameRateById = async (req, res) => {
 };
 
 export { addGameRate, updateGameRate, deleteGameRate, gameRateList, gameRateById };
-
