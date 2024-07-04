@@ -10,8 +10,7 @@ export const adminProfileSchema = Joi.object({
 });
 
 export const changePasswordSchema = Joi.object({
-  adminId: Joi.string().required(),
-  empId:Joi.string().required(),
+  id: Joi.string().required(),
   password:Joi.string().required()
 });
 

@@ -121,8 +121,8 @@ const adminProfile = async (req, res) => {
 //Function For Admin Chang Password Api
 const changePassword = async (req, res) => {
   try {
-    const { adminId, password } = req.body;
-    const details = await findOne("Admin", { _id: adminId });
+    const { id, password } = req.body;
+    const details = await findOne("Admin", { _id: id });
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
@@ -134,7 +134,7 @@ const changePassword = async (req, res) => {
       knowPassword: password, 
     };
 
-    const updatedDetails = await update("Admin", { _id: adminId }, updateData, "findOneAndUpdate");
+    const updatedDetails = await update("Admin", { _id: id }, updateData, "findOneAndUpdate");
     return SuccessResponse(res, HTTP_MESSAGE.PASSWORD_CHANGE, { details: updatedDetails });
 
   } catch (err) {
