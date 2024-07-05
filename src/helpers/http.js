@@ -43,11 +43,12 @@ export const HTTP_MESSAGE = {
   GAME_RATE_UPDATE:"Game Rate Update Successfully",
   GAME_RATE_DELETED:"Game Rate Deleted Successfully",
   GAME_RATE_LIST:"Game Rate List Show Successfully",
-  GAME_RATE_DETAILS:"Game Rate Details Show Successfully"
-
-  
-
-
+  GAME_RATE_DETAILS:"Game Rate Details Show Successfully",
+  USER_INFO:"User Info Show Successfully",
+  BLOCK_USER:"User Block Successfully",
+  UNBLOCK_USER:"User UnBlock Successfully",
+  USER_AlREADY_DELETED:"User Not Found Or User Already Deleted",
+  USER_DELETED_SUCCESS:"User Deleted Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {

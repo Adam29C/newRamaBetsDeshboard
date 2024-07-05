@@ -1,98 +1,103 @@
 import mongoose from "mongoose";
-import bcrypt from "bcryptjs";
 
-const { Schema } = mongoose;
-
-// Utility function to get current month and year in string format
-const currentMonthAndYearInString = () => {
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
-  const today = new Date();
-  return `${monthNames[today.getMonth()]} ${today.getFullYear()}`;
-};
-
-// Schema for mobile number with validation fields
-const MobileNumberValidator = {
-  value: {
-    type: Number,
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      min: 3,
+      max: 255,
+    },
+    username: {
+      type: String,
+    },
+    mobile: {
+      type: String,
+    },
+    deviceName: {
+      type: String,
+    },
+    deviceId: {
+      type: String,
+    },
+    password: {
+      type: String,
+    },
+    role: {
+      type: String,
+    },
+    email: {
+      type: String,
+    },
+    firebaseId: {
+      type: String,
+    },
+    isBlock: {
+      type: Boolean,
+      default: false,
+    },
+    wallet_balance: {
+      type: Number,
+    },
+    wallet_bal_updated_at: {
+      type: String,
+    },
+    mpin: {
+      type: String,
+    },
+    fingerPrint: {
+      type: String,
+    },
+    register_via: {
+      type: Number,
+      // 1: registered from android, 2: registered from web
+    },
+    mpinOtp: {
+      type: Number,
+    },
+    deviceVeriOTP: {
+      type: Number,
+    },
+    CreatedAt: {
+      type: String,
+    },
+    UpdatedAt: {
+      type: String,
+    },
+    changeDetails: {
+      type: Array,
+    },
+    loginStatus: {
+      type: String,
+    },
+    mainNotification: {
+      type: Boolean,
+    },
+    gameNotification: {
+      type: Boolean,
+    },
+    starLineNotification: {
+      type: Boolean,
+    },
+    andarBaharNotification: {
+      type: Boolean,
+    },
+    time: {
+      type: String,
+    },
+    timestamp: {
+      type: Number,
+    },
+    blockReason: {
+      type: String,
+    },
+    lastLoginDate: {
+      type: String,
+    },
   },
-  verified: {
-    type: Boolean,
-    default: false,
-  },
-  otp: {
-    type: Number,
-    select: false
-  },
-};
-
-const BankDetailSchema = new Schema({
-  bankName: {
-    type: String,
-  },
-  branchName: {
-    type: String,
-  },
-  accountNumber: {
-    type: Number,
-  },
-  holderName: {
-    type: String,
-  },
-  ifscCode: {
-    type: String,
+  {
+    versionKey: false,
   }
-});
+);
 
-const UserSchema = new Schema({
-  userName: {
-    type: String,
-  },
-  mobileNumber: MobileNumberValidator,
-  roles: {
-    type: String,
-    enum: ["USER", "ADMIN"],
-    default: "USER",
-  },
-  fcmToken: {
-    type: String,
-  },
-  status: {
-    type: String,
-    enum: ["pending", "active", "deactivate"],
-    default: "pending",
-  },
-  loginStatus: {
-    type: String,
-    enum: ["loggedIn", "loggedOut"],
-  },
-  appInstalledStatus: {
-    type: String,
-  },
-  memberSince: {
-    type: String,
-    default: currentMonthAndYearInString
-  },
-  bankDetails: {
-    type: BankDetailSchema,
-  },
-}, {
-  collection: "users",
-  timestamps: true
-});
-
-UserSchema.methods.correctPassword = async function (clientPassword, savedPassword) {
-  return await bcrypt.compare(clientPassword, savedPassword);
-};
-
-UserSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
-  if (this.pinChangedAt) {
-    const changedTimestamp = parseInt(this.pinChangedAt.getTime() / 1000, 10);
-    return JWTTimestamp < changedTimestamp;
-  }
-  return false;
-};
-
-export default mongoose.model("User", UserSchema);
+const Users = mongoose.model("Users", userSchema);
+ export {Users}
