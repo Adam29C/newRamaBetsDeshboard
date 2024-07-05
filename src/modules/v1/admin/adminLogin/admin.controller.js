@@ -184,26 +184,39 @@ const createEmployee = async (req, res) => {
 //Function For Admin Block Employee api
 const blockEmployee = async (req, res) => {
   try {
-    const { adminId, empId } = req.body;
+    const { adminId, empId, isBlock } = req.body;
 
-    const details = await findOne("Admin", { _id: adminId });
-    if (!details) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    // Validate adminId
+    const adminDetails = await findOne("Admin", { _id: adminId });
+    if (!adminDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
+    // Validate empId
     const empDetails = await findOne("Admin", { _id: empId });
     if (!empDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
+
+    // Toggle the isBlock value
+    const newBlockStatus = !isBlock;
     const updateData = {
-      isBlock: true
+      isBlock: newBlockStatus
     };
+
+    // Update employee block status
     const updatedDetails = await update("Admin", { _id: empId }, updateData, "findOneAndUpdate");
-    return SuccessResponse(res, HTTP_MESSAGE.BLOCK_EMPLOYEE, { details: updatedDetails });
+
+    // Determine the response message
+    const message = newBlockStatus ? HTTP_MESSAGE.BLOCK_EMPLOYEE : HTTP_MESSAGE.UNBLOCK_EMPLOYEE;
+
+    // Respond with the appropriate message
+    return SuccessResponse(res, message, { details: updatedDetails });
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+
 
 //Function For List Of Employee api
 const empList = async (req, res) => {
