@@ -17,6 +17,7 @@ export const HTTP_MESSAGE = {
   PASSWORD_CHANGE:"Password Change Successfully",
   CREATED_EMPLOGEE:"New Employee Created Successfully",
   BLOCK_EMPLOYEE:"Employee Block Successfully",
+  UNBLOCK_EMPLOYEE:"Employee UnBlock Successfully",
   EMP_LIST:"Employee List Show Successfully",
   LOGIN:"Login Successfully",
   ADD_SYSINFO:"System Informition Added Successfully",

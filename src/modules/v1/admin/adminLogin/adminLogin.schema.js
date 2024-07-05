@@ -24,7 +24,8 @@ export const createEmployeeSchema = Joi.object({
 
 export const blockEmployeeSchema = Joi.object({
   adminId: Joi.string().required(),
-  empId: Joi.string().required()
+  empId: Joi.string().required(),
+  isBlock:Joi.boolean().required()
 });
 
 export const empListSchema = Joi.object({
