@@ -211,7 +211,7 @@ const blockEmployee = async (req, res) => {
     const message = newBlockStatus ? HTTP_MESSAGE.BLOCK_EMPLOYEE : HTTP_MESSAGE.UNBLOCK_EMPLOYEE;
 
     // Respond with the appropriate message
-    return SuccessResponse(res, message, { details: updatedDetails });
+    return SuccessResponse(res, message);
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
