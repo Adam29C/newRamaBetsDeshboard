@@ -8,7 +8,6 @@ import admin from "../models/admin.js";
 const verifyToken = async (req, res, next) => {
   try {
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
-
       const token = req.headers.authorization.split(" ")[1];
       let decoded;
 

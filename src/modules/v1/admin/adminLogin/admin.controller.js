@@ -1,7 +1,6 @@
 import bcrypt from 'bcrypt';
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse } from '../../../../helpers/http.js';
 import Admin from '../../../../models/admin.js';
-import User from '../../../../models/users.js';
 import System from '../../../../models/system.js';
 import { createToken } from '../../../../helpers/token.js';
 import { findOne, insertQuery, update, deleteQuery } from '../../../../helpers/crudMongo.js';
@@ -11,6 +10,7 @@ const adminLogin = async (req, res) => {
   try {
     const { username, password } = req.body;
     const details = await findOne("Admin", { username: username });
+
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
