@@ -78,6 +78,10 @@ const UserSchema = new Schema({
   bankDetails: {
     type: BankDetailSchema,
   },
+  isLogin:{
+    type:Boolean,
+    default:false
+  }
 }, {
   collection: "users",
   timestamps: true
