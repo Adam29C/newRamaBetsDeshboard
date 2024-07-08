@@ -5,7 +5,7 @@ import {
   } from "../../../../middlewares/validator.js";
 const adminDetailsRouters = express.Router();
 import { verifyToken } from "../../../../helpers/token.js";
-import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission,userList} from "./admin.controller.js";
+import {adminLogin,adminProfile,changePassword,createEmployee,blockEmployee,empList,addSystemInfo,updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission,userList, countDashboard,todayRegisterUsers} from "./admin.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import {verifyRoles} from "../../../../middlewares/verifyRoles.js";
 import  getMulterStorage from "../../../../helpers/fileUpload.js";  
@@ -124,4 +124,19 @@ adminDetailsRouters.get(
   userList
 );
 
+adminDetailsRouters.get(
+  "/countDashboard/:id",
+  verifyToken,
+  verifyRoles(roleList.ADMIN),
+  validator(commonSchema, ValidationSource.PARAM),
+  countDashboard
+);
+
+adminDetailsRouters.get(
+  "/todayRegisterUsers/:id",
+  verifyToken,
+  verifyRoles(roleList.ADMIN),
+  validator(commonSchema, ValidationSource.PARAM),
+  todayRegisterUsers
+);
 export { adminDetailsRouters }; 
