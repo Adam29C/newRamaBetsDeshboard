@@ -3,7 +3,7 @@ import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestR
 import Admin from '../../../../models/admin.js';
 import System from '../../../../models/system.js';
 import { createToken } from '../../../../helpers/token.js';
-import { findOne, insertQuery, update,deleteQuery } from '../../../../helpers/crudMongo.js';
+import { findOne, insertQuery, update, deleteQuery } from '../../../../helpers/crudMongo.js';
 
 //Function For Admin Login Api 
 const adminLogin = async (req, res) => {
@@ -25,7 +25,7 @@ const adminLogin = async (req, res) => {
     const roles = details.role;
     const query = { id };
     const token = await createToken(id, deviceId, roles, query);
-    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token:token,roles:details.role,id:id,isBlock:details.isBlock });
+    return SuccessResponse(res, HTTP_MESSAGE.LOGIN, { token: token, roles: details.role, id: id, isBlock: details.isBlock });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -40,7 +40,7 @@ const addSystemInfo = async (req, res) => {
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
-    
+
     const logo = req.files?.logo ? req.files.logo[0].location : null;
     const favIcon = req.files?.favIcon ? req.files.favIcon[0].location : null;
     const backgroundImage = req.files?.backgroundImage ? req.files.backgroundImage[0].location : null;
@@ -130,7 +130,7 @@ const changePassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const updateData = {
       password: hashedPassword,
-      knowPassword: password, 
+      knowPassword: password,
     };
 
     const updatedDetails = await update("Admin", { _id: id }, updateData, "findOneAndUpdate");
@@ -263,7 +263,7 @@ const deleteEmployee = async (req, res) => {
 //Function For Admin Change Employee Password Api
 const changeEmployeePassword = async (req, res) => {
   try {
-    const { adminId,empId,password } = req.body;
+    const { adminId, empId, password } = req.body;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
@@ -278,7 +278,7 @@ const changeEmployeePassword = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const updateData = {
       password: hashedPassword,
-      knowPassword: password, 
+      knowPassword: password,
     };
 
     const updatedDetails = await update("Admin", { _id: empId }, updateData, "findOneAndUpdate");
@@ -292,7 +292,7 @@ const changeEmployeePassword = async (req, res) => {
 //Function For Admin Update Employee Informition Api
 const updateEmployeeInformition = async (req, res) => {
   try {
-    const { adminId,empId,username,permission } = req.body;
+    const { adminId, empId, username, permission } = req.body;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
@@ -303,12 +303,12 @@ const updateEmployeeInformition = async (req, res) => {
       return BadRequestResponse(res, HTTP_MESSAGE.EMPLOYEE_NOT_FOUND);
     }
 
-    const updateData={}
-    if(username){
-      updateData.userName=username
+    const updateData = {}
+    if (username) {
+      updateData.userName = username
     };
-    if(permission){
-      updateData.permission=permission
+    if (permission) {
+      updateData.permission = permission
     }
 
 
@@ -344,13 +344,53 @@ const userList = async (req, res) => {
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
-    
+
     const userDetails = await findOne("User", {});
 
-    return SuccessResponse(res, HTTP_MESSAGE.USER_LIST, { details:userDetails });
+    return SuccessResponse(res, HTTP_MESSAGE.USER_LIST, { details: userDetails });
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList,addSystemInfo, updateSystemInfo,deleteEmployee,changeEmployeePassword,updateEmployeeInformition,getPermission,userList };
+//Function For Get userList Api
+const countDashboard = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const details = await findOne("Admin", { _id: id });
+    if (!details) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
+    const allUsers = await User.countDocuments({});
+    const loginUsers = await User.countDocuments({ isLogin: true });
+    const bannedUsers = await User.countDocuments({ isBlock: true });
+    const activeUsers = await User.countDocuments({ isLogin: true });
+    return SuccessResponse(res, HTTP_MESSAGE.USER_LIST, { allUsers, loginUsers, bannedUsers, activeUsers });
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+const todayRegisterUsers = async(req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id,"ggg")
+  //Fetch Admin Id is exist
+  const details = await findOne("Admin",{_id:id},)
+  if(!details){
+    return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND,)
+  }
+
+  //Fetch User Id is exist
+  const userDetails = await findOne("User",{},{name:1,mobile:1})
+  if(!userDetails){
+    return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND,)
+  }
+  
+  return SuccessResponse(res,HTTP_MESSAGE.USER_INFO,userDetails)
+  } catch (err) {
+    return InternalServerErrorResponse(res,HTTP_MESSAGE.INTERNAL_SERVER_ERROR,res); 
+  }
+}
+
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, addSystemInfo, updateSystemInfo, deleteEmployee, changeEmployeePassword, updateEmployeeInformition, getPermission, userList, countDashboard,todayRegisterUsers };
