@@ -149,7 +149,13 @@ const createEmployee = async (req, res) => {
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
-
+    
+    //Check if the userName already exist
+    const checkUserName = await findOne("Admin",{username})   
+    if(checkUserName){
+      return BadRequestResponse(res,HTTP_MESSAGE.USERNAME_EXIST)
+    }
+    
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const employeeDetails = {

@@ -49,7 +49,8 @@ export const HTTP_MESSAGE = {
   UNBLOCK_USER:"User UnBlock Successfully",
   USER_AlREADY_DELETED:"User Not Found Or User Already Deleted",
   USER_DELETED_SUCCESS:"User Deleted Successfully",
-  USER_INFO:"User Informition Show Successfully"
+  USER_INFO:"User Informition Show Successfully",
+  USERNAME_EXIST:"UserName Already Exist"
 };
 
 const handleResponse = (res, status, success, message, data) => {
