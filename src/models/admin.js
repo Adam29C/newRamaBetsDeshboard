@@ -28,6 +28,15 @@ const adminSchema = new mongoose.Schema(
         permission: {
             type: Object,
             default:{}
+        },
+        loginPermission:{
+         type:Number,
+         require:true
+         /**
+          * 0-for both,
+          * 1-for dashboad
+          * 2-for chat panel
+          */
         }, 
         mobile: {
             type: String,
