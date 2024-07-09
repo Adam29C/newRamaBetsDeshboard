@@ -178,7 +178,6 @@ const createEmployee = async (req, res) => {
     return SuccessResponse(res, HTTP_MESSAGE.CREATED_EMPLOGEE, { details: responseDetails });
 
   } catch (err) {
-    console.log(err.message,"ggggg")
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
