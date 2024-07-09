@@ -7,14 +7,15 @@ import { verifyToken } from "../../../../helpers/token.js";
 //deleteGameProvider, updateGameProvider,gameProviderList,gameProviderById
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
-import { addGameReteSchema, updateGameReteSchema, deleteGameRateSchema, gameRateListSchema, gameReteByIdSchema} from "./gameResult.schema.js";
+import { addGameResult } from "./gameResult.controller.js";
+import { addGameResultSchema } from "./gameResult.schema.js";
 
 const gameResultRouters = express.Router();
 gameResultRouters.post(
   "/gameResult",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
-  validator(addGameReteSchema, ValidationSource.BODY),
+  validator(addGameResultSchema, ValidationSource.BODY),
   addGameResult
 );
 

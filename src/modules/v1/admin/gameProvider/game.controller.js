@@ -5,7 +5,7 @@ import {GameProvider} from "../../../../models/gameProvider.js"
 // Function for adding a game provider
 const addGameProvider = async (req, res) => {
   try {
-    const { adminId, game, providerName, providerResult, resultStatus, activeStatus, mobile } = req.body;
+    const { adminId, gameType,game, providerName, providerResult, resultStatus, activeStatus, mobile } = req.body;
 
 
     // Check if the admin exists
@@ -16,6 +16,7 @@ const addGameProvider = async (req, res) => {
 
     // Prepare game provider details
     const gameDetails = {
+      gameType,
       game,
       providerName,
       providerResult,

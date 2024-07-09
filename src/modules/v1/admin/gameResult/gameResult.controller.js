@@ -2,27 +2,36 @@ import { findOne, insertQuery, deleteQuery, update, findAll } from '../../../../
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, NotFoundResponse } from '../../../../helpers/http.js';
 import Admin from '../../../../models/admin.js';
 import { GameRate } from '../../../../models/gameRates.js';
+import {GameProvider}from '../../../../models/gameProvider.js'
 
 // Function for adding a game rate
 const addGameResult = async (req, res) => {
   try {
-    const { adminId, gameName, gamePrice } = req.body;
-
+    const {adminId,providerId,resultdate,winningDigit} = req.body;
     // Check if the admin exists
     const adminDetails = await findOne('Admin', { _id: adminId });
     if (!adminDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
+    };
+    
+    // Check if the provider exists
+    const providerDetails = await findOne('GameProvider', { _id: providerId });
+    if (!providerDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
+    };
+    console.log(providerDetails,"providerDetailsproviderDetailsproviderDetails")
 
     // Prepare game rate details
-    const gameRateDetails = {
-      gameName,
-      gamePrice
+    const gameResultDetails = {
+      providerId,
+      gamePrice,
+      resultdate,
+      winningDigit
     };
 
     // Insert new game rate
-    const newGameRate = await insertQuery('GameRate', gameRateDetails);
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_CREATED, { details: newGameRate });
+    const newGameResult = await insertQuery('GameResult', gameResultDetails);
+    return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_CREATED, { details: newGameResult });
 
   } catch (err) {
     console.error('Error in addGameRate:', err);
@@ -30,102 +39,102 @@ const addGameResult = async (req, res) => {
   }
 };
 
-// Function for updating a game rate
-const updateGameRate = async (req, res) => {
-  try {
-    const { adminId, gameRateId, gameName, gamePrice } = req.body;
+// // Function for updating a game rate
+// const updateGameRate = async (req, res) => {
+//   try {
+//     const { adminId, gameRateId, gameName, gamePrice } = req.body;
 
-    // Check if the admin exists
-    const adminDetails = await findOne('Admin', { _id: adminId });
-    if (!adminDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
+//     // Check if the admin exists
+//     const adminDetails = await findOne('Admin', { _id: adminId });
+//     if (!adminDetails) {
+//       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+//     }
 
-    // Check if the game rate exists
-    const gameRateDetails = await findOne('GameRate', { _id: gameRateId });
-    if (!gameRateDetails) {
-      return NotFoundResponse(res, HTTP_MESSAGE.GAME_RATE_NOT_FOUND);
-    }
+//     // Check if the game rate exists
+//     const gameRateDetails = await findOne('GameRate', { _id: gameRateId });
+//     if (!gameRateDetails) {
+//       return NotFoundResponse(res, HTTP_MESSAGE.GAME_RATE_NOT_FOUND);
+//     }
 
-    // Prepare fields to be updated
-    const updateFields = {};
-    if (gameName !== undefined) updateFields.gameName = gameName;
-    if (gamePrice !== undefined) updateFields.gamePrice = gamePrice;
+//     // Prepare fields to be updated
+//     const updateFields = {};
+//     if (gameName !== undefined) updateFields.gameName = gameName;
+//     if (gamePrice !== undefined) updateFields.gamePrice = gamePrice;
 
-    // Perform the update
-    const updatedGameRate = await updateQuery('GameRate', { _id: gameRateId }, updateFields, { new: true });
+//     // Perform the update
+//     const updatedGameRate = await updateQuery('GameRate', { _id: gameRateId }, updateFields, { new: true });
 
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_UPDATE, { details: updatedGameRate });
+//     return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_UPDATE, { details: updatedGameRate });
 
-  } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-  }
-};
+//   } catch (err) {
+//     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+//   }
+// };
 
-// Function for deleting a game rate
-const deleteGameRate = async (req, res) => {
-  try {
-    const { adminId, gameRateId } = req.body;
+// // Function for deleting a game rate
+// const deleteGameRate = async (req, res) => {
+//   try {
+//     const { adminId, gameRateId } = req.body;
 
-    // Check if the admin exists
-    const adminDetails = await findOne('Admin', { _id: adminId });
-    if (!adminDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
+//     // Check if the admin exists
+//     const adminDetails = await findOne('Admin', { _id: adminId });
+//     if (!adminDetails) {
+//       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+//     }
 
-    // Check if the game rate exists
-    const gameRateDetails = await findOne('GameRate', { _id: gameRateId });
-    if (!gameRateDetails) {
-      return NotFoundResponse(res, HTTP_MESSAGE.GAME_RATE_NOT_FOUND);
-    }
+//     // Check if the game rate exists
+//     const gameRateDetails = await findOne('GameRate', { _id: gameRateId });
+//     if (!gameRateDetails) {
+//       return NotFoundResponse(res, HTTP_MESSAGE.GAME_RATE_NOT_FOUND);
+//     }
 
-    // Delete the game rate
-    await deleteQuery('GameRate', { _id: gameRateId });
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_DELETED);
+//     // Delete the game rate
+//     await deleteQuery('GameRate', { _id: gameRateId });
+//     return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_DELETED);
 
-  } catch (err) {
-    ;
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-  }
-};
+//   } catch (err) {
+//     ;
+//     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+//   }
+// };
 
-// Function for listing all game rates
-const gameRateList = async (req, res) => {
-  try {
-    const { adminId } = req.query;
+// // Function for listing all game rates
+// const gameRateList = async (req, res) => {
+//   try {
+//     const { adminId } = req.query;
 
-    // Check if the admin exists
-    const adminDetails = await findOne('Admin', { _id: adminId });
-    if (!adminDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
+//     // Check if the admin exists
+//     const adminDetails = await findOne('Admin', { _id: adminId });
+//     if (!adminDetails) {
+//       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+//     }
 
-    // Fetch all game rates
-    const gameRates = await findAll('GameRate', {});
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_LIST, gameRates);
+//     // Fetch all game rates
+//     const gameRates = await findAll('GameRate', {});
+//     return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_LIST, gameRates);
 
-  } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-  }
-};
+//   } catch (err) {
+//     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+//   }
+// };
 
-// Function for retrieving game rate by ID
-const gameRateById = async (req, res) => {
-  try {
-    const { gameRateId } = req.params;
+// // Function for retrieving game rate by ID
+// const gameRateById = async (req, res) => {
+//   try {
+//     const { gameRateId } = req.params;
 
-    // Check if the game rate exists
-    const gameRateDetails = await findOne('GameRate', { _id: gameRateId });
-    if (!gameRateDetails) {
-      return NotFoundResponse(res, HTTP_MESSAGE.GAME_RATE_NOT_FOUND);
-    }
+//     // Check if the game rate exists
+//     const gameRateDetails = await findOne('GameRate', { _id: gameRateId });
+//     if (!gameRateDetails) {
+//       return NotFoundResponse(res, HTTP_MESSAGE.GAME_RATE_NOT_FOUND);
+//     }
 
-    // Prepare the response for game rate info
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_DETAILS, gameRateDetails);
+//     // Prepare the response for game rate info
+//     return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_DETAILS, gameRateDetails);
 
-  } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-  }
-};
+//   } catch (err) {
+//     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+//   }
+// };
 
-export { addGameRate,  };
+export { addGameResult  };
