@@ -144,12 +144,18 @@ const changePassword = async (req, res) => {
 //Function For Admin Created Employee Api
 const createEmployee = async (req, res) => {
   try {
-    const { adminId, employeeName, username, password, designation, permission } = req.body;
+    const { adminId, employeeName, username, password, designation,loginPermission, permission } = req.body;
     const details = await findOne("Admin", { _id: adminId });
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
-
+    
+    //Check if the userName already exist
+    const checkUserName = await findOne("Admin",{username})   
+    if(checkUserName){
+      return BadRequestResponse(res,HTTP_MESSAGE.USERNAME_EXIST)
+    }
+    
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const employeeDetails = {
@@ -158,6 +164,7 @@ const createEmployee = async (req, res) => {
       password: hashedPassword,
       knowPassword: password,
       designation,
+      loginPermission,
       permission,
       role: "SUBADMIN"
     };
@@ -170,7 +177,8 @@ const createEmployee = async (req, res) => {
       username,
       designation,
       permission,
-      role: "SUBADMIN"
+      loginPermission,
+      role:"SUBADMIN"
     };
 
     return SuccessResponse(res, HTTP_MESSAGE.CREATED_EMPLOGEE, { details: responseDetails });
