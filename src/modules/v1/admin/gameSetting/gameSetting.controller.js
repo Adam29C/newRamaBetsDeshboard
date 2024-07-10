@@ -5,7 +5,7 @@ import { GameSetting } from "../../../../models/gameSetting.js";
 // Function for adding a game setting
 const addGameSetting = async (req, res) => {
   try {
-    const { adminId, providerId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
+    const { adminId, gameType, providerId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
      
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
@@ -15,6 +15,7 @@ const addGameSetting = async (req, res) => {
 
     // Prepare game setting details
     const gameSettingDetails = {
+      gameType,
       providerId,
       gameDay,
       OBT,

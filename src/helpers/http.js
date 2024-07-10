@@ -51,6 +51,11 @@ export const HTTP_MESSAGE = {
   USER_DELETED_SUCCESS:"User Deleted Successfully",
   USER_INFO:"User Informition Show Successfully",
   USERNAME_EXIST:"UserName Already Exist",
+  RESULT_NOT_DECLLARED:"Result Not Decllared",
+  DIGIT_FAMILY_NOT_FOUND:"Digit family not found",
+  RESULT_DECLARED_SUCCESSFULLY:"Result declared successfully",
+  PROVIDER_SETTING_NOT_FOUND:"Provider Setting Not Found",
+  INVALID_RESULT_DATE:"Invalid Result Date"
 };
 
 const handleResponse = (res, status, success, message, data) => {

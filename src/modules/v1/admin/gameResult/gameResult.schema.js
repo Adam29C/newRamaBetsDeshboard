@@ -1,9 +1,10 @@
 import Joi from "joi";
 
 export const addGameResultSchema = Joi.object({
+  session:Joi.string().required(),
   adminId:Joi.string().required(),
   providerId:Joi.string().required(),
-  resultdate: Joi.string().required(),
+  resultDate: Joi.string().required(),
   winningDigit:Joi.number().required()
 });
 
