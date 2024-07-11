@@ -97,6 +97,24 @@ const findOne = async (
     throw error;
   }
 };
+const findWithSort = async (
+  modelName,
+  where = {},
+  sort = {},
+  limit = 1
+) => {
+  try {
+    const model = mongoose.model(modelName); // Expect a model name string here
+    return await model
+      .find(where)
+      .sort(sort)
+      .limit(limit)
+      .lean();
+  } catch (error) {
+    console.error("Error in findWithSort:", error);
+    throw error;
+  }
+};
 
 
 const update = async (modelName, where, updateData, queryType = "default") => {
@@ -182,4 +200,5 @@ export {
   findRaw,
   groupBy,
   projectAggregate,
+  findWithSort
 };

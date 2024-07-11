@@ -5,7 +5,7 @@ const gamesSettingSchema = new mongoose.Schema({
         required: true
     },
     providerId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         required: true
     },
     gameDay: {

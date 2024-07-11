@@ -1,4 +1,4 @@
-import { findOne, insertQuery, deleteQuery, update, findAll } from '../../../../helpers/crudMongo.js';
+import { findOne, insertQuery, deleteQuery, update, findAll, findWithSort } from '../../../../helpers/crudMongo.js';
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, NotFoundResponse } from '../../../../helpers/http.js';
 import Admin from '../../../../models/admin.js';
 import { GameRate } from '../../../../models/gameRates.js';
@@ -8,61 +8,46 @@ import { GameResult } from '../../../../models/GameResult.js';
 import moment from 'moment';
 import { gameDigit } from '../../../../models/digits.js';
 
+//Function For Add Gmae Result
 const addGameResult = async (req, res) => {
   try {
     const { providerId, session, resultDate, winningDigit } = req.body;
-    console.log("1", req.body);
-    let a=await gameDigit.findOne({ Digit: 100 });
-    console.log(a,"gggg")
+
     // Check if the provider exists
     const providerDetails = await findOne("GameProvider", { _id: providerId });
     if (!providerDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
     }
-    console.log("2");
 
-    // Check current time and provider settings
+    // Get current time and day
     const currentTime = moment().format("h:mm A");
-    const todayDay = moment().format("dddd"); // Get full day name
-    console.log("3");
+    const todayDay = moment().format("dddd");
+    
+    // Set game session time check field
+    let getItem = session === "Close" ? { CBRT: 1, gameDay: 1 } : { OBRT: 1, gameDay: 1 };
 
-    let getItem = { OBRT: 1, gameDay: 1 };
-    if (session === "Close") {
-      getItem = { CBRT: 1, gameDay: 1 };
-    }
-    console.log("4");
-
-    // Query GameSetting for today
+    // Query GameSetting for today's session
     const findTime = await GameSetting.findOne({ providerId, gameDay: todayDay }, getItem);
-    console.log("5");
-
-    // Validate if findTime is null or undefined
-    if (!findTime || (session === "Close" && !findTime.CBRT) || (!findTime.OBRT && session !== "Close")) {
+    if (!findTime || (session === "Close" && !findTime.CBRT) || (session !== "Close" && !findTime.OBRT)) {
       return BadRequestResponse(res, HTTP_MESSAGE.PROVIDER_SETTING_NOT_FOUND);
     }
-    console.log("6");
 
-    let timeCheck = session === "Close" ? findTime.CBRT : findTime.OBRT;
-    console.log("7");
-    console.log(resultDate, "ggggggggggggg");
+    const timeCheck = session === "Close" ? findTime.CBRT : findTime.OBRT;
 
     // Parse and validate resultDate
-    const resultDateParsed = moment(resultDate, "MM/DD/YYYY", true); // Parsing with strict mode
-    console.log(resultDateParsed, "gggg");
+    const resultDateParsed = moment(resultDate, "MM/DD/YYYY", true);
     if (!resultDateParsed.isValid()) {
       return BadRequestResponse(res, HTTP_MESSAGE.INVALID_RESULT_DATE);
     }
-    console.log("8");
-    console.log("hhh");
 
     // Check if it's the correct time to declare result
     const beginningTime = moment(currentTime, "h:mm A");
     const endTime = moment(timeCheck, "h:mm A");
-    console.log("ttt");
-    console.log((moment(), "day"), "zzzzz");
-    if (!moment(resultDateParsed).isSame(moment(), "day")) {
+
+    if (!resultDateParsed.isSame(moment(), "day")) {
       return BadRequestResponse(res, HTTP_MESSAGE.INVALID_RESULT_DATE);
     }
+
     if (!(beginningTime >= endTime)) {
       return BadRequestResponse(res, HTTP_MESSAGE.IT_IS_NOT_RIGTH_TIME_TO_DECLARE_RESULT);
     }
@@ -75,22 +60,18 @@ const addGameResult = async (req, res) => {
     }
 
     // Fetch digit family based on winning digit
-    console.log(`Querying gameDigit collection for Digit: ${winningDigit}`);
     const digitFamily = await gameDigit.findOne({ Digit: winningDigit });
-    console.log(digitFamily, "ggggggggggggggg");
     if (!digitFamily) {
       return BadRequestResponse(res, HTTP_MESSAGE.DIGIT_FAMILY_NOT_FOUND);
     }
 
-    // Create formatted date-time
+    // Create formatted date-time and new game result object
     const formattedDateTime = moment().format("MM/DD/YYYY H:mm:ss A");
-
-    // Create new game result object
     const newGameResult = {
       providerId,
       providerName: providerDetails.providerName,
       session,
-      resultDate: resultDateParsed.toDate(), // Convert moment object to Date
+      resultDate: resultDateParsed.toDate(),
       winningDigit,
       winningDigitFamily: digitFamily.digitFamily,
       status: "0",
@@ -113,7 +94,7 @@ const addGameResult = async (req, res) => {
     const rowData = {
       providerId,
       session,
-      resultDate: resultDateParsed.format("MM/DD/YYYY"),
+      resultDate: format("MM/DD/YYYY"),
       winningDigit,
       resultId: savedGameResult._id,
       status: savedGameResult.status,
@@ -126,10 +107,65 @@ const addGameResult = async (req, res) => {
     return SuccessResponse(res, HTTP_MESSAGE.RESULT_DECLARED_SUCCESSFULLY, rowData);
 
   } catch (err) {
-    console.error("Error in addGameResult:", err);
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+
+//Get The Game Result
+const getGameResult = async (req, res) => {
+  try {
+    const { adminId } = req.query;
+
+    const formatted = moment().format("MM/DD/YYYY");
+    console.log(formatted,"fff")
+    const chaeckInfo = await findOne("Admin", { _id: adminId });
+
+    if (!chaeckInfo) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
+
+    // Fetch today's game results
+    let result = await findWithSort("GameResult", { resultDate: formatted }, { _id: -1 });
+
+    // If no results found for today, check previous day's results
+    if (result.length === 0) {
+      const currentTime = moment();
+      const checkTime = moment("09:00 AM", "hh:mm A");
+      const beginningTime = moment(currentTime, "hh:mm A");
+
+      if (beginningTime.isBefore(checkTime)) {
+        const previousDate = moment().subtract(1, 'days').startOf('day').toISOString();
+        result = await findWithSort("GameResult", { resultDate: previousDate }, { _id: -1 });
+      }
+    }
+
+    return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_LIST, result);
+
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+const deleteGameResult=async (req,res)=>{
+  try{
+    let{adminId,gameProviderId}=req.body;
+    console.log(req.body,"hhhh");
+    const adminDetails = await findOne("Admin",{_id:adminId});
+    
+    if(!adminDetails){
+      return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND)
+    };
+    
+    const result = await findOne(gameProviderId,{}) 
+
+
+
+
+  }catch(err){
+   return InternalServerErrorResponse(res,HTTP_MESSAGE.InternalServerErrorResponse,err)
+  }
+}
+
 
 
 
@@ -253,4 +289,4 @@ const addGameResult = async (req, res) => {
 //   }
 // };
 
-export { addGameResult  };
+export { addGameResult,getGameResult  };

@@ -23,7 +23,7 @@ export const HTTP_MESSAGE = {
   ADD_SYSINFO:"System Informition Added Successfully",
   UPDATE_SYSINFO:"System Informition Updated Successfully",
   DELETE_EMPLOYEE:"Employee Delete Successfully",
-  USER_NOT_FOUND:"User Not Found",
+  USER_NOT_FOUND:"Admin Or SubAdmin Are Not Found",
   EMPLOYEE_NOT_FOUND:"Employee Not Found",
   EMP_UPDATE:"Employee Informition Update successfully",
   GET_PERMISSION:"Get All Permissions",

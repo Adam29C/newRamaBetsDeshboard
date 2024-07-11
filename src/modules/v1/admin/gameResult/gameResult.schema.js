@@ -8,6 +8,13 @@ export const addGameResultSchema = Joi.object({
   winningDigit:Joi.number().required()
 });
 
+export const getGameResultSchema = Joi.object({
+  adminId:Joi.string().required(),
+});
+
+
+
+
 //adminId,providerId,resultdate,winningDigit
 
 // export const deleteGameRateSchema = Joi.object({
