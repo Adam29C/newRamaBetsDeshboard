@@ -146,6 +146,7 @@ const getGameResult = async (req, res) => {
   }
 };
 
+//Delete the game Result 
 const deleteGameResult=async (req,res)=>{
   try{
     let{adminId,gameProviderId}=req.body;
@@ -166,8 +167,17 @@ const deleteGameResult=async (req,res)=>{
   }
 }
 
-
-
+/*const test= async(req,res)=>{
+  try{
+    const {adminId}=req.body;
+    console.log(req.body,"hhhh")
+    const test=moment().change
+  }catch(err){
+  return InternalServerErrorResponce(res,HTTP_MESSAGE.InternalServerErrorResponce,err)
+  }
+  
+  }
+*/
 
 
 
