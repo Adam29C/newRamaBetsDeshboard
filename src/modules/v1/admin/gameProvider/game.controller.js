@@ -36,7 +36,6 @@ const addGameProvider = async (req, res) => {
 const updateGameProvider = async (req, res) => {
   try {
     const { adminId, gameProviderId, providerName, providerResult, resultStatus,activeStatus, mobile } = req.body;
-    console.log(req.body,"ggggggggggg")
     
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
