@@ -2,7 +2,6 @@ import mongoose from 'mongoose';
 const gamesSettingSchema = new mongoose.Schema({
     gameType: {
         type: String,
-        required: true
     },
     providerId: {
         type: mongoose.Schema.Types.ObjectId,

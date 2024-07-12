@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 const gamesSchema = new mongoose.Schema({
   gameType: {
     type: String,
-    required: true
   },
   game: {
     type: String,
