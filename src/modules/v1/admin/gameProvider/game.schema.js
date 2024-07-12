@@ -21,7 +21,7 @@ export const updateGameProviderSchema = Joi.object({
   providerName:Joi.string().optional(),
   providerResult:Joi.string().optional(),
   resultStatus:Joi.boolean().optional(),
-  mobile:Joi.number().optional(),
+  mobile:Joi.string().optional(),
 });
 
 export const gameProviderListSchema = Joi.object({
