@@ -3,7 +3,8 @@ import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestR
 import Admin from '../../../../models/admin.js';
 import System from '../../../../models/system.js';
 import { createToken } from '../../../../helpers/token.js';
-import { findOne, insertQuery, update, deleteQuery } from '../../../../helpers/crudMongo.js';
+import { findOne, insertQuery, update, deleteQuery, countRecords } from '../../../../helpers/crudMongo.js';
+import {Users} from "../../../../models/users.js"
 
 //Function For Admin Login Api 
 const adminLogin = async (req, res) => {
@@ -371,10 +372,10 @@ const countDashboard = async (req, res) => {
     }
     
     const [allUsers, loginUsers, bannedUsers, activeUsers] = await Promise.all([
-      countRecords("User", {}),
-      countRecords("User", { isLogin: true }),
-      countRecords("User", { isBlock: true }),
-      countRecords("User", { isLogin: true })
+      countRecords("Users", {}),
+      countRecords("Users", { isLogin: true }),
+      countRecords("Users", { isBlock: true }),
+      countRecords("Users", { isLogin: true })
     ]);
 
     return SuccessResponse(res, HTTP_MESSAGE.USER_LIST, { allUsers, loginUsers, bannedUsers, activeUsers });
@@ -386,7 +387,7 @@ const countDashboard = async (req, res) => {
 const todayRegisterUsers = async(req, res) => {
   try {
     const { id } = req.params;
-    console.log(id,"ggg")
+
   //Fetch Admin Id is exist
   const details = await findOne("Admin",{_id:id},)
   if(!details){
