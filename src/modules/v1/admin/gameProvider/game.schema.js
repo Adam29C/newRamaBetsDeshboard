@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 export const gameSchema = Joi.object({
-  game:Joi.string().required(),
+  // game:Joi.string().required(),
   adminId:Joi.string().required(),
   providerName: Joi.string().required(),
   providerResult:Joi.string().required(),
@@ -21,6 +21,7 @@ export const updateGameProviderSchema = Joi.object({
   providerName:Joi.string().optional(),
   providerResult:Joi.string().optional(),
   resultStatus:Joi.boolean().optional(),
+  activeStatus:Joi.boolean().optional(),
   mobile:Joi.string().optional(),
 });
 

@@ -5,7 +5,7 @@ import {GameProvider} from "../../../../models/gameProvider.js"
 // Function for adding a game provider
 const addGameProvider = async (req, res) => {
   try {
-    const { adminId, game, providerName, providerResult, resultStatus, activeStatus, mobile } = req.body;
+    const { adminId, providerName, providerResult, resultStatus, activeStatus, mobile } = req.body;
 
 
     // Check if the admin exists
@@ -16,7 +16,6 @@ const addGameProvider = async (req, res) => {
 
     // Prepare game provider details
     const gameDetails = {
-      game,
       providerName,
       providerResult,
       resultStatus,
@@ -36,8 +35,8 @@ const addGameProvider = async (req, res) => {
 // Function for Update a game provider
 const updateGameProvider = async (req, res) => {
   try {
-    const { adminId, gameProviderId, providerName, providerResult, resultStatus, mobile } = req.body;
-
+    const { adminId, gameProviderId, providerName, providerResult, resultStatus,activeStatus, mobile } = req.body;
+    
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
     if (!adminDetails) {
@@ -63,8 +62,11 @@ const updateGameProvider = async (req, res) => {
     };
     if (mobile) {
       option.mobile = mobile
-    }
-
+    };
+    if (typeof activeStatus !== 'undefined') {
+      option.activeStatus = activeStatus;
+    };
+  
     //Return the responce 
     const responce = await update("GameProvider", { _id: gameProviderId }, option, "findOneAndUpdate", option);
     return SuccessResponse(res, HTTP_MESSAGE.GAME_PROVIDER_UPDATE, { details: responce })
