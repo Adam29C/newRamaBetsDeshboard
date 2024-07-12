@@ -2,7 +2,6 @@ import { findOne, insertQuery, deleteQuery, update, findAll } from '../../../../
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, NotFoundResponse } from '../../../../helpers/http.js';
 import Admin from '../../../../models/admin.js';
 import { GameRate } from '../../../../models/gameRates.js';
-
 // Function for adding a game rate
 const addGameRate = async (req, res) => {
   try {
@@ -53,7 +52,7 @@ const updateGameRate = async (req, res) => {
     if (gamePrice !== undefined) updateFields.gamePrice = gamePrice;
 
     // Perform the update
-    const updatedGameRate = await updateQuery('GameRate', { _id: gameRateId }, updateFields, { new: true });
+    const updatedGameRate = await update('GameRate', { _id: gameRateId }, updateFields, { new: true });
 
     return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_UPDATE, { details: updatedGameRate });
 
