@@ -6,7 +6,7 @@ export const gameSchema = Joi.object({
   providerName: Joi.string().required(),
   providerResult:Joi.string().required(),
   activeStatus:Joi.boolean().required(),
-  mobile:Joi.number().required(),
+  mobile:Joi.string().required(),
   resultStatus:Joi.number().required()
 });
 
