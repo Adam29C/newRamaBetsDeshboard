@@ -369,10 +369,14 @@ const countDashboard = async (req, res) => {
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
-    const allUsers = await User.countDocuments({});
-    const loginUsers = await User.countDocuments({ isLogin: true });
-    const bannedUsers = await User.countDocuments({ isBlock: true });
-    const activeUsers = await User.countDocuments({ isLogin: true });
+    
+    const [allUsers, loginUsers, bannedUsers, activeUsers] = await Promise.all([
+      countRecords("User", {}),
+      countRecords("User", { isLogin: true }),
+      countRecords("User", { isBlock: true }),
+      countRecords("User", { isLogin: true })
+    ]);
+
     return SuccessResponse(res, HTTP_MESSAGE.USER_LIST, { allUsers, loginUsers, bannedUsers, activeUsers });
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -399,6 +403,6 @@ const todayRegisterUsers = async(req, res) => {
   } catch (err) {
     return InternalServerErrorResponse(res,HTTP_MESSAGE.INTERNAL_SERVER_ERROR,res); 
   }
-}
+};
 
 export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, addSystemInfo, updateSystemInfo, deleteEmployee, changeEmployeePassword, updateEmployeeInformition, getPermission, userList, countDashboard,todayRegisterUsers };
