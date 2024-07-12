@@ -149,7 +149,7 @@ const getGameResult = async (req, res) => {
 //Delete the game Result 
 const deleteGameResult=async (req,res)=>{
   try{
-    let{adminId,gameProviderId}=req.body;
+    let{adminId,gameResultId,session,}=req.body;
     console.log(req.body,"hhhh");
     const adminDetails = await findOne("Admin",{_id:adminId});
     
@@ -157,7 +157,7 @@ const deleteGameResult=async (req,res)=>{
       return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND)
     };
     
-    const result = await findOne(gameProviderId,{}) 
+    const result = await findOne("GameProvide",{_id:gameProviderId}) 
 
 
 
