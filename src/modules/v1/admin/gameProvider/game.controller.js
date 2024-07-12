@@ -36,6 +36,7 @@ const addGameProvider = async (req, res) => {
 const updateGameProvider = async (req, res) => {
   try {
     const { adminId, gameProviderId, providerName, providerResult, resultStatus,activeStatus, mobile } = req.body;
+    console.log(req.body,"ggggggggggg")
     
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
@@ -62,11 +63,11 @@ const updateGameProvider = async (req, res) => {
     };
     if (mobile) {
       option.mobile = mobile
-    }
-    if(activeStatus){
-      option.activeStatus=activeStatus
-    }
-
+    };
+    if (typeof activeStatus !== 'undefined') {
+      option.activeStatus = activeStatus;
+    };
+  
     //Return the responce 
     const responce = await update("GameProvider", { _id: gameProviderId }, option, "findOneAndUpdate", option);
     return SuccessResponse(res, HTTP_MESSAGE.GAME_PROVIDER_UPDATE, { details: responce })
