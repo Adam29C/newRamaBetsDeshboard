@@ -144,5 +144,4 @@ const gameProviderById = async (req, res) => {
   }
 };
 
-
 export { addGameProvider, deleteGameProvider, updateGameProvider, gameProviderList, gameProviderById };
