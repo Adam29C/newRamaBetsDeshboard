@@ -15,7 +15,7 @@ const gamesSchema = new mongoose.Schema({
     type: String,
   },
   mobile: {
-    type: Number,
+    type: String,
   },
   resultStatus: {
     type: Number,
