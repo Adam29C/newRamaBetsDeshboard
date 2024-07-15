@@ -7,6 +7,9 @@ const gamesSettingSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    providerName: {
+        type: String,
+    },
     gameDay: {
         type: String,
         required: true
@@ -37,5 +40,5 @@ const gamesSettingSchema = new mongoose.Schema({
         versionKey: false
     });
 
-const GameSetting = mongoose.model('GameSetting', gamesSettingSchema);
+const  GameSetting = mongoose.model('GameSetting', gamesSettingSchema);
 export { GameSetting }
