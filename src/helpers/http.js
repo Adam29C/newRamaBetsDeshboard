@@ -55,7 +55,9 @@ export const HTTP_MESSAGE = {
   DIGIT_FAMILY_NOT_FOUND:"Digit family not found",
   RESULT_DECLARED_SUCCESSFULLY:"Result declared successfully",
   PROVIDER_SETTING_NOT_FOUND:"Provider Setting Not Found",
-  INVALID_RESULT_DATE:"Invalid Result Date"
+  INVALID_RESULT_DATE:"Invalid Result Date",
+  GAME_RESULT_NOT_FOUND:"Game Result Not Found",
+  DELETE_GAME_RESULT:"Game Result Delete Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {

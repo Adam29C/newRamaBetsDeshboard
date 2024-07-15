@@ -146,26 +146,38 @@ const getGameResult = async (req, res) => {
   }
 };
 
-//Delete the game Result 
-const deleteGameResult=async (req,res)=>{
-  try{
-    let{adminId,gameResultId,session,}=req.body;
-    console.log(req.body,"hhhh");
-    const adminDetails = await findOne("Admin",{_id:adminId});
+//Delete the game result
+const deleteGameResult = async (req, res) => {
+  try {
+    const { adminId, gameResultId } = req.body; // Destructure adminId and gameResultId directly from req.body
+    console.log(req.body); 
+
+    // Find the admin details
+    const adminDetails = await findOne("Admin", { _id: adminId });
+    if (!adminDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
+
+    // Find the game result to delete
+    const gameResult = await findOne("GameResult", { _id: gameResultId });
+    if (!gameResult) {
+      return BadRequestResponse(res, HTTP_MESSAGE.GAME_RESULT_NOT_FOUND);
+    }
+
+    // Perform the deletion
+    const deleteResult = await deleteQuery("GameResult", { _id: gameResultId });
+    if (!deleteResult) {
+      return InternalServerErrorResponse(res, HTTP_MESSAGE.DELETE_GAME_RESULT);
+    }
+
+    // If deletion is successful
+    return SuccessResponse(res, HTTP_MESSAGE.DELETE_GAME_RESULT);
     
-    if(!adminDetails){
-      return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND)
-    };
-    
-    const result = await findOne("GameProvide",{_id:gameProviderId}) 
-
-
-
-
-  }catch(err){
-   return InternalServerErrorResponse(res,HTTP_MESSAGE.InternalServerErrorResponse,err)
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
-}
+};
+
 
 /*const test= async(req,res)=>{
   try{
@@ -299,4 +311,4 @@ const deleteGameResult=async (req,res)=>{
 //   }
 // };
 
-export { addGameResult,getGameResult  };
+export { addGameResult,getGameResult,deleteGameResult  };

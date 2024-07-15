@@ -12,7 +12,10 @@ export const getGameResultSchema = Joi.object({
   adminId:Joi.string().required(),
 });
 
-
+export const deleteGameRateSchema = Joi.object({
+  adminId:Joi.string().required(),
+  gameResultId:Joi.string().required()
+});
 
 
 //adminId,providerId,resultdate,winningDigit

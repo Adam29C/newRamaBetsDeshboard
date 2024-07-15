@@ -7,8 +7,8 @@ import { verifyToken } from "../../../../helpers/token.js";
 //deleteGameProvider, updateGameProvider,gameProviderList,gameProviderById
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
-import { addGameResult, getGameResult } from "./gameResult.controller.js";
-import { addGameResultSchema, getGameResultSchema } from "./gameResult.schema.js";
+import { addGameResult, getGameResult, deleteGameResult } from "./gameResult.controller.js";
+import { addGameResultSchema, getGameResultSchema,deleteGameRateSchema } from "./gameResult.schema.js";
 
 const gameResultRouters = express.Router();
 gameResultRouters.post(
@@ -27,6 +27,18 @@ gameResultRouters.get(
   getGameResult
 );
 
+
+gameResultRouters.delete(
+  "/gameResult",
+  verifyToken,
+  verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
+  validator(deleteGameRateSchema, ValidationSource.BODY),
+  deleteGameResult,
+);
+
+
+
+
 // gameResultRouters.put(
 //   "/gameResult",
 //   verifyToken,
@@ -35,13 +47,6 @@ gameResultRouters.get(
 //   updateGameRate,
 // );
 
-// gameResultRouters.delete(
-//   "/gameResult",
-//   verifyToken,
-//   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
-//   validator(deleteGameRateSchema, ValidationSource.BODY),
-//   deleteGameRate,
-// );
 
 // gameResultRouters.get(
 //   "/gameResult",
