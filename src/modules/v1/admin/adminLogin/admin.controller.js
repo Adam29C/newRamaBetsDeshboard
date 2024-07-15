@@ -5,6 +5,8 @@ import System from '../../../../models/system.js';
 import { createToken } from '../../../../helpers/token.js';
 import { findOne, insertQuery, update, deleteQuery, countRecords } from '../../../../helpers/crudMongo.js';
 import {Users} from "../../../../models/users.js"
+import { GameProvider } from '../../../../models/gameProvider.js';
+
 
 //Function For Admin Login Api 
 const adminLogin = async (req, res) => {
@@ -301,8 +303,9 @@ const changeEmployeePassword = async (req, res) => {
 //Function For Admin Update Employee Informition Api
 const updateEmployeeInformition = async (req, res) => {
   try {
-    const { adminId, empId, username, permission } = req.body;
+    const { adminId, empId,employeeName, username, permission,loginPermission } = req.body;
     const details = await findOne("Admin", { _id: adminId });
+
     if (!details) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
@@ -313,16 +316,23 @@ const updateEmployeeInformition = async (req, res) => {
     }
 
     const updateData = {}
+    if (employeeName) {
+      updateData.employeeName = employeeName
+    };
     if (username) {
-      updateData.userName = username
+      updateData.username = username
     };
     if (permission) {
       updateData.permission = permission
     }
-
-
-    const updatedDetails = await update("Admin", { _id: empId }, updateData, "findOneAndUpdate");
-    return SuccessResponse(res, HTTP_MESSAGE.EMP_UPDATE, { details: updatedDetails });
+    if (loginPermission) {
+      updateData.loginPermission = loginPermission
+    }
+   
+    await update("Admin", { _id: empId }, updateData);
+    const responce=await findOne("Admin",{ _id: empId },{role:0,password:0,knowPassword:0})
+    
+    return SuccessResponse(res, HTTP_MESSAGE.EMP_UPDATE, { details: responce });
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -384,6 +394,7 @@ const countDashboard = async (req, res) => {
   }
 };
 
+//Function For To day register user 
 const todayRegisterUsers = async(req, res) => {
   try {
     const { id } = req.params;
@@ -406,4 +417,30 @@ const todayRegisterUsers = async(req, res) => {
   }
 };
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, addSystemInfo, updateSystemInfo, deleteEmployee, changeEmployeePassword, updateEmployeeInformition, getPermission, userList, countDashboard,todayRegisterUsers };
+//Function For To day register user 
+const updateGameStatus = async(req, res) => {
+  try {
+    const { adminId,id,status} = req.body;
+  //Fetch Admin Id is exist
+  const details = await findOne("Admin",{_id:adminId},)
+  if(!details){
+    return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND,)
+  }
+
+  const providerInfo = await findOne("GameProvider",{_id:id});
+  if(!providerInfo){
+    return BadRequestResponse(res,HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND)
+  } 
+
+  const updateField=status
+  //Update Status
+  await update("GameProvider",{_id:id},{updateField})
+  
+  return SuccessResponse(res,HTTP_MESSAGE.GAME_STATUS_UPDATED)
+  } catch (err) {
+    return InternalServerErrorResponse(res,HTTP_MESSAGE.INTERNAL_SERVER_ERROR,res); 
+  }
+};
+
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, addSystemInfo, updateSystemInfo, deleteEmployee, changeEmployeePassword, updateEmployeeInformition, getPermission, userList, countDashboard,todayRegisterUsers,updateGameStatus };
+

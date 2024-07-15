@@ -57,7 +57,8 @@ export const HTTP_MESSAGE = {
   PROVIDER_SETTING_NOT_FOUND:"Provider Setting Not Found",
   INVALID_RESULT_DATE:"Invalid Result Date",
   GAME_RESULT_NOT_FOUND:"Game Result Not Found",
-  DELETE_GAME_RESULT:"Game Result Delete Successfully"
+  DELETE_GAME_RESULT:"Game Result Delete Successfully",
+  GAME_STATUS_UPDATED:"Game Status Update Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {
