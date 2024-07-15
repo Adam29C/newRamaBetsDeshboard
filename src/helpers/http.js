@@ -23,7 +23,7 @@ export const HTTP_MESSAGE = {
   ADD_SYSINFO:"System Informition Added Successfully",
   UPDATE_SYSINFO:"System Informition Updated Successfully",
   DELETE_EMPLOYEE:"Employee Delete Successfully",
-  USER_NOT_FOUND:"User Not Found",
+  USER_NOT_FOUND:"Admin Or SubAdmin Are Not Found",
   EMPLOYEE_NOT_FOUND:"Employee Not Found",
   EMP_UPDATE:"Employee Informition Update successfully",
   GET_PERMISSION:"Get All Permissions",
@@ -50,7 +50,15 @@ export const HTTP_MESSAGE = {
   USER_AlREADY_DELETED:"User Not Found Or User Already Deleted",
   USER_DELETED_SUCCESS:"User Deleted Successfully",
   USER_INFO:"User Informition Show Successfully",
-  USERNAME_EXIST:"UserName Already Exist"
+  USERNAME_EXIST:"UserName Already Exist",
+  RESULT_NOT_DECLLARED:"Result Not Decllared",
+  DIGIT_FAMILY_NOT_FOUND:"Digit family not found",
+  RESULT_DECLARED_SUCCESSFULLY:"Result declared successfully",
+  PROVIDER_SETTING_NOT_FOUND:"Provider Setting Not Found",
+  INVALID_RESULT_DATE:"Invalid Result Date",
+  GAME_RESULT_NOT_FOUND:"Game Result Not Found",
+  DELETE_GAME_RESULT:"Game Result Delete Successfully",
+  GAME_STATUS_UPDATED:"Game Status Update Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {

@@ -35,4 +35,4 @@ const gamesResultSchema = new mongoose.Schema({
     });
 
 const GameResult = mongoose.model('GameResult', gamesResultSchema);
-exports ={GameResult}
+export {GameResult}

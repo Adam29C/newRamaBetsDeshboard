@@ -7,7 +7,6 @@ const addGameProvider = async (req, res) => {
   try {
     const { adminId, providerName, providerResult, resultStatus, activeStatus, mobile } = req.body;
 
-
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
     if (!adminDetails) {
@@ -16,6 +15,8 @@ const addGameProvider = async (req, res) => {
 
     // Prepare game provider details
     const gameDetails = {
+      gameType,
+      game,
       providerName,
       providerResult,
       resultStatus,
@@ -142,6 +143,5 @@ const gameProviderById = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
-
 
 export { addGameProvider, deleteGameProvider, updateGameProvider, gameProviderList, gameProviderById };

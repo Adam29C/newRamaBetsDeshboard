@@ -44,12 +44,24 @@ export const deleteEmployeeSchema = Joi.object({
 export const updateEmployeeInformitionSchema = Joi.object({
   adminId : Joi.string().required(),
   empId : Joi.string().required(),
+  employeeName:Joi.string().required(),
   username : Joi.string().optional(),
-  permission : Joi.object().optional()
+  loginPermission:Joi.number().required(),
+  permission : Joi.object().optional(),
+  
 });
 
 export const commonSchema = Joi.object({
   id : Joi.string().required(),
 });
+
+export const updateGameStatusSchema = Joi.object({
+  adminId:Joi.string().required(),
+  id : Joi.string().required(),
+  gameType:Joi.string().required(),
+  activeStatus:Joi.boolean().required()
+});
+
+
 
 //adminId,empId,username,permission 
