@@ -3,47 +3,52 @@ import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestR
 import { GameProvider } from '../../../../models/gameProvider.js';
 import { GameSetting } from "../../../../models/gameSetting.js";
 
+const addGameSetting = async(req,res)=>{
+  try{
+    const {adminId,providerId,gameDay,OBT,CBT,OBRT,CBRT,isClosed}=req.body;
+    console.log(req.body);
+    
+    //check Admin is exist
+    const adminInfo = await findOne("Admin",{_id:adminId});
+    if (!adminInfo) return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND);
 
-// Function for adding a game setting
-const addGameSetting = async (req, res) => {
-  try {
-    const { adminId, gameType, providerId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
+    //check Provider is exist
+    const providerInfo = await findOne("GameProvider",{_id:providerId});
+    if (!providerInfo) return BadRequestResponse(res,HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
 
-    // Check if the admin exists
-    const adminDetails = await findOne("Admin", { _id: adminId });
-    if (!adminDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
+    
+    //check game satting if the provider is already exist or not 
+    const gameSettingInfo = await findOne("GameSetting",{providerId:providerId});
 
-    // Check if the providerId exists in GameProvider collection
-    const gameProvider = await findOne("GameProvider", { _id: providerId });
-    if (!gameProvider) {
-      return BadRequestResponse(res, "Provider not found in GameProvider collection");
-    }
-    // Extract providerName from gameProvider
-    const providerName = gameProvider.providerName; // Adjust this based on your GameProvider schema
-
-    // Prepare game setting details including providerName
-    const gameSettingDetails = {
-      gameType,
+    const insertingObj={
       providerId,
-      providerName, // Add providerName field
       gameDay,
       OBT,
       CBT,
       OBRT,
       CBRT,
       isClosed
-    };
+    }
+    if(gameSettingInfo){
+       await insertQuery("GameSatting",insertingObj)    
+    }else{
+      await insertQuery("GameSatting",insertingObj) 
+      console.log("game satting new")
 
-    // Insert new game setting
-    const newGameSetting = await insertQuery("GameSetting", gameSettingDetails);
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_SETTING_CREATED, { details: newGameSetting });
+      await insertQuery("TokenData", tokenData);
+    }
 
-  } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    
+
+  }catch(err){
+    return InternalServerErrorResponse(res,HTTP_MESSAGE.INTERNAL_SERVER_ERROR,err)
   }
-};
+}
+
+
+
+
+
 
 
 // Function for Update a game setting
@@ -122,26 +127,28 @@ const gameSettingList = async (req, res) => {
     // Fetch all game settings
     const gameSettings = await findAll("GameSetting", {});
 
-    // Transform the game settings array into the desired format
-    const transformedGameSettings = gameSettings.map(setting => ({
-      _id: setting._id,
-      gameType: setting.gameType,
-      providerId: setting.providerId,
-      gameDay: setting.gameDay,
-      OBT: setting.OBT,
-      CBT: setting.CBT,
-      OBRT: setting.OBRT,
-      CBRT: setting.CBRT,
-      isClosed: setting.isClosed
-    }));
-
-    // Prepare the response in the desired format
-    const response = {
-      details: {
-        gameName: {}, // You may need to populate this based on your actual data structure
-        gameDay: transformedGameSettings
+    // Group game settings by gameName
+    const groupedSettings = gameSettings.reduce((acc, setting) => {
+      const gameName = setting.providerName || "Unknown";
+      if (!acc[gameName]) {
+        acc[gameName] = [];
       }
-    };
+      acc[gameName].push({
+        gameDay: setting.gameDay,
+        obt: setting.OBT,
+        cbt: setting.CBT,
+        obrt: setting.OBRT,
+        cbrt: setting.CBRT,
+        isClosed: setting.isClosed
+      });
+      return acc;
+    }, {});
+
+    // Prepare the final response structure
+    const response = Object.keys(groupedSettings).map(gameName => ({
+      gameName,
+      info: groupedSettings[gameName]
+    }));
 
     return SuccessResponse(res, HTTP_MESSAGE.GAME_SETTING_LIST, response);
 
@@ -149,6 +156,9 @@ const gameSettingList = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+
+
+
 
 
 // Function for all Provider setting 
