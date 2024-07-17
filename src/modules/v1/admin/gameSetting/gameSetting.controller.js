@@ -4,47 +4,78 @@ import { GameProvider } from '../../../../models/gameProvider.js';
 import { GameSetting } from "../../../../models/gameSetting.js";
 
 
-// Function for adding a game setting
+
 const addGameSetting = async (req, res) => {
   try {
-    const { adminId, gameType, providerId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
-
-    // Check if the admin exists
-    const adminDetails = await findOne("Admin", { _id: adminId });
-    if (!adminDetails) {
+    const { gameType, adminId, providerId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
+    
+    // Check Admin exists
+    const adminInfo = await findOne("Admin", { _id: adminId });
+    if (!adminInfo) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
-    // Check if the providerId exists in GameProvider collection
-    const gameProvider = await findOne("GameProvider", { _id: providerId });
-    if (!gameProvider) {
-      return BadRequestResponse(res, "Provider not found in GameProvider collection");
+    // Check Provider exists
+    const providerInfo = await findOne("GameProvider", { _id: providerId });
+    if (!providerInfo) {
+      return BadRequestResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
     }
-    // Extract providerName from gameProvider
-    const providerName = gameProvider.providerName; // Adjust this based on your GameProvider schema
 
-    // Prepare game setting details including providerName
-    const gameSettingDetails = {
-      gameType,
-      providerId,
-      providerName, // Add providerName field
-      gameDay,
-      OBT,
-      CBT,
-      OBRT,
-      CBRT,
-      isClosed
-    };
+    // Find the game setting for the provider
+    let gameSettingInfo = await GameSetting.findOne({ providerId });
 
-    // Insert new game setting
-    const newGameSetting = await insertQuery("GameSetting", gameSettingDetails);
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_SETTING_CREATED, { details: newGameSetting });
+    if (!gameSettingInfo) {
+      // If no game setting exists for the provider, create a new one
+      const insertingObj = {
+        gameType,
+        providerId,
+        providerName: providerInfo.providerName,
+        gameSatingInfo: [{
+          gameDay,
+          OBT,
+          CBT,
+          OBRT,
+          CBRT,
+          isClosed
+        }]
+      };
+      
+      gameSettingInfo = await GameSetting.create(insertingObj);
+
+      // Respond with success
+      return SuccessResponse(res, HTTP_MESSAGE.SUCCESS, gameSettingInfo);
+
+    } else {
+      // Check if the game day already exists in the gameSatingInfo array
+      const existingGameDayIndex = gameSettingInfo.gameSatingInfo.findIndex(info => info.gameDay === gameDay);
+
+      if (existingGameDayIndex !== -1) {
+        // If the game day already exists, return a message
+        return SuccessResponse(res, "Game day entry already exists for this provider", gameSettingInfo);
+      }
+
+      // Add a new entry to gameSatingInfo array
+      gameSettingInfo.gameSatingInfo.push({
+        gameDay,
+        OBT,
+        CBT,
+        OBRT,
+        CBRT,
+        isClosed
+      });
+
+      // Save the updated game setting document
+      gameSettingInfo = await gameSettingInfo.save();
+
+      // Respond with success
+      return SuccessResponse(res, HTTP_MESSAGE.SUCCESS, gameSettingInfo);
+    }
 
   } catch (err) {
+    // Handle errors
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
-};
-
+}
 
 // Function for Update a game setting
 const updateGameSetting = async (req, res) => {
@@ -122,33 +153,16 @@ const gameSettingList = async (req, res) => {
     // Fetch all game settings
     const gameSettings = await findAll("GameSetting", {});
 
-    // Transform the game settings array into the desired format
-    const transformedGameSettings = gameSettings.map(setting => ({
-      _id: setting._id,
-      gameType: setting.gameType,
-      providerId: setting.providerId,
-      gameDay: setting.gameDay,
-      OBT: setting.OBT,
-      CBT: setting.CBT,
-      OBRT: setting.OBRT,
-      CBRT: setting.CBRT,
-      isClosed: setting.isClosed
-    }));
 
-    // Prepare the response in the desired format
-    const response = {
-      details: {
-        gameName: {}, // You may need to populate this based on your actual data structure
-        gameDay: transformedGameSettings
-      }
-    };
-
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_SETTING_LIST, response);
+    return SuccessResponse(res, HTTP_MESSAGE.GAME_SETTING_LIST, gameSettings);
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+
+
+
 
 
 // Function for all Provider setting 

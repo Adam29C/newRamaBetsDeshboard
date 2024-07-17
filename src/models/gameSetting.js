@@ -1,44 +1,48 @@
 import mongoose from 'mongoose';
+
 const gamesSettingSchema = new mongoose.Schema({
     gameType: {
-        type: String,
-    },
-    providerId: {
         type: String,
         required: true
     },
     providerName: {
         type: String,
-    },
-    gameDay: {
-        type: String,
         required: true
     },
-    OBT: {
+    providerId: {
         type: String,
-        required: true
     },
-    CBT: {
-        type: String,
-        required: true
-    },
-    OBRT: {
-        type: String,
-        required: true
-    },
-    CBRT: {
-        type: String,
-        required: true
-    },
-    isClosed: {
-        type: String,
-        required: true
-    },
+    gameSatingInfo: [{
+        gameDay: {
+            type: String,
+            enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            required: true
+        },
+        OBT: {
+            type: String,
+        },
+        CBT: {
+            type: String,
+        },
+        OBRT: {
+            type: String,
+        },
+        CBRT: {
+            type: String,
+        },
+        isClosed: {
+            type: Boolean,
+            default: false
+        }
+    }]
 },
-    {
-        timestamps: true,
-        versionKey: false
-    });
+{
+    timestamps: true,
+    versionKey: false
+});
 
-const  GameSetting = mongoose.model('GameSetting', gamesSettingSchema);
-export { GameSetting }
+
+
+const GameSetting = mongoose.model('GameSetting', gamesSettingSchema);
+
+export { GameSetting };

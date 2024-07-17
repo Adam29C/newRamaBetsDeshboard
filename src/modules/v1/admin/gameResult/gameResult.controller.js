@@ -107,6 +107,7 @@ const addGameResult = async (req, res) => {
     return SuccessResponse(res, HTTP_MESSAGE.RESULT_DECLARED_SUCCESSFULLY, rowData);
 
   } catch (err) {
+    console.log(err.message,"gggggggg")
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
