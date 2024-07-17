@@ -3,24 +3,27 @@ import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestR
 import { GameProvider } from '../../../../models/gameProvider.js';
 import { GameSetting } from "../../../../models/gameSetting.js";
 
-const addGameSetting = async(req,res)=>{
-  try{
-    const {adminId,providerId,gameDay,OBT,CBT,OBRT,CBRT,isClosed}=req.body;
-    console.log(req.body);
+
+const addGameSetting = async (req, res) => {
+  try {
+    const { adminId, providerId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
     
-    //check Admin is exist
-    const adminInfo = await findOne("Admin",{_id:adminId});
-    if (!adminInfo) return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND);
+    // Check Admin exists (Assuming this functionality exists in your utils)
+    const adminInfo = await findOne("Admin", { _id: adminId });
+    if (!adminInfo) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
 
-    //check Provider is exist
-    const providerInfo = await findOne("GameProvider",{_id:providerId});
-    if (!providerInfo) return BadRequestResponse(res,HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
+    // Check Provider exists (Assuming this functionality exists in your utils)
+    const providerInfo = await findOne("GameProvider", { _id: providerId });
+    if (!providerInfo) {
+      return BadRequestResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
+    }
 
-    
-    //check game satting if the provider is already exist or not 
-    const gameSettingInfo = await findOne("GameSetting",{providerId:providerId});
+    // Check if game setting for the provider already exists for the given day
+    let gameSettingInfo = await findOne("GameSetting", { providerId, gameDay });
 
-    const insertingObj={
+    const insertingObj = {
       providerId,
       gameDay,
       OBT,
@@ -28,22 +31,31 @@ const addGameSetting = async(req,res)=>{
       OBRT,
       CBRT,
       isClosed
+    };
+
+    if (gameSettingInfo) {
+      // Update existing game setting
+      await update("GameSetting", { providerId, gameDay }, insertingObj);
+      console.log("1");
+      // Assuming update function returns the updated document, if not, you need to query it again
+      gameSettingInfo = { ...gameSettingInfo, ...insertingObj };
+      console.log("2");
+    } else {
+      // Create new game setting
+      gameSettingInfo = await GameSetting.create(insertingObj);
     }
-    if(gameSettingInfo){
-       await insertQuery("GameSatting",insertingObj)    
-    }else{
-      await insertQuery("GameSatting",insertingObj) 
-      console.log("game satting new")
 
-      await insertQuery("TokenData", tokenData);
-    }
+    // Respond with success
+    return SuccessResponse(res, HTTP_MESSAGE.SUCCESS, gameSettingInfo);
 
-    
-
-  }catch(err){
-    return InternalServerErrorResponse(res,HTTP_MESSAGE.INTERNAL_SERVER_ERROR,err)
+  } catch (err) {
+    // Handle errors
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 }
+
+
+
 
 
 
