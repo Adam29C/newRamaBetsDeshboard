@@ -81,38 +81,62 @@ const addGameSetting = async (req, res) => {
 // Function for Update a game setting
 const updateGameSetting = async (req, res) => {
   try {
-    const { adminId, gameSettingId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
-
+    const { adminId, providerId,gameSettingId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
+     //we take the gameSettingId for the feture aspect 
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
     if (!adminDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
-    // Check if the game setting exists
-    const gameSettingDetails = await findOne("GameSetting", { _id: gameSettingId });
-    if (!gameSettingDetails) {
-      return NotFoundResponse(res, HTTP_MESSAGE.GAME_SETTING_NOT_FOUND);
+    // Check if the providerDetails exists
+    const providerDetails = await findOne("GameSetting", { providerId: providerId });
+    if (!providerDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
     }
 
-    // Update game setting details
-    const updateFields = {};
-    if (gameDay !== undefined) updateFields.gameDay = gameDay;
-    if (OBT !== undefined) updateFields.OBT = OBT;
-    if (CBT !== undefined) updateFields.CBT = CBT;
-    if (OBRT !== undefined) updateFields.OBRT = OBRT;
-    if (CBRT !== undefined) updateFields.CBRT = CBRT;
-    if (isClosed !== undefined) updateFields.isClosed = isClosed;
+    // Update game setting details based on providerId and gameDay conditions
+    if (providerId && gameDay) {
+      // Update specific game day entry
+      const filter = { providerId: providerId, 'gameSatingInfo.gameDay': gameDay };
+      const updateFields = {};
+      if (OBT !== undefined) updateFields['gameSatingInfo.$.OBT'] = OBT;
+      if (CBT !== undefined) updateFields['gameSatingInfo.$.CBT'] = CBT;
+      if (OBRT !== undefined) updateFields['gameSatingInfo.$.OBRT'] = OBRT;
+      if (CBRT !== undefined) updateFields['gameSatingInfo.$.CBRT'] = CBRT;
+      if (isClosed !== undefined) updateFields['gameSatingInfo.$.isClosed'] = isClosed;
 
-    // Perform the update
-    const updatedGameSetting = await updateQuery("GameSetting", { _id: gameSettingId }, updateFields, "findOneAndUpdate");
+      await GameSetting.updateOne(filter, { $set: updateFields });
 
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_SETTING_UPDATE, { details: updatedGameSetting });
+      // Fetch updated document to return in response
+      const updatedGameSetting = await GameSetting.findOne(filter);
+
+      return SuccessResponse(res, HTTP_MESSAGE.GAME_SETTING_UPDATE, { details: updatedGameSetting });
+    } else if (providerId) {
+      // Update all game days entries for the provider
+      const filter = { providerId: providerId };
+      const updateFields = {};
+      if (OBT !== undefined) updateFields['gameSatingInfo.$[].OBT'] = OBT;
+      if (CBT !== undefined) updateFields['gameSatingInfo.$[].CBT'] = CBT;
+      if (OBRT !== undefined) updateFields['gameSatingInfo.$[].OBRT'] = OBRT;
+      if (CBRT !== undefined) updateFields['gameSatingInfo.$[].CBRT'] = CBRT;
+      if (isClosed !== undefined) updateFields['gameSatingInfo.$[].isClosed'] = isClosed;
+
+      await GameSetting.updateMany(filter, { $set: updateFields });
+      // Fetch updated documents to return in response
+      const updatedGameSettings = await GameSetting.find(filter);
+
+      return SuccessResponse(res, HTTP_MESSAGE.GAME_SETTING_UPDATE, { details: updatedGameSettings });
+    } else {
+      return BadRequestResponse(res, "Either providerId or providerId with gameDay must be provided");
+    }
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+
+
 
 // Function for deleting a game setting
 const deleteGameSetting = async (req, res) => {

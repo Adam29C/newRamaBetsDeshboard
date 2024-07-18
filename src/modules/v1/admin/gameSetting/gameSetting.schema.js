@@ -19,7 +19,8 @@ export const deleteGameSettingSchema = Joi.object({
 
 export const updateGameSettingSchema = Joi.object({
   adminId:Joi.string().required(),
-  gameSettingId: Joi.string().required(),
+  providerId:Joi.string().required(),
+  gameSettingId: Joi.string().optional(),
   gameDay:Joi.string().optional(),
   OBT:Joi.string().optional(),
   CBT:Joi.string().optional(),
