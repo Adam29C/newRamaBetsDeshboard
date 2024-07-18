@@ -50,8 +50,8 @@ const addGameSetting = async (req, res) => {
       const existingGameDayIndex = gameSettingInfo.gameSatingInfo.findIndex(info => info.gameDay === gameDay);
 
       if (existingGameDayIndex !== -1) {
-        // If the game day already exists, return a message
-        return SuccessResponse(res, "Game day entry already exists for this provider", gameSettingInfo);
+        // If the game day already exists, return an error response
+        return BadRequestResponse(res, HTTP_MESSAGE.GAME_DAY_ENTRY_ALLREADY_EXIST);
       }
 
       // Add a new entry to gameSatingInfo array
@@ -76,6 +76,7 @@ const addGameSetting = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 }
+
 
 // Function for Update a game setting
 const updateGameSetting = async (req, res) => {
@@ -139,7 +140,6 @@ const deleteGameSetting = async (req, res) => {
   }
 };
 
-// Function for all Provider setting 
 const gameSettingList = async (req, res) => {
   try {
     const { adminId } = req.query;
@@ -151,19 +151,24 @@ const gameSettingList = async (req, res) => {
     }
 
     // Fetch all game settings
-    const gameSettings = await findAll("GameSetting", {});
+    let gameSettings = await findAll("GameSetting", {});
 
+    // Sort gameSettings by gameDay
+    gameSettings.forEach(setting => {
+      setting.gameSatingInfo.sort((a, b) => {
+        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        return daysOfWeek.indexOf(a.gameDay) - daysOfWeek.indexOf(b.gameDay);
+      });
+    });
 
+    // Respond with sorted gameSettings
     return SuccessResponse(res, HTTP_MESSAGE.GAME_SETTING_LIST, gameSettings);
 
   } catch (err) {
+    // Handle errors
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
-
-
-
-
 
 // Function for all Provider setting 
 const gameSettingById = async (req, res) => {

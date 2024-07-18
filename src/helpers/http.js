@@ -58,7 +58,8 @@ export const HTTP_MESSAGE = {
   INVALID_RESULT_DATE:"Invalid Result Date",
   GAME_RESULT_NOT_FOUND:"Game Result Not Found",
   DELETE_GAME_RESULT:"Game Result Delete Successfully",
-  GAME_STATUS_UPDATED:"Game Status Update Successfully"
+  GAME_STATUS_UPDATED:"Game Status Update Successfully",
+  GAME_DAY_ENTRY_ALLREADY_EXIST:"Game day entry already exists for this provider"
 };
 
 const handleResponse = (res, status, success, message, data) => {
