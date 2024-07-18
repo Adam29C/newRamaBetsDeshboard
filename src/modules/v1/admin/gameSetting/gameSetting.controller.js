@@ -51,7 +51,7 @@ const addGameSetting = async (req, res) => {
 
       if (existingGameDayIndex !== -1) {
         // If the game day already exists, return an error response
-        return BadRequestResponse(res, "Game day entry already exists for this provider");
+        return BadRequestResponse(res, HTTP_MESSAGE.GAME_DAY_ENTRY_ALLREADY_EXIST);
       }
 
       // Add a new entry to gameSatingInfo array
