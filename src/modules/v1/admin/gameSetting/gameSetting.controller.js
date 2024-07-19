@@ -9,16 +9,12 @@ const addGameSetting = async (req, res) => {
 
     // Check Admin exists
     const adminInfo = await findOne("Admin", { _id: adminId });
-    if (!adminInfo) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
-
+    if (!adminInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    
     // Check Provider exists
     const providerInfo = await findOne("GameProvider", { _id: providerId });
-    if (!providerInfo) {
-      return BadRequestResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
-    }
-
+    if (!providerInfo) return BadRequestResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
+    
     // Find or create the game setting for the provider
     let gameSettingInfo = await GameSetting.findOne({ providerId });
 
@@ -46,15 +42,15 @@ const addGameSetting = async (req, res) => {
         // Add entries for all days of the week only if they do not exist
         const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         weekDays.forEach(day => {
-          const existingGameDayIndex = gameSettingInfo.gameSatingInfo.findIndex(info => info.gameDay === day);
+          const existingGameDayIndex = insertingObj.gameSatingInfo.findIndex(info => info.gameDay === day);
           if (existingGameDayIndex === -1) {
             insertingObj.gameSatingInfo.push({
               gameDay: day,
-              OBT,
-              CBT,
-              OBRT,
-              CBRT,
-              isClosed
+              OBT: day === gameDay ? OBT : undefined,
+              CBT: day === gameDay ? CBT : undefined,
+              OBRT: day === gameDay ? OBRT : undefined,
+              CBRT: day === gameDay ? CBRT : undefined,
+              isClosed: day === gameDay ? isClosed : undefined
             });
           }
         });
@@ -99,12 +95,14 @@ const addGameSetting = async (req, res) => {
               isClosed
             });
           } else {
-            // Update existing entry only if OBT, CBT, OBRT, CBRT, or isClosed is provided
-            if (OBT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].OBT = OBT;
-            if (CBT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].CBT = CBT;
-            if (OBRT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].OBRT = OBRT;
-            if (CBRT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].CBRT = CBRT;
-            if (isClosed !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].isClosed = isClosed;
+            // Update existing entry only if it matches the gameDay provided
+            if (day === gameDay) {
+              if (OBT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].OBT = OBT;
+              if (CBT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].CBT = CBT;
+              if (OBRT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].OBRT = OBRT;
+              if (CBRT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].CBRT = CBRT;
+              if (isClosed !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].isClosed = isClosed;
+            }
           }
         });
       }
@@ -121,11 +119,6 @@ const addGameSetting = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
-
-
-
-
-
 
 // Function for Update a game setting
 const updateGameSetting = async (req, res) => {
@@ -184,8 +177,6 @@ const updateGameSetting = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
-
-
 
 // Function for deleting a game setting
 const deleteGameSetting = async (req, res) => {

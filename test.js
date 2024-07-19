@@ -1,8 +1,7 @@
-function test(n){
-console.log(n)
-if(n>1){
-    test(n-1)
-}
-console.log(n);
+const arr=[[{gameDay:"monday"}]];
+function test(a){
+console.log(a)
 };
-test(10)
+
+
+test([{gameDay:"monday"},{gameDay:"Tuesday"},{gameDay:"Wednesday"},])
