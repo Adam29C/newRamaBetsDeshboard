@@ -3,66 +3,109 @@ import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestR
 import { GameProvider } from '../../../../models/gameProvider.js';
 import { GameSetting } from "../../../../models/gameSetting.js";
 
-
-
 const addGameSetting = async (req, res) => {
   try {
     const { gameType, adminId, providerId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
-    
+
     // Check Admin exists
     const adminInfo = await findOne("Admin", { _id: adminId });
-    if (!adminInfo) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
-
+    if (!adminInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    
     // Check Provider exists
     const providerInfo = await findOne("GameProvider", { _id: providerId });
-    if (!providerInfo) {
-      return BadRequestResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
-    }
-
-    // Find the game setting for the provider
+    if (!providerInfo) return BadRequestResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
+    
+    // Find or create the game setting for the provider
     let gameSettingInfo = await GameSetting.findOne({ providerId });
 
     if (!gameSettingInfo) {
-      // If no game setting exists for the provider, create a new one
+      // If no game setting exists for the provider, create a new one with initial game day data
       const insertingObj = {
         gameType,
         providerId,
         providerName: providerInfo.providerName,
-        gameSatingInfo: [{
+        gameSatingInfo: []
+      };
+
+      // Check if gameDay is specified
+      if (gameDay && gameDay !== 'all') {
+        // Add entry for the specific game day
+        insertingObj.gameSatingInfo.push({
           gameDay,
           OBT,
           CBT,
           OBRT,
           CBRT,
           isClosed
-        }]
-      };
-      
+        });
+      } else {
+        // Add entries for all days of the week only if they do not exist
+        const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        weekDays.forEach(day => {
+          const existingGameDayIndex = insertingObj.gameSatingInfo.findIndex(info => info.gameDay === day);
+          if (existingGameDayIndex === -1) {
+            insertingObj.gameSatingInfo.push({
+              gameDay: day,
+              OBT: day === gameDay ? OBT : undefined,
+              CBT: day === gameDay ? CBT : undefined,
+              OBRT: day === gameDay ? OBRT : undefined,
+              CBRT: day === gameDay ? CBRT : undefined,
+              isClosed: day === gameDay ? isClosed : undefined
+            });
+          }
+        });
+      }
+
       gameSettingInfo = await GameSetting.create(insertingObj);
 
       // Respond with success
       return SuccessResponse(res, HTTP_MESSAGE.SUCCESS, gameSettingInfo);
 
     } else {
-      // Check if the game day already exists in the gameSatingInfo array
-      const existingGameDayIndex = gameSettingInfo.gameSatingInfo.findIndex(info => info.gameDay === gameDay);
+      // Check if gameDay is specified
+      if (gameDay && gameDay !== 'all') {
+        // Check if the game day already exists
+        const existingGameDayIndex = gameSettingInfo.gameSatingInfo.findIndex(info => info.gameDay === gameDay);
+        if (existingGameDayIndex !== -1) {
+          return BadRequestResponse(res, HTTP_MESSAGE.GAME_DAY_ENTRY_ALLREADY_EXIST);
+        }
 
-      if (existingGameDayIndex !== -1) {
-        // If the game day already exists, return an error response
-        return BadRequestResponse(res, HTTP_MESSAGE.GAME_DAY_ENTRY_ALLREADY_EXIST);
+        // Add new entry for the specific game day
+        gameSettingInfo.gameSatingInfo.push({
+          gameDay,
+          OBT,
+          CBT,
+          OBRT,
+          CBRT,
+          isClosed
+        });
+
+      } else {
+        // Update or insert entries for all days of the week only if they do not exist
+        const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        weekDays.forEach(day => {
+          const existingGameDayIndex = gameSettingInfo.gameSatingInfo.findIndex(info => info.gameDay === day);
+          if (existingGameDayIndex === -1) {
+            gameSettingInfo.gameSatingInfo.push({
+              gameDay: day,
+              OBT,
+              CBT,
+              OBRT,
+              CBRT,
+              isClosed
+            });
+          } else {
+            // Update existing entry only if it matches the gameDay provided
+            if (day === gameDay) {
+              if (OBT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].OBT = OBT;
+              if (CBT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].CBT = CBT;
+              if (OBRT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].OBRT = OBRT;
+              if (CBRT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].CBRT = CBRT;
+              if (isClosed !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].isClosed = isClosed;
+            }
+          }
+        });
       }
-
-      // Add a new entry to gameSatingInfo array
-      gameSettingInfo.gameSatingInfo.push({
-        gameDay,
-        OBT,
-        CBT,
-        OBRT,
-        CBRT,
-        isClosed
-      });
 
       // Save the updated game setting document
       gameSettingInfo = await gameSettingInfo.save();
@@ -75,8 +118,7 @@ const addGameSetting = async (req, res) => {
     // Handle errors
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
-}
-
+};
 
 // Function for Update a game setting
 const updateGameSetting = async (req, res) => {
@@ -135,8 +177,6 @@ const updateGameSetting = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
-
-
 
 // Function for deleting a game setting
 const deleteGameSetting = async (req, res) => {
