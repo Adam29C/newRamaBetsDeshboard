@@ -15,7 +15,7 @@ const gamesSettingSchema = new mongoose.Schema({
     gameSatingInfo: [{
         gameDay: {
             type: String,
-            enum: ['all','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+            // enum: ['all','Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
             required: true
         },
         OBT: {
