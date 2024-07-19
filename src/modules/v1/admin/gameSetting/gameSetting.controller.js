@@ -29,16 +29,27 @@ const addGameSetting = async (req, res) => {
 
       // Check if gameDay is specified
       if (gameDay && gameDay !== 'all') {
-        // Add entry for the specific game day
-        insertingObj.gameSatingInfo.push({
-          gameDay,
-          OBT,
-          CBT,
-          OBRT,
-          CBRT,
-          isClosed
-        });
-      } else {
+        // Add or update entry for the specific game day
+        const existingGameDayIndex = insertingObj.gameSatingInfo.findIndex(info => info.gameDay === gameDay);
+        if (existingGameDayIndex === -1) {
+          insertingObj.gameSatingInfo.push({
+            gameDay,
+            OBT,
+            CBT,
+            OBRT,
+            CBRT,
+            isClosed
+          });
+        } else {
+          // Update existing entry
+          if (OBT !== undefined) insertingObj.gameSatingInfo[existingGameDayIndex].OBT = OBT;
+          if (CBT !== undefined) insertingObj.gameSatingInfo[existingGameDayIndex].CBT = CBT;
+          if (OBRT !== undefined) insertingObj.gameSatingInfo[existingGameDayIndex].OBRT = OBRT;
+          if (CBRT !== undefined) insertingObj.gameSatingInfo[existingGameDayIndex].CBRT = CBRT;
+          if (isClosed !== undefined) insertingObj.gameSatingInfo[existingGameDayIndex].isClosed = isClosed;
+        }
+
+      } else if (gameDay === 'all') {
         // Add entries for all days of the week only if they do not exist
         const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         weekDays.forEach(day => {
@@ -46,11 +57,11 @@ const addGameSetting = async (req, res) => {
           if (existingGameDayIndex === -1) {
             insertingObj.gameSatingInfo.push({
               gameDay: day,
-              OBT: day === gameDay ? OBT : undefined,
-              CBT: day === gameDay ? CBT : undefined,
-              OBRT: day === gameDay ? OBRT : undefined,
-              CBRT: day === gameDay ? CBRT : undefined,
-              isClosed: day === gameDay ? isClosed : undefined
+              OBT,
+              CBT,
+              OBRT,
+              CBRT,
+              isClosed: false // Set isClosed to false for all days when gameDay === 'all'
             });
           }
         });
@@ -62,7 +73,8 @@ const addGameSetting = async (req, res) => {
       return SuccessResponse(res, HTTP_MESSAGE.SUCCESS, gameSettingInfo);
 
     } else {
-      // Check if gameDay is specified
+      // If game setting already exists for the provider
+
       if (gameDay && gameDay !== 'all') {
         // Check if the game day already exists
         const existingGameDayIndex = gameSettingInfo.gameSatingInfo.findIndex(info => info.gameDay === gameDay);
@@ -80,7 +92,7 @@ const addGameSetting = async (req, res) => {
           isClosed
         });
 
-      } else {
+      } else if (gameDay === 'all') {
         // Update or insert entries for all days of the week only if they do not exist
         const weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
         weekDays.forEach(day => {
@@ -92,17 +104,15 @@ const addGameSetting = async (req, res) => {
               CBT,
               OBRT,
               CBRT,
-              isClosed
+              isClosed: false // Set isClosed to false for all days when gameDay === 'all'
             });
           } else {
-            // Update existing entry only if it matches the gameDay provided
-            if (day === gameDay) {
-              if (OBT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].OBT = OBT;
-              if (CBT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].CBT = CBT;
-              if (OBRT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].OBRT = OBRT;
-              if (CBRT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].CBRT = CBRT;
-              if (isClosed !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].isClosed = isClosed;
-            }
+            // Update existing entry
+            if (OBT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].OBT = OBT;
+            if (CBT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].CBT = CBT;
+            if (OBRT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].OBRT = OBRT;
+            if (CBRT !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].CBRT = CBRT;
+            if (isClosed !== undefined) gameSettingInfo.gameSatingInfo[existingGameDayIndex].isClosed = isClosed;
           }
         });
       }
@@ -115,6 +125,7 @@ const addGameSetting = async (req, res) => {
     }
 
   } catch (err) {
+    console.error(err.message); // Log the error message
     // Handle errors
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
