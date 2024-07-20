@@ -22,18 +22,20 @@ const addGameResult = async (req, res) => {
     // Get current time and day
     const currentTime = moment().format("h:mm A");
     const todayDay = moment().format("dddd");
-    
-    // Set game session time check field
-    let getItem = session === "Close" ? { CBRT: 1, gameDay: 1 } : { OBRT: 1, gameDay: 1 };
 
     // Query GameSetting for today's session
-    const findTime = await GameSetting.findOne({ providerId, gameDay: todayDay }, getItem);
-    if (!findTime || (session === "Close" && !findTime.CBRT) || (session !== "Close" && !findTime.OBRT)) {
+    const findTime = await GameSetting.findOne(
+      { providerId, "gameSatingInfo.gameDay": todayDay },
+      { "gameSatingInfo.$": 1 }
+    );
+    console.log(findTime,"ggggg")
+
+    if (!findTime || !findTime.gameSatingInfo[0]) {
       return BadRequestResponse(res, HTTP_MESSAGE.PROVIDER_SETTING_NOT_FOUND);
     }
 
-    const timeCheck = session === "Close" ? findTime.CBRT : findTime.OBRT;
-
+    const timeCheck = session === "Close" ? findTime.gameSatingInfo[0].CBRT : findTime.gameSatingInfo[0].OBRT;
+     console.log(timeCheck,"gggg")
     // Parse and validate resultDate
     const resultDateParsed = moment(resultDate, "MM/DD/YYYY", true);
     if (!resultDateParsed.isValid()) {
@@ -42,12 +44,14 @@ const addGameResult = async (req, res) => {
 
     // Check if it's the correct time to declare result
     const beginningTime = moment(currentTime, "h:mm A");
+    console.log(beginningTime,"uuuuuuuuu")
     const endTime = moment(timeCheck, "h:mm A");
+    console.log(endTime,"ffffff")
 
     if (!resultDateParsed.isSame(moment(), "day")) {
       return BadRequestResponse(res, HTTP_MESSAGE.INVALID_RESULT_DATE);
     }
-
+    console.log(beginningTime ,">=" ,endTime)
     if (!(beginningTime >= endTime)) {
       return BadRequestResponse(res, HTTP_MESSAGE.IT_IS_NOT_RIGTH_TIME_TO_DECLARE_RESULT);
     }
@@ -94,7 +98,7 @@ const addGameResult = async (req, res) => {
     const rowData = {
       providerId,
       session,
-      resultDate: format("MM/DD/YYYY"),
+      resultDate: moment(resultDateParsed).format("MM/DD/YYYY"),
       winningDigit,
       resultId: savedGameResult._id,
       status: savedGameResult.status,
@@ -107,10 +111,12 @@ const addGameResult = async (req, res) => {
     return SuccessResponse(res, HTTP_MESSAGE.RESULT_DECLARED_SUCCESSFULLY, rowData);
 
   } catch (err) {
-    console.log(err.message,"gggggggg")
+    console.error("Error in addGameResult:", err.message);
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+
+
 
 //Get The Game Result
 const getGameResult = async (req, res) => {
