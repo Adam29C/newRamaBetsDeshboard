@@ -1,38 +1,15 @@
-import mongoose from 'mongoose';
-const gamesResultSchema = new mongoose.Schema({
-    providerId: {
-        type: String,
-        required: true
-    },
-    providerName: {
-        type: String,
-        required: true
-    },
-    session: {
-        type: String,
-        required: true
-    },
-    resultDate: {
-        type: String,
-        required: true
-    },
-    winningDigit: {
-        type: String,
-        required: true
-    },
-    winningDigitFamily: {
-        type: Number,
-        required: true
-    },
-    status: {
-        type: Number,
-        required: true
-    }
-},
-    {
-        timestamps: true,
-        versionKey: false
-    });
+import mongoose from "mongoose";
+const GameResultSchema = new mongoose.Schema({
+    providerId: { type: mongoose.Schema.Types.ObjectId, ref: 'GameProvider' },
+    providerName: { type: String },
+    session: { type: String },
+    resultDate: { type: Date },
+    winningDigit: { type: String },
+    DigitFamily: { type: String, required: true }, // Ensure required is set
+    status: { type: String },
+    createdAt: { type: Date, default: Date.now }
+  });
+  
 
-const GameResult = mongoose.model('GameResult', gamesResultSchema);
+const GameResult = mongoose.model('GameResult', GameResultSchema);
 export {GameResult}

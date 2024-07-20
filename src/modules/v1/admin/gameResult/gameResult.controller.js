@@ -8,7 +8,7 @@ import { GameResult } from '../../../../models/GameResult.js';
 import moment from 'moment';
 import { gameDigit } from '../../../../models/digits.js';
 
-//Function For Add Gmae Result
+// Function For Add Game Result
 const addGameResult = async (req, res) => {
   try {
     const { providerId, session, resultDate, winningDigit } = req.body;
@@ -28,14 +28,13 @@ const addGameResult = async (req, res) => {
       { providerId, "gameSatingInfo.gameDay": todayDay },
       { "gameSatingInfo.$": 1 }
     );
-    console.log(findTime,"ggggg")
 
     if (!findTime || !findTime.gameSatingInfo[0]) {
       return BadRequestResponse(res, HTTP_MESSAGE.PROVIDER_SETTING_NOT_FOUND);
     }
 
     const timeCheck = session === "Close" ? findTime.gameSatingInfo[0].CBRT : findTime.gameSatingInfo[0].OBRT;
-     console.log(timeCheck,"gggg")
+
     // Parse and validate resultDate
     const resultDateParsed = moment(resultDate, "MM/DD/YYYY", true);
     if (!resultDateParsed.isValid()) {
@@ -44,14 +43,12 @@ const addGameResult = async (req, res) => {
 
     // Check if it's the correct time to declare result
     const beginningTime = moment(currentTime, "h:mm A");
-    console.log(beginningTime,"uuuuuuuuu")
     const endTime = moment(timeCheck, "h:mm A");
-    console.log(endTime,"ffffff")
 
     if (!resultDateParsed.isSame(moment(), "day")) {
       return BadRequestResponse(res, HTTP_MESSAGE.INVALID_RESULT_DATE);
     }
-    console.log(beginningTime ,">=" ,endTime)
+
     if (!(beginningTime >= endTime)) {
       return BadRequestResponse(res, HTTP_MESSAGE.IT_IS_NOT_RIGTH_TIME_TO_DECLARE_RESULT);
     }
@@ -65,19 +62,20 @@ const addGameResult = async (req, res) => {
 
     // Fetch digit family based on winning digit
     const digitFamily = await gameDigit.findOne({ Digit: winningDigit });
+    console.log(digitFamily, "1", digitFamily.DigitFamily); // Note the case correction
     if (!digitFamily) {
       return BadRequestResponse(res, HTTP_MESSAGE.DIGIT_FAMILY_NOT_FOUND);
     }
 
     // Create formatted date-time and new game result object
-    const formattedDateTime = moment().format("MM/DD/YYYY H:mm:ss A");
+    const formattedDateTime = new Date(); // Current date and time as Date object
     const newGameResult = {
       providerId,
       providerName: providerDetails.providerName,
       session,
       resultDate: resultDateParsed.toDate(),
       winningDigit,
-      winningDigitFamily: digitFamily.digitFamily,
+      DigitFamily: digitFamily.DigitFamily, // Note the case correction
       status: "0",
       createdAt: formattedDateTime,
     };
@@ -86,12 +84,13 @@ const addGameResult = async (req, res) => {
     const savedGameResult = await insertQuery("GameResult", newGameResult);
 
     // Update provider with new result
-    const finalResult = `${winningDigit}-${digitFamily.digitFamily}`;
+    const finalResult = `${winningDigit}-${digitFamily.DigitFamily}`; // Note the case correction
     const updateData = {
       providerResult: finalResult,
       modifiedAt: formattedDateTime,
       resultStatus: 1,
     };
+
     await update("GameProvider", { _id: providerId }, updateData);
 
     // Prepare response data
@@ -102,7 +101,7 @@ const addGameResult = async (req, res) => {
       winningDigit,
       resultId: savedGameResult._id,
       status: savedGameResult.status,
-      digitFamily: digitFamily.digitFamily,
+      digitFamily: digitFamily.DigitFamily, // Note the case correction
       providerName: providerDetails.providerName,
       time: savedGameResult.createdAt,
     };
@@ -116,37 +115,56 @@ const addGameResult = async (req, res) => {
   }
 };
 
-
+// router.get("/pastResult", session, async (req, res) => {
+// 	try {
+// 		const name = req.query.date;
+// 		const result = await gameResult.find().where("resultDate").equals(name);
+// 		const countResult = await gameResult
+// 			.find({ resultDate: name })
+// 			.countDocuments();
+// 		const providerCount = await gamesProvider.find().countDocuments();
+// 		const pendingCount = providerCount * 2 - countResult;
+// 		res.json({
+// 			result: result,
+// 			countResult: countResult,
+// 			providerCount: providerCount,
+// 			pendingCount: pendingCount,
+// 		});
+// 	} catch (e) {
+// 		res.json({
+// 			status: 0,
+// 			message: e,
+// 		});
+// 	}
+// });
 
 //Get The Game Result
 const getGameResult = async (req, res) => {
   try {
-    const { adminId } = req.query;
-
+    const { adminId,date} = req.body;
+    console.log(req.body)
+    
     const formatted = moment().format("MM/DD/YYYY");
     console.log(formatted,"fff")
+
+    const result1 = await GameResult.find().where("resultDate").equals(name);
     const chaeckInfo = await findOne("Admin", { _id: adminId });
+    if (!chaeckInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    
+    const countResult = await GameResult
+    .find({ resultDate: date })
+    .countDocuments();
 
-    if (!chaeckInfo) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    const providerCount = await GameProvider.find().countDocuments();
+		const pendingCount = providerCount * 2 - countResult;
+    const result={
+      result1:result1,
+      countResult: countResult,
+      providerCount: providerCount,
+      pendingCount: pendingCount,
     }
-
-    // Fetch today's game results
-    let result = await findWithSort("GameResult", { resultDate: formatted }, { _id: -1 });
-
-    // If no results found for today, check previous day's results
-    if (result.length === 0) {
-      const currentTime = moment();
-      const checkTime = moment("09:00 AM", "hh:mm A");
-      const beginningTime = moment(currentTime, "hh:mm A");
-
-      if (beginningTime.isBefore(checkTime)) {
-        const previousDate = moment().subtract(1, 'days').startOf('day').toISOString();
-        result = await findWithSort("GameResult", { resultDate: previousDate }, { _id: -1 });
-      }
-    }
-
-    return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_LIST, result);
+    
+    return SuccessResponse(res, HTTP_MESSAGE.GAME_RESULT_LIST_SHOW_SUCCESSFULLY, result);
 
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
