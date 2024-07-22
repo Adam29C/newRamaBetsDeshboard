@@ -115,48 +115,18 @@ const addGameResult = async (req, res) => {
   }
 };
 
-// router.get("/pastResult", session, async (req, res) => {
-// 	try {
-// 		const name = req.query.date;
-// 		const result = await gameResult.find().where("resultDate").equals(name);
-// 		const countResult = await gameResult
-// 			.find({ resultDate: name })
-// 			.countDocuments();
-// 		const providerCount = await gamesProvider.find().countDocuments();
-// 		const pendingCount = providerCount * 2 - countResult;
-// 		res.json({
-// 			result: result,
-// 			countResult: countResult,
-// 			providerCount: providerCount,
-// 			pendingCount: pendingCount,
-// 		});
-// 	} catch (e) {
-// 		res.json({
-// 			status: 0,
-// 			message: e,
-// 		});
-// 	}
-// });
-
 //Get The Game Result
 const getGameResult = async (req, res) => {
   try {
     const { adminId, date } = req.body;
-    console.log(req.body);
-    // Find results for the given date
-    const r= await GameResult.find({});
-    console.log(r[0].resultDate,"jjjjjjjjjj")
-    console.log(date,"iiiiiiiiiii");
-
-    const q=await GameResult.find({resultDate:date});
-    console.log(q,"qqqqqqqqqqq")
-    const result1 = await GameResult.find().where("resultDate").equals(date);
-    console.log(result1, "game results");
 
     // Check if the admin exists
     const chaeckInfo = await findOne("Admin", { _id: adminId });
     if (!chaeckInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-
+    
+    //Fatch the record based on date
+    const gameResult = await GameResult.find().where("resultDate").equals(date);
+    
     // Count the number of game results for the given date
     const countResult = await GameResult.find({ resultDate: date }).countDocuments();
 
@@ -165,7 +135,7 @@ const getGameResult = async (req, res) => {
     const pendingCount = providerCount * 2 - countResult;
 
     const result = {
-      result1: result1,
+      gameResult: gameResult,
       countResult: countResult,
       providerCount: providerCount,
       pendingCount: pendingCount,
@@ -174,177 +144,8 @@ const getGameResult = async (req, res) => {
     return SuccessResponse(res, HTTP_MESSAGE.GAME_RESULT_LIST_SHOW_SUCCESSFULLY, result);
 
   } catch (err) {
-    console.log(err.message, "test");
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
 
-
-
-
-//Delete the game result
-const deleteGameResult = async (req, res) => {
-  try {
-    const { adminId, gameResultId } = req.body; // Destructure adminId and gameResultId directly from req.body
-    console.log(req.body); 
-
-    // Find the admin details
-    const adminDetails = await findOne("Admin", { _id: adminId });
-    if (!adminDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
-
-    // Find the game result to delete
-    const gameResult = await findOne("GameResult", { _id: gameResultId });
-    if (!gameResult) {
-      return BadRequestResponse(res, HTTP_MESSAGE.GAME_RESULT_NOT_FOUND);
-    }
-
-    // Perform the deletion
-    const deleteResult = await deleteQuery("GameResult", { _id: gameResultId });
-    if (!deleteResult) {
-      return InternalServerErrorResponse(res, HTTP_MESSAGE.DELETE_GAME_RESULT);
-    }
-
-    // If deletion is successful
-    return SuccessResponse(res, HTTP_MESSAGE.DELETE_GAME_RESULT);
-    
-  } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-  }
-};
-
-
-/*const test= async(req,res)=>{
-  try{
-    const {adminId}=req.body;
-    console.log(req.body,"hhhh")
-    const test=moment().change
-  }catch(err){
-  return InternalServerErrorResponce(res,HTTP_MESSAGE.InternalServerErrorResponce,err)
-  }
-  
-  }
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// // Function for updating a game rate
-// const updateGameRate = async (req, res) => {
-//   try {
-//     const { adminId, gameRateId, gameName, gamePrice } = req.body;
-
-//     // Check if the admin exists
-//     const adminDetails = await findOne('Admin', { _id: adminId });
-//     if (!adminDetails) {
-//       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-//     }
-
-//     // Check if the game rate exists
-//     const gameRateDetails = await findOne('GameRate', { _id: gameRateId });
-//     if (!gameRateDetails) {
-//       return NotFoundResponse(res, HTTP_MESSAGE.GAME_RATE_NOT_FOUND);
-//     }
-
-//     // Prepare fields to be updated
-//     const updateFields = {};
-//     if (gameName !== undefined) updateFields.gameName = gameName;
-//     if (gamePrice !== undefined) updateFields.gamePrice = gamePrice;
-
-//     // Perform the update
-//     const updatedGameRate = await updateQuery('GameRate', { _id: gameRateId }, updateFields, { new: true });
-
-//     return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_UPDATE, { details: updatedGameRate });
-
-//   } catch (err) {
-//     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-//   }
-// };
-
-// // Function for deleting a game rate
-// const deleteGameRate = async (req, res) => {
-//   try {
-//     const { adminId, gameRateId } = req.body;
-
-//     // Check if the admin exists
-//     const adminDetails = await findOne('Admin', { _id: adminId });
-//     if (!adminDetails) {
-//       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-//     }
-
-//     // Check if the game rate exists
-//     const gameRateDetails = await findOne('GameRate', { _id: gameRateId });
-//     if (!gameRateDetails) {
-//       return NotFoundResponse(res, HTTP_MESSAGE.GAME_RATE_NOT_FOUND);
-//     }
-
-//     // Delete the game rate
-//     await deleteQuery('GameRate', { _id: gameRateId });
-//     return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_DELETED);
-
-//   } catch (err) {
-//     ;
-//     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-//   }
-// };
-
-// // Function for listing all game rates
-// const gameRateList = async (req, res) => {
-//   try {
-//     const { adminId } = req.query;
-
-//     // Check if the admin exists
-//     const adminDetails = await findOne('Admin', { _id: adminId });
-//     if (!adminDetails) {
-//       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-//     }
-
-//     // Fetch all game rates
-//     const gameRates = await findAll('GameRate', {});
-//     return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_LIST, gameRates);
-
-//   } catch (err) {
-//     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-//   }
-// };
-
-// // Function for retrieving game rate by ID
-// const gameRateById = async (req, res) => {
-//   try {
-//     const { gameRateId } = req.params;
-
-//     // Check if the game rate exists
-//     const gameRateDetails = await findOne('GameRate', { _id: gameRateId });
-//     if (!gameRateDetails) {
-//       return NotFoundResponse(res, HTTP_MESSAGE.GAME_RATE_NOT_FOUND);
-//     }
-
-//     // Prepare the response for game rate info
-//     return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_DETAILS, gameRateDetails);
-
-//   } catch (err) {
-//     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-//   }
-// };
-
-export { addGameResult,getGameResult,deleteGameResult  };
+export { addGameResult,getGameResult  };
