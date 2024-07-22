@@ -10,3 +10,8 @@ export const blockUserSchema = Joi.object({
   userId: Joi.string().required(),
   isBlock:Joi.boolean().required()
 })
+
+export const deleteUserSchema = Joi.object({
+  adminId: Joi.string().required(),
+  userId:Joi.string().required(),
+});

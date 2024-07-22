@@ -10,7 +10,7 @@ import { roleList } from "../../../../consts/authorization.js";
 import {verifyRoles} from "../../../../middlewares/verifyRoles.js";
 import  getMulterStorage from "../../../../helpers/fileUpload.js";  
 const systemInformition = getMulterStorage("uploads/systemInfo");
-import { blockUserSchema, userListSchema } from "./userInfo.schema.js";
+import { blockUserSchema, userListSchema,deleteUserSchema } from "./userInfo.schema.js";
 
 userDetailsRouters.get(
   "/users/:adminId",
@@ -40,7 +40,7 @@ userDetailsRouters.delete(
   "/users",
   verifyToken,
   verifyRoles(roleList.ADMIN),
-  validator(userListSchema,ValidationSource.BODY),
+  validator(deleteUserSchema,ValidationSource.BODY),
   deleteUser
 );
 
