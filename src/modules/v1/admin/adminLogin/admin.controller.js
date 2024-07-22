@@ -253,8 +253,13 @@ const empList = async (req, res) => {
 //Function For Delete Employee Api
 const deleteEmployee = async (req, res) => {
   try {
-    const empId = req.params.empId;
+    const {empId,adminId} = req.body;
 
+    const details = await findOne("Admin", { _id: adminId });
+    if (!details) {
+      return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+    }
+    
     const empDetails = await findOne("Admin", { _id: empId });
     if (!empDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);

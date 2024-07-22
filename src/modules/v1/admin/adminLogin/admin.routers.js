@@ -60,10 +60,10 @@ adminDetailsRouters.get(
 );
 
 adminDetailsRouters.delete(
-  "/deleteEmployee/:empId",
+  "/deleteEmployee",
   verifyToken,
   verifyRoles(roleList.ADMIN),
-  validator(deleteEmployeeSchema, ValidationSource.PARAM),
+  validator(deleteEmployeeSchema, ValidationSource.BODY),
   deleteEmployee
 );
 
