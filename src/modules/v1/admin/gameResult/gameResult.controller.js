@@ -143,17 +143,14 @@ const getGameResult = async (req, res) => {
   try {
     const { adminId, date } = req.body;
     console.log(req.body);
-
-    // Convert the date from the body to the format stored in the database
-    const formattedDate = moment(date, "MM/DD/YYYY").format("MM/DD/YYYY");
-    console.log(formattedDate, "formatted date");
-
-    // Find all results to check the type of resultDate
-    const allResults = await GameResult.find({});
-    console.log(allResults[0].resultDate, "resultDate type in database");
-
     // Find results for the given date
-    const result1 = await GameResult.find({ resultDate: formattedDate });
+    const r= await GameResult.find({});
+    console.log(r[0].resultDate,"jjjjjjjjjj")
+    console.log(date,"iiiiiiiiiii");
+
+    const q=await GameResult.find({resultDate:date});
+    console.log(q,"qqqqqqqqqqq")
+    const result1 = await GameResult.find().where("resultDate").equals(date);
     console.log(result1, "game results");
 
     // Check if the admin exists
@@ -161,7 +158,7 @@ const getGameResult = async (req, res) => {
     if (!chaeckInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
 
     // Count the number of game results for the given date
-    const countResult = await GameResult.find({ resultDate: formattedDate }).countDocuments();
+    const countResult = await GameResult.find({ resultDate: date }).countDocuments();
 
     // Count the number of providers and calculate pending count
     const providerCount = await GameProvider.find().countDocuments();

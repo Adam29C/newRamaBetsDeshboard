@@ -3,7 +3,7 @@ const GameResultSchema = new mongoose.Schema({
     providerId: { type: mongoose.Schema.Types.ObjectId, ref: 'GameProvider' },
     providerName: { type: String },
     session: { type: String },
-    resultDate: { type: Date },
+    resultDate: { type: String },
     winningDigit: { type: String },
     DigitFamily: { type: String, required: true }, // Ensure required is set
     status: { type: String },
