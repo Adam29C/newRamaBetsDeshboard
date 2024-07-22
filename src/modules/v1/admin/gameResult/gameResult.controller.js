@@ -141,35 +141,49 @@ const addGameResult = async (req, res) => {
 //Get The Game Result
 const getGameResult = async (req, res) => {
   try {
-    const { adminId,date} = req.body;
-    console.log(req.body)
-    
-    const formatted = moment().format("MM/DD/YYYY");
-    console.log(formatted,"fff")
+    const { adminId, date } = req.body;
+    console.log(req.body);
 
-    const result1 = await GameResult.find().where("resultDate").equals(name);
+    // Convert the date from the body to the format stored in the database
+    const formattedDate = moment(date, "MM/DD/YYYY").format("MM/DD/YYYY");
+    console.log(formattedDate, "formatted date");
+
+    // Find all results to check the type of resultDate
+    const allResults = await GameResult.find({});
+    console.log(allResults[0].resultDate, "resultDate type in database");
+
+    // Find results for the given date
+    const result1 = await GameResult.find({ resultDate: formattedDate });
+    console.log(result1, "game results");
+
+    // Check if the admin exists
     const chaeckInfo = await findOne("Admin", { _id: adminId });
     if (!chaeckInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    
-    const countResult = await GameResult
-    .find({ resultDate: date })
-    .countDocuments();
 
+    // Count the number of game results for the given date
+    const countResult = await GameResult.find({ resultDate: formattedDate }).countDocuments();
+
+    // Count the number of providers and calculate pending count
     const providerCount = await GameProvider.find().countDocuments();
-		const pendingCount = providerCount * 2 - countResult;
-    const result={
-      result1:result1,
+    const pendingCount = providerCount * 2 - countResult;
+
+    const result = {
+      result1: result1,
       countResult: countResult,
       providerCount: providerCount,
       pendingCount: pendingCount,
-    }
-    
+    };
+
     return SuccessResponse(res, HTTP_MESSAGE.GAME_RESULT_LIST_SHOW_SUCCESSFULLY, result);
 
   } catch (err) {
+    console.log(err.message, "test");
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+
+
+
 
 //Delete the game result
 const deleteGameResult = async (req, res) => {

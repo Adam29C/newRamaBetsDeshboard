@@ -23,7 +23,7 @@ gameResultRouters.get(
   "/gameResult",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
-  validator(getGameResultSchema, ValidationSource.QUERY),
+  validator(getGameResultSchema, ValidationSource.BODY),
   getGameResult
 );
 
