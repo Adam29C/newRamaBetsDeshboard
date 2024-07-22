@@ -191,7 +191,7 @@ const createEmployee = async (req, res) => {
   }
 };
 
-//Function For Admin Block Employee api
+// Function For Admin Block Employee API
 const blockEmployee = async (req, res) => {
   try {
     const { adminId, empId, isBlock } = req.body;
@@ -208,20 +208,15 @@ const blockEmployee = async (req, res) => {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
-    // Toggle the isBlock value
-    const newBlockStatus = !isBlock;
-    const updateData = {
-      isBlock: newBlockStatus
-    };
-
-    // Update employee block status
-    const updatedDetails = await update("Admin", { _id: empId }, updateData, "findOneAndUpdate");
+    // Update Employee block status
+    await update("Admin", { _id: empId }, { isBlock });
 
     // Determine the response message
-    const message = newBlockStatus ? HTTP_MESSAGE.BLOCK_EMPLOYEE : HTTP_MESSAGE.UNBLOCK_EMPLOYEE;
+    const message = isBlock ? HTTP_MESSAGE.BLOCK_EMPLOYEE : HTTP_MESSAGE.UNBLOCK_EMPLOYEE;
 
     // Respond with the appropriate message
     return SuccessResponse(res, message);
+
   } catch (err) {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }

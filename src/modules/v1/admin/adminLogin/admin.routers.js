@@ -43,7 +43,7 @@ adminDetailsRouters.post(
    createEmployee
 );
 
-adminDetailsRouters.post(
+adminDetailsRouters.patch(
   "/blockEmployee",
    verifyToken,
    verifyRoles(roleList.ADMIN),
