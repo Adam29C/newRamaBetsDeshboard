@@ -66,17 +66,11 @@ const blockUser = async (req, res) => {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
-    // Toggle the isBlock value
-    const newBlockStatus = !isBlock;
-    const updateData = {
-      isBlock: newBlockStatus
-    };
-
     // Update User block status
-    await update("Users", { _id: userId }, updateData);
+    await update("Users", { _id: userId }, { isBlock });
 
     // Determine the response message
-    const message = newBlockStatus ? HTTP_MESSAGE.BLOCK_USER : HTTP_MESSAGE.UNBLOCK_USER;
+    const message = isBlock ? HTTP_MESSAGE.BLOCK_USER : HTTP_MESSAGE.UNBLOCK_USER;
 
     // Respond with the appropriate message
     return SuccessResponse(res, message);
@@ -85,6 +79,7 @@ const blockUser = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
+
 
 //Function For Delete The User Api
 const deleteUser = async (req, res) => {
