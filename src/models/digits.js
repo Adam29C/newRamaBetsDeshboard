@@ -5,7 +5,7 @@ const digitsSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    digitFamily:{
+    DigitFamily:{
         type: Number,
         required: true
     }
