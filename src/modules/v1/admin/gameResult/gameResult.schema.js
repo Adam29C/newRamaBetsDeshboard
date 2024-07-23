@@ -9,8 +9,7 @@ export const addGameResultSchema = Joi.object({
 });
 
 export const getGameResultSchema = Joi.object({
- date:Joi.string().required(),
- adminId:Joi.string().required()
+ date:Joi.string().required()
 });
 
 export const deleteGameRateSchema = Joi.object({
