@@ -6,6 +6,7 @@ export const ValidationSource = {
   QUERY: "query",
   PARAM: "params",
 };
+console.log(ValidationSource,"testteset")
 
 const validator = (schema, source = ValidationSource.BODY) =>
   (req, res, next) => {
