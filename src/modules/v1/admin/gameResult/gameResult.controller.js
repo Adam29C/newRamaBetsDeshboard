@@ -118,12 +118,8 @@ const addGameResult = async (req, res) => {
 //Get The Game Result
 const getGameResult = async (req, res) => {
   try {
-    const { adminId, date } = req.body;
-
-    // Check if the admin exists
-    const chaeckInfo = await findOne("Admin", { _id: adminId });
-    if (!chaeckInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    
+    const { date } = req.query;
+     console.log("ddd")
     //Fatch the record based on date
     const gameResult = await GameResult.find().where("resultDate").equals(date);
     
@@ -144,6 +140,7 @@ const getGameResult = async (req, res) => {
     return SuccessResponse(res, HTTP_MESSAGE.GAME_RESULT_LIST_SHOW_SUCCESSFULLY, result);
 
   } catch (err) {
+    console.log(err.message,"ggggggggg")
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };

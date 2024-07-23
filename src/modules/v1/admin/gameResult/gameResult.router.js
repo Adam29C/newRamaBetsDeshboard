@@ -19,11 +19,11 @@ gameResultRouters.post(
   addGameResult
 );
 
-gameResultRouters.post(
+gameResultRouters.get(
   "/gameResult",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
-  validator(getGameResultSchema, ValidationSource.BODY),
+  validator(getGameResultSchema, ValidationSource.QUERY),
   getGameResult
 );
 
