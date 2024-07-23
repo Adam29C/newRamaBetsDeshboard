@@ -19,7 +19,7 @@ gameResultRouters.post(
   addGameResult
 );
 
-gameResultRouters.get(
+gameResultRouters.post(
   "/gameResult",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
