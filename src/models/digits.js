@@ -10,7 +10,8 @@ const digitsSchema = new mongoose.Schema({
         required: true
     }
 }, {
-    versionKey: false
+    versionKey: false,
+    timestamps:true
 });
 
 const gameDigit = mongoose.model('gameDigit', digitsSchema);
