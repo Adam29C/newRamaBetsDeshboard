@@ -3,8 +3,6 @@ import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestR
 import Admin from '../../../../models/admin.js';
 import { Users } from '../../../../models/users.js';
 
-
-
 //All User List Api function 
 const userList = async (req, res) => {
   try {

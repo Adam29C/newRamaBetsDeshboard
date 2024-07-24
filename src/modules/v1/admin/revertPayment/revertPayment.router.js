@@ -8,47 +8,49 @@ import { addGameProvider, deleteGameProvider, updateGameProvider,gameProviderLis
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import { gameSchema, deleteGameProviderSchema, updateGameProviderSchema,gameProviderListSchema,gameProviderIdSchema } from "./game.schema.js";
-const gameDetailsRouters = express.Router();
+const revertPayment = express.Router();
 
 
-gameDetailsRouters.post(
-  "/gameProvider",
+revertPayment.post(
+  "/revertPayment",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
   validator(gameSchema, ValidationSource.BODY),
   addGameProvider,
 );
 
-gameDetailsRouters.delete(
-  "/gameProvider",
-  verifyToken,
-  verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
-  validator(deleteGameProviderSchema, ValidationSource.BODY),
-  deleteGameProvider,
-);
+updateRevertPayment, deleteRevertPayment, revertPaymentList, revertPaymentById
 
-gameDetailsRouters.put(
-  "/gameProvider",
-  verifyToken,
-  verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
-  validator(updateGameProviderSchema, ValidationSource.BODY),
-  updateGameProvider,
-);
+// gameDetailsRouters.delete(
+//   "/gameProvider",
+//   verifyToken,
+//   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
+//   validator(deleteGameProviderSchema, ValidationSource.BODY),
+//   deleteGameProvider,
+// );
 
-gameDetailsRouters.get(
-  "/gameProvider",
-  verifyToken,
-  verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
-  validator(gameProviderListSchema, ValidationSource.QUERY),
-  gameProviderList,
-);
+// gameDetailsRouters.put(
+//   "/gameProvider",
+//   verifyToken,
+//   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
+//   validator(updateGameProviderSchema, ValidationSource.BODY),
+//   updateGameProvider,
+// );
 
-gameDetailsRouters.get(
-  "/gameProvider/:providerId",
-  verifyToken,
-  verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
-  validator(gameProviderIdSchema, ValidationSource.PARAM),
-  gameProviderById,
-);
+// gameDetailsRouters.get(
+//   "/gameProvider",
+//   verifyToken,
+//   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
+//   validator(gameProviderListSchema, ValidationSource.QUERY),
+//   gameProviderList,
+// );
+
+// gameDetailsRouters.get(
+//   "/gameProvider/:providerId",
+//   verifyToken,
+//   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
+//   validator(gameProviderIdSchema, ValidationSource.PARAM),
+//   gameProviderById,
+// );
 
 export { gameDetailsRouters }; 
