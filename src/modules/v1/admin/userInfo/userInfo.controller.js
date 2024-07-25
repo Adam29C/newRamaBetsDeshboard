@@ -1,8 +1,9 @@
 import { deleteQuery, findAll, findOne, update } from '../../../../helpers/crudMongo.js';
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse } from '../../../../helpers/http.js';
 import Admin from '../../../../models/admin.js';
-import { Users } from '../../../../models/users.js';
+import { UserIdea } from '../../../../models/userIdia.js';
 
+import { Users } from '../../../../models/users.js';
 
 
 //All User List Api function 
@@ -98,9 +99,27 @@ const deleteUser = async (req, res) => {
 
     return SuccessResponse(res, HTTP_MESSAGE.USER_DELETED_SUCCESS)
   } catch (err) {
-    console.log(err.message,"ggggggggggggggg")
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err)
   }
 }
 
-export { userList, userInfoById, blockUser,deleteUser }
+//All userInfoById Api function 
+const getUserIdia = async (req, res) => {
+  try {
+    const { adminId } = req.query;
+
+    // Check if the admin exists
+    const adminDetails = await findOne("Admin", { _id: adminId });
+    if (!adminDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
+
+    // Find user ideas
+    const userIdeaInfo = await findAll("UserIdea", {});
+    return SuccessResponse(res, HTTP_MESSAGE.USER_IDIA_INFO, userIdeaInfo);
+
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+export { userList, userInfoById, blockUser,deleteUser,getUserIdia }

@@ -5,12 +5,12 @@ import {
   } from "../../../../middlewares/validator.js";
 const userDetailsRouters = express.Router();
 import { verifyToken } from "../../../../helpers/token.js";
-import {blockUser, deleteUser, userInfoById, userList} from "./userInfo.controller.js";
+import {blockUser, deleteUser, getUserIdia, userInfoById, userList} from "./userInfo.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import {verifyRoles} from "../../../../middlewares/verifyRoles.js";
 import  getMulterStorage from "../../../../helpers/fileUpload.js";  
 const systemInformition = getMulterStorage("uploads/systemInfo");
-import { blockUserSchema, userListSchema,deleteUserSchema } from "./userInfo.schema.js";
+import { blockUserSchema, userListSchema,deleteUserSchema,userIdiaSchema } from "./userInfo.schema.js";
 
 userDetailsRouters.get(
   "/users/:adminId",
@@ -43,5 +43,14 @@ userDetailsRouters.delete(
   validator(deleteUserSchema,ValidationSource.BODY),
   deleteUser
 );
+
+userDetailsRouters.get(
+  "/userss",
+  verifyToken,
+  verifyRoles(roleList.ADMIN),
+  validator(userIdiaSchema,ValidationSource.QUERY),
+  getUserIdia
+);
+
 
 export { userDetailsRouters }; 
