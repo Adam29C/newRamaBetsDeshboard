@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 const GameResultSchema = new mongoose.Schema({
-    providerId: { type: mongoose.Schema.Types.ObjectId, ref: 'GameProvider' },
+    providerId: { type: String },
     providerName: { type: String },
     session: { type: String },
     resultDate: { type: String },

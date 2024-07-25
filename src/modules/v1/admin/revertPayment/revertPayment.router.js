@@ -4,22 +4,22 @@ import {
   validator,
 } from "../../../../middlewares/validator.js";
 import { verifyToken } from "../../../../helpers/token.js";
-import { addGameProvider, deleteGameProvider, updateGameProvider,gameProviderList,gameProviderById } from "./game.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
-import { gameSchema, deleteGameProviderSchema, updateGameProviderSchema,gameProviderListSchema,gameProviderIdSchema } from "./game.schema.js";
-const revertPayment = express.Router();
+
+import { revertPayment } from "./revertPayment.controller.js";
+import { revertPaymentSchema } from "./revertPayment.schema.js";
+const resultRevertPaymentRouter = express.Router();
 
 
-revertPayment.post(
+resultRevertPaymentRouter.post(
   "/revertPayment",
   verifyToken,
   verifyRoles(roleList.ADMIN, roleList.SUBADMIN),
-  validator(gameSchema, ValidationSource.BODY),
-  addGameProvider,
+  validator(revertPaymentSchema, ValidationSource.BODY),
+  revertPayment,
 );
 
-updateRevertPayment, deleteRevertPayment, revertPaymentList, revertPaymentById
 
 // gameDetailsRouters.delete(
 //   "/gameProvider",
@@ -53,4 +53,4 @@ updateRevertPayment, deleteRevertPayment, revertPaymentList, revertPaymentById
 //   gameProviderById,
 // );
 
-export { gameDetailsRouters }; 
+export { resultRevertPaymentRouter }; 

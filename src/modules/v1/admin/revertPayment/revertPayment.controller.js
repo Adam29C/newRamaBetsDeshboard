@@ -243,42 +243,35 @@ import {GameProvider} from "../../../../models/gameProvider.js"
 // Function for adding a game provider
 const revertPayment = async (req, res) => {
   try {
-    const { updateRevertPayment, deleteRevertPayment, revertPaymentList, revertPaymentById } = req.body;
+    const {adminId,gameResultId,providerId,resultDate,digit,digitFamily,session } = req.body;
 
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
     if (!adminDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    
-    // Check if the admin exists
-    const gameDetails = await findOne("GameResult", { _id: resultId });
-    if (!gameDetails) return BadRequestResponse(res, HTTP_MESSAGE.GAME_RESULT_NOT_FOUND);
-      
-    // Check if the admin exists
-    const providerDetails = await findOne("Admin", { _id: providerId });
+
+    // Check if the game Provider exists
+    const providerDetails = await findOne("GameProvider", { _id: providerId });
     if (!providerDetails) return BadRequestResponse(res, HTTP_MESSAGE.PROVIDER_SETTING_NOT_FOUND);
     
-    
-    // Check if the admin exists
-    const digitDetails = await findOne("gameDigit", { _id: adminId });
+    // Check if the digit and digit family exists
+    const digitDetails = await findOne("gameDigit", { Digit: digit });
     if (!digitDetails) return BadRequestResponse(res, HTTP_MESSAGE.DIGIT_FAMILY_NOT_FOUND);
-    console.log("testinggggggggggggggggggggggg")                        
-    
-    // // Prepare game provider details
-    // const gameDetailsInfo = {
-    //   gameType,
-    //   game,
-    //   providerName,
-    //   providerResult,
-    //   resultStatus,
-    //   mobile,
-    //   activeStatus
-    // };
-
-    // // Insert new game provider
-    // const newGameProvider = await insertQuery("GameProvider", gameDetails);
-    // return SuccessResponse(res, HTTP_MESSAGE.GAME_CREATED, { details: newGameProvider });
-
+                            
+    // Check if the game result is exists
+    const gameDetails = await findOne("GameResult", {
+      $and: [
+          { _id: gameResultId },
+          { providerId: providerId },
+         { session: session },
+         { resultDate: resultDate },
+         { winningDigit: digit },
+         { winningDigitFamily: digitFamily }
+      ]
+    });
+    if (!gameDetails) return BadRequestResponse(res, HTTP_MESSAGE.GAME_RESULT_NOT_FOUND);
+      
   } catch (err) {
+    console.log(err.message,"111111111111111111111111")
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
@@ -394,5 +387,6 @@ const revertPayment = async (req, res) => {
 //   }
 // };
 
+console.log("testing testing")
 export { revertPayment };
 //updateRevertPayment, deleteRevertPayment, revertPaymentList, revertPaymentById

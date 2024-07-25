@@ -1,36 +1,38 @@
 import Joi from "joi";
 
-export const gameSchema = Joi.object({
-  // game:Joi.string().required(),
+export const revertPaymentSchema = Joi.object({
   adminId:Joi.string().required(),
-  providerName: Joi.string().required(),
-  providerResult:Joi.string().required(),
-  activeStatus:Joi.boolean().required(),
-  mobile:Joi.string().required(),
-  resultStatus:Joi.number().required()
+  providerId: Joi.string().required(),
+  gameResultId:Joi.string().required(),
+  session:Joi.string().required(),
+  resultDate:Joi.string().required(), 
+  digit:Joi.number().required(),
+  digitFamily:Joi.number().required(),
 });
 
-export const deleteGameProviderSchema = Joi.object({
-  adminId:Joi.string().required(),
-  gameProviderId: Joi.string().required()
-});
+//adminId,gameResultId,providerId,session,digit,family,date
 
-export const updateGameProviderSchema = Joi.object({
-  adminId:Joi.string().required(),
-  gameProviderId: Joi.string().required(),
-  providerName:Joi.string().optional(),
-  providerResult:Joi.string().optional(),
-  resultStatus:Joi.boolean().optional(),
-  activeStatus:Joi.boolean().optional(),
-  mobile:Joi.string().optional(),
-});
+// export const deleteGameProviderSchema = Joi.object({
+//   adminId:Joi.string().required(),
+//   gameProviderId: Joi.string().required()
+// });
 
-export const gameProviderListSchema = Joi.object({
-  adminId:Joi.string().required()
-});
+// export const updateGameProviderSchema = Joi.object({
+//   adminId:Joi.string().required(),
+//   gameProviderId: Joi.string().required(),
+//   providerName:Joi.string().optional(),
+//   providerResult:Joi.string().optional(),
+//   resultStatus:Joi.boolean().optional(),
+//   activeStatus:Joi.boolean().optional(),
+//   mobile:Joi.string().optional(),
+// });
 
-export const gameProviderIdSchema = Joi.object({
-  providerId:Joi.string().required()
-});
+// export const gameProviderListSchema = Joi.object({
+//   adminId:Joi.string().required()
+// });
+
+// export const gameProviderIdSchema = Joi.object({
+//   providerId:Joi.string().required()
+// });
 
 
