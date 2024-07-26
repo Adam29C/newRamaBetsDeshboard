@@ -47,7 +47,7 @@ export const HTTP_MESSAGE = {
   USER_INFO:"User Info Show Successfully",
   BLOCK_USER:"User Block Successfully",
   UNBLOCK_USER:"User UnBlock Successfully",
-  USER_AlREADY_DELETED:"User Not Found Or User Already Deleted",
+  USER_ALREADY_DELETED:"User Not Found Or User Already Deleted",
   USER_DELETED_SUCCESS:"User Deleted Successfully",
   USER_INFO:"User Informition Show Successfully",
   USERNAME_EXIST:"UserName Already Exist",
