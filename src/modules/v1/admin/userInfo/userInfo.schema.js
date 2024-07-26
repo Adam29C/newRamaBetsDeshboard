@@ -15,3 +15,9 @@ export const deleteUserSchema = Joi.object({
   adminId: Joi.string().required(),
   userId:Joi.string().required(),
 });
+
+export const userIdiaSchema = Joi.object({
+  adminId: Joi.string().required(),
+});
+
+
