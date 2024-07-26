@@ -86,7 +86,7 @@ const blockUser = async (req, res) => {
 
 const deleteUser = async (req, res) => {
   try {
-    let { adminId, userId, } = req.body;
+    let { adminId, userId,reason } = req.body;
 
     // Check if admin exists
     const adminInfo = await findOne("Admin", { _id: adminId });
@@ -102,8 +102,12 @@ const deleteUser = async (req, res) => {
       name: userInfo.name,
       username: userInfo.username,
       mobile: userInfo.mobile,
-      createdAt: userInfo.createdAt // Assuming `createdAt` is stored in the `userInfo`
+      createdAt: userInfo.createdAt,
+      deviceId:userInfo.deviceId,
+      deviceName:userInfo.deviceName,
+      reason:reason  
     };
+
 
     // Insert the deleted user object into DeletedUser collection
     await insertQuery("DeletedUser", deleteUserObj);
@@ -145,7 +149,8 @@ try{
   const adminDetails =await ("Admin",{_id:adminId})
   if(!adminDetails) return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND)
   
-  const list = await DeletedUser.find({})
+  const list = await DeletedUser.find({},{createdAt:0,updatedAt:0,deletedAt:0})
+  
   return SuccessResponse(res,HTTP_MESSAGE.ALL_DELETE_USER_HISTORY,list)
 }catch(err){
   return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);

@@ -14,6 +14,7 @@ export const blockUserSchema = Joi.object({
 export const deleteUserSchema = Joi.object({
   adminId: Joi.string().required(),
   userId:Joi.string().required(),
+  reason:Joi.string().required()
 });
 
 export const userIdiaSchema = Joi.object({

@@ -17,6 +17,16 @@ const deletedUserSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    deviceName: {
+        type: String,
+    },
+    deviceId: {
+        type: String,
+    },
+    reason:{
+        type:String,
+        require:true
+    },
     deletedAt: {
         type: Date,
         default: Date.now 
