@@ -6,7 +6,14 @@ import { createToken } from '../../../../helpers/token.js';
 import { findOne, insertQuery, update, deleteQuery, countRecords } from '../../../../helpers/crudMongo.js';
 import {Users} from "../../../../models/users.js"
 import { GameProvider } from '../../../../models/gameProvider.js';
+import { VersionSetting } from '../../../../models/versionSetting.js';
+import moment from 'moment';
+import path from 'path';
+import fs from 'fs/promises';
+import { fileURLToPath } from 'url';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //Function For Admin Login Api 
 const adminLogin = async (req, res) => {
@@ -221,7 +228,6 @@ const blockEmployee = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
-
 
 //Function For List Of Employee api
 const empList = async (req, res) => {
@@ -442,5 +448,67 @@ const updateGameStatus = async(req, res) => {
   }
 };
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, addSystemInfo, updateSystemInfo, deleteEmployee, changeEmployeePassword, updateEmployeeInformition, getPermission, userList, countDashboard,todayRegisterUsers,updateGameStatus };
+const updateVersionSetting = async (req, res) => {
+  try {
+    const { adminId, type, versionId, status, appVer } = req.body;
+    const file = req.file;
+
+    // Fetch Admin ID to check if it exists
+    const details = await findOne("Admin", { _id: adminId });
+    if (!details) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
+
+    const versionInfo = await findOne("VersionSetting", { _id: versionId });
+    if (!versionInfo) {
+      return BadRequestResponse(res, HTTP_MESSAGE.VERSION_SETTING_NOT_FOUND);
+    }
+
+    let query = {};
+
+    switch (type) {
+      case '1':
+        query = { forceUpdate: status };
+        if (file && file.originalname) {
+          query['apkFileName'] = file.originalname;
+        }
+        break;
+      case '2':
+        query = { maintainence: status };
+        if (file && file.originalname) {
+          query['apkFileName'] = file.originalname;
+        }
+        break;
+      case '3':
+        query = { appVersion: appVer };
+        if (file && file.filename) {
+          query['apkFileName'] = file.filename;
+        }
+        break;
+      default:
+        return BadRequestResponse(res, "Invalid type");
+    }
+
+    if (file && file.filename) {
+      const filePath = path.join(__dirname, '../../../../../../public/tempDirectory/', file.filename);
+      const destinationDir = path.join(__dirname, '../../../../../../public/apk/');
+      
+      await fs.mkdir(destinationDir, { recursive: true });
+      const files = await fs.readdir(destinationDir);
+      for (const existingFile of files) {
+        await fs.unlink(path.join(destinationDir, existingFile));
+      }
+      const destinationPath = path.join(destinationDir, file.filename);
+      await fs.rename(filePath, destinationPath);
+    }
+    const t=await VersionSetting.find({})
+    let a=await update("VersionSetting", { _id: versionId }, { $set: query });
+    return SuccessResponse(res, HTTP_MESSAGE.VERSION_SETTING_UPDATE);
+
+  } catch (err) {
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, addSystemInfo, updateSystemInfo, deleteEmployee, changeEmployeePassword, updateEmployeeInformition, getPermission, userList, countDashboard,todayRegisterUsers,updateGameStatus,updateVersionSetting };
 

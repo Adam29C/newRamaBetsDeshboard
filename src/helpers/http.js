@@ -63,7 +63,9 @@ export const HTTP_MESSAGE = {
   IT_IS_NOT_RIGTH_TIME_TO_DECLARE_RESULT:"It Is Not Right Time To Declare The Result",
   GAME_RESULT_LIST_SHOW_SUCCESSFULLY:"Game Result Show Successfully",
   USER_IDIA_INFO:"All User Idea Info Show Successfully",
-  ALL_DELETE_USER_HISTORY: "All Deleted User History Shown Successfully"
+  ALL_DELETE_USER_HISTORY: "All Deleted User History Shown Successfully",
+  VERSION_SETTING_NOT_FOUND:"Version Setting Not Found",
+  VERSION_SETTING_UPDATE:"Version Setting Update Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {
