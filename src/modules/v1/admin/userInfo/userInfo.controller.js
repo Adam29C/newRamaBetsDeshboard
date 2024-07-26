@@ -1,9 +1,11 @@
-import { deleteQuery, findAll, findOne, update } from '../../../../helpers/crudMongo.js';
+import { deleteQuery, findAll, findOne, insertQuery, update } from '../../../../helpers/crudMongo.js';
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse } from '../../../../helpers/http.js';
 import Admin from '../../../../models/admin.js';
+import { DeletedUser } from '../../../../models/deleteUser.js';
 import { UserIdea } from '../../../../models/userIdia.js';
 
 import { Users } from '../../../../models/users.js';
+
 
 
 //All User List Api function 
@@ -82,29 +84,41 @@ const blockUser = async (req, res) => {
 };
 
 
-//Function For Delete The User Api
 const deleteUser = async (req, res) => {
   try {
-    let { adminId, userId } = req.body;
+    let { adminId, userId, } = req.body;
 
-    //check if admin exist
+    // Check if admin exists
     const adminInfo = await findOne("Admin", { _id: adminId });
     if (!adminInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
 
-    //check if user exist
+    // Check if user exists
     const userInfo = await findOne("Users", { _id: userId });
-    if (!userInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_AlREADY_DELETED)
-    
+    if (!userInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_ALREADY_DELETED);
+
+    // Create delete user object
+    const deleteUserObj = {
+      userId: userInfo._id,
+      name: userInfo.name,
+      username: userInfo.username,
+      mobile: userInfo.mobile,
+      createdAt: userInfo.createdAt // Assuming `createdAt` is stored in the `userInfo`
+    };
+
+    // Insert the deleted user object into DeletedUser collection
+    await insertQuery("DeletedUser", deleteUserObj);
+
+    // Delete the user from Users collection
     await deleteQuery("Users", { _id: userId });
 
-    return SuccessResponse(res, HTTP_MESSAGE.USER_DELETED_SUCCESS)
+    return SuccessResponse(res, HTTP_MESSAGE.USER_DELETED_SUCCESS);
   } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err)
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 }
 
 //All userInfoById Api function 
-const getUserIdia = async (req, res) => {
+const getUserIdea = async (req, res) => {
   try {
     const { adminId } = req.query;
 
@@ -122,4 +136,20 @@ const getUserIdia = async (req, res) => {
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
-export { userList, userInfoById, blockUser,deleteUser,getUserIdia }
+
+const getDeleteUser =async(req,res)=>{
+try{
+  const {adminId}=req.query;
+  
+  //chack if admin exist
+  const adminDetails =await ("Admin",{_id:adminId})
+  if(!adminDetails) return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND)
+  
+  const list = await DeletedUser.find({})
+  return SuccessResponse(res,HTTP_MESSAGE.ALL_DELETE_USER_HISTORY,list)
+}catch(err){
+  return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+}
+}
+
+export { userList, userInfoById, blockUser,deleteUser,getUserIdea,getDeleteUser }
