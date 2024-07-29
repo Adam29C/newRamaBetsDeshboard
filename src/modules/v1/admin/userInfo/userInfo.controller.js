@@ -3,10 +3,7 @@ import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestR
 import Admin from '../../../../models/admin.js';
 import { DeletedUser } from '../../../../models/deleteUser.js';
 import { UserIdea } from '../../../../models/userIdia.js';
-
 import { Users } from '../../../../models/users.js';
-
-
 
 //All User List Api function 
 const userList = async (req, res) => {
@@ -83,7 +80,7 @@ const blockUser = async (req, res) => {
   }
 };
 
-
+//delete user
 const deleteUser = async (req, res) => {
   try {
     let { adminId, userId,reason } = req.body;
@@ -141,6 +138,7 @@ const getUserIdea = async (req, res) => {
   }
 };
 
+//list of delete user
 const getDeleteUser =async(req,res)=>{
 try{
   const {adminId}=req.query;
@@ -155,6 +153,6 @@ try{
 }catch(err){
   return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
 }
-}
+};
 
 export { userList, userInfoById, blockUser,deleteUser,getUserIdea,getDeleteUser }
