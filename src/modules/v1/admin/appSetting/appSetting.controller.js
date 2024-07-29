@@ -1,5 +1,21 @@
+
+import { findOne, insertQuery, deleteQuery, update, findAll } from '../../../../helpers/crudMongo.js';//update the version setting
+import bcrypt from 'bcrypt';
 import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse } from '../../../../helpers/http.js';
-//update the version setting
+import Admin from '../../../../models/admin.js';
+import System from '../../../../models/system.js';
+import { createToken } from '../../../../helpers/token.js';
+
+import {Users} from "../../../../models/users.js"
+import { GameProvider } from '../../../../models/gameProvider.js';
+import { VersionSetting } from '../../../../models/versionSetting.js';
+import moment from 'moment';
+import path from 'path';
+import fs from 'fs/promises';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const updateVersionSetting = async (req, res) => {
     try {
       const { adminId, type, versionId, status, appVer } = req.body;
