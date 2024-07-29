@@ -64,17 +64,17 @@ export const updateGameStatusSchema = Joi.object({
   activeStatus:Joi.boolean().required()
 });
 
-export const updateVersionSettingSchema = Joi.object({
-  adminId:Joi.string().required(),
-  versionId : Joi.string().required(),
-  appVersion:Joi.number().required(),
-  apkFileName:Joi.string().optional(),
-  forceUpdate:Joi.boolean().optional(),
-  maintainence:Joi.boolean().required()
-});
+// export const updateVersionSettingSchema = Joi.object({
+//   adminId:Joi.string().required(),
+//   versionId : Joi.string().required(),
+//   appVersion:Joi.number().required(),
+//   apkFileName:Joi.string().optional(),
+//   forceUpdate:Joi.boolean().optional(),
+//   maintainence:Joi.boolean().required()
+// });
 
-export const listVersionSettingSchema = Joi.object({
-  adminId:Joi.string().required()
-});
+// export const listVersionSettingSchema = Joi.object({
+//   adminId:Joi.string().required()
+// });
 
 // 

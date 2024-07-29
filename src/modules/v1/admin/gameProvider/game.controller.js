@@ -28,6 +28,7 @@ const addGameProvider = async (req, res) => {
     return SuccessResponse(res, HTTP_MESSAGE.GAME_CREATED, { details: newGameProvider });
 
   } catch (err) {
+    console.log(err.message)
     return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
