@@ -3,7 +3,7 @@ import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestR
 import Admin from '../../../../models/admin.js';
 import System from '../../../../models/system.js';
 import { createToken } from '../../../../helpers/token.js';
-import { findOne, insertQuery, update, deleteQuery, countRecords } from '../../../../helpers/crudMongo.js';
+import { findOne, insertQuery, update, deleteQuery, countRecords, findAll } from '../../../../helpers/crudMongo.js';
 import {Users} from "../../../../models/users.js"
 import { GameProvider } from '../../../../models/gameProvider.js';
 import { VersionSetting } from '../../../../models/versionSetting.js';
@@ -448,6 +448,7 @@ const updateGameStatus = async(req, res) => {
   }
 };
 
+//update the version setting
 const updateVersionSetting = async (req, res) => {
   try {
     const { adminId, type, versionId, status, appVer } = req.body;
@@ -501,7 +502,7 @@ const updateVersionSetting = async (req, res) => {
       const destinationPath = path.join(destinationDir, file.filename);
       await fs.rename(filePath, destinationPath);
     }
-    const t=await VersionSetting.find({})
+
     let a=await update("VersionSetting", { _id: versionId }, { $set: query });
     return SuccessResponse(res, HTTP_MESSAGE.VERSION_SETTING_UPDATE);
 
@@ -510,5 +511,21 @@ const updateVersionSetting = async (req, res) => {
   }
 };
 
-export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, addSystemInfo, updateSystemInfo, deleteEmployee, changeEmployeePassword, updateEmployeeInformition, getPermission, userList, countDashboard,todayRegisterUsers,updateGameStatus,updateVersionSetting };
+const listVersionSetting = async(req,res)=>{
+  try{
+    let{adminId}=req.query;
+
+    //check if admin is exist
+    const adminDetails = await findOne("Admin",{_id:adminId});
+    if(!adminDetails) return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND);
+     
+    //get the all version list from the version setting table
+    const list = await findAll("VersionSetting",{});
+    return SuccessResponse(res,HTTP_MESSAGE.ALL_VERSION_SETTING_LIST,list)
+    
+  }catch(err){
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+}
+export { adminLogin, adminProfile, changePassword, createEmployee, blockEmployee, empList, addSystemInfo, updateSystemInfo, deleteEmployee, changeEmployeePassword, updateEmployeeInformition, getPermission, userList, countDashboard,todayRegisterUsers,updateGameStatus,updateVersionSetting,listVersionSetting };
 

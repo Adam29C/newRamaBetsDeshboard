@@ -27,6 +27,7 @@ import {
   todayRegisterUsers,
   updateGameStatus,
   updateVersionSetting,
+  listVersionSetting,
 } from "./admin.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
@@ -44,6 +45,7 @@ import {
   commonSchema,
   updateGameStatusSchema,
   updateVersionSettingSchema,
+  listVersionSettingSchema,
 } from "./adminLogin.schema.js";
 
 // Get current directory in ES module
@@ -212,6 +214,14 @@ adminDetailsRouters.put(
   verifyRoles(roleList.ADMIN),
   // validator(updateVersionSettingSchema, ValidationSource.BODY),
   updateVersionSetting
+);
+
+adminDetailsRouters.get(
+  "/listVersionSetting",
+  verifyToken,
+  verifyRoles(roleList.ADMIN),
+  validator(listVersionSettingSchema, ValidationSource.QUERY),
+  listVersionSetting
 );
 
 export { adminDetailsRouters };

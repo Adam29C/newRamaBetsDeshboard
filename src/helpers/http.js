@@ -65,7 +65,8 @@ export const HTTP_MESSAGE = {
   USER_IDIA_INFO:"All User Idea Info Show Successfully",
   ALL_DELETE_USER_HISTORY: "All Deleted User History Shown Successfully",
   VERSION_SETTING_NOT_FOUND:"Version Setting Not Found",
-  VERSION_SETTING_UPDATE:"Version Setting Update Successfully"
+  VERSION_SETTING_UPDATE:"Version Setting Update Successfully",
+  ALL_VERSION_SETTING_LIST:"All Version List Show Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {

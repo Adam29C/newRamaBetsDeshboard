@@ -72,3 +72,9 @@ export const updateVersionSettingSchema = Joi.object({
   forceUpdate:Joi.boolean().optional(),
   maintainence:Joi.boolean().required()
 });
+
+export const listVersionSettingSchema = Joi.object({
+  adminId:Joi.string().required()
+});
+
+// 
