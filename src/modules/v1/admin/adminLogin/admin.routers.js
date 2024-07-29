@@ -203,21 +203,4 @@ adminDetailsRouters.put(
   updateGameStatus
 );
 
-// adminDetailsRouters.put(
-//   "/updateVersionSetting",
-//   upload.single('apk'),
-//   verifyToken,
-//   verifyRoles(roleList.ADMIN),
-//   // validator(updateVersionSettingSchema, ValidationSource.BODY),
-//   updateVersionSetting
-// );
-
-// adminDetailsRouters.get(
-//   "/listVersionSetting",
-//   verifyToken,
-//   verifyRoles(roleList.ADMIN),
-//   validator(listVersionSettingSchema, ValidationSource.QUERY),
-//   listVersionSetting
-// );
-
 export { adminDetailsRouters };
