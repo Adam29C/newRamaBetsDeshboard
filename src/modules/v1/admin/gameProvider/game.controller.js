@@ -36,7 +36,7 @@ const addGameProvider = async (req, res) => {
 // Function for Update a game provider
 const updateGameProvider = async (req, res) => {
   try {
-    const { adminId, gameProviderId, providerName, providerResult, resultStatus,activeStatus, mobile } = req.body;
+    const { adminId, providerId, providerName, providerResult, resultStatus,activeStatus, mobile } = req.body;
     
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
@@ -45,7 +45,7 @@ const updateGameProvider = async (req, res) => {
     }
 
     // Check if the game provider exists
-    const gameProviderDetails = await findOne("GameProvider", { _id: gameProviderId });
+    const gameProviderDetails = await findOne("GameProvider", { _id: providerId });
     if (!gameProviderDetails) {
       return NotFoundResponse(res, HTTP_MESSAGE.GAME_PROVIDER_NOT_FOUND);
     }

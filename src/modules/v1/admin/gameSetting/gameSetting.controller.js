@@ -134,7 +134,7 @@ const addGameSetting = async (req, res) => {
 // Function for Update a game setting
 const updateGameSetting = async (req, res) => {
   try {
-    const { adminId, providerId,gameSettingId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
+    const { adminId,gameType, providerId,gameSettingId, gameDay, OBT, CBT, OBRT, CBRT, isClosed } = req.body;
      //we take the gameSettingId for the feture aspect 
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });

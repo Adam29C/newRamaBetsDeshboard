@@ -17,7 +17,8 @@ export const deleteGameProviderSchema = Joi.object({
 
 export const updateGameProviderSchema = Joi.object({
   adminId:Joi.string().required(),
-  gameProviderId: Joi.string().required(),
+  gameType:Joi.string().optional(),
+  providerId: Joi.string().required(),
   providerName:Joi.string().optional(),
   providerResult:Joi.string().optional(),
   resultStatus:Joi.boolean().optional(),
