@@ -25,9 +25,7 @@ import {
   userList,
   countDashboard,
   todayRegisterUsers,
-  updateGameStatus,
-  updateVersionSetting,
-  listVersionSetting,
+  updateGameStatus
 } from "./admin.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
@@ -44,8 +42,6 @@ import {
   updateEmployeeInformitionSchema,
   commonSchema,
   updateGameStatusSchema,
-  updateVersionSettingSchema,
-  listVersionSettingSchema,
 } from "./adminLogin.schema.js";
 
 // Get current directory in ES module
@@ -207,21 +203,21 @@ adminDetailsRouters.put(
   updateGameStatus
 );
 
-adminDetailsRouters.put(
-  "/updateVersionSetting",
-  upload.single('apk'),
-  verifyToken,
-  verifyRoles(roleList.ADMIN),
-  // validator(updateVersionSettingSchema, ValidationSource.BODY),
-  updateVersionSetting
-);
+// adminDetailsRouters.put(
+//   "/updateVersionSetting",
+//   upload.single('apk'),
+//   verifyToken,
+//   verifyRoles(roleList.ADMIN),
+//   // validator(updateVersionSettingSchema, ValidationSource.BODY),
+//   updateVersionSetting
+// );
 
-adminDetailsRouters.get(
-  "/listVersionSetting",
-  verifyToken,
-  verifyRoles(roleList.ADMIN),
-  validator(listVersionSettingSchema, ValidationSource.QUERY),
-  listVersionSetting
-);
+// adminDetailsRouters.get(
+//   "/listVersionSetting",
+//   verifyToken,
+//   verifyRoles(roleList.ADMIN),
+//   validator(listVersionSettingSchema, ValidationSource.QUERY),
+//   listVersionSetting
+// );
 
 export { adminDetailsRouters };
