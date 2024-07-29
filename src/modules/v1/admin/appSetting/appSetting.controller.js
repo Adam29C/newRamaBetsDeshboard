@@ -6,7 +6,7 @@ import Admin from '../../../../models/admin.js';
 import System from '../../../../models/system.js';
 import { createToken } from '../../../../helpers/token.js';
 
-import {Users} from "../../../../models/users.js"
+import { Users } from "../../../../models/users.js"
 import { GameProvider } from '../../../../models/gameProvider.js';
 import { VersionSetting } from '../../../../models/versionSetting.js';
 import moment from 'moment';
@@ -14,87 +14,100 @@ import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const updateVersionSetting = async (req, res) => {
-    try {
+  try {
       const { adminId, type, versionId, status, appVer } = req.body;
       const file = req.file;
-  
+
       // Fetch Admin ID to check if it exists
       const details = await findOne("Admin", { _id: adminId });
       if (!details) {
-        return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+          return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
       }
-  
+
       const versionInfo = await findOne("VersionSetting", { _id: versionId });
       if (!versionInfo) {
-        return BadRequestResponse(res, HTTP_MESSAGE.VERSION_SETTING_NOT_FOUND);
+          return BadRequestResponse(res, HTTP_MESSAGE.VERSION_SETTING_NOT_FOUND);
       }
-  
+
       let query = {};
-  
+
       switch (type) {
-        case '1':
-          query = { forceUpdate: status };
-          if (file && file.originalname) {
-            query['apkFileName'] = file.originalname;
-          }
-          break;
-        case '2':
-          query = { maintainence: status };
-          if (file && file.originalname) {
-            query['apkFileName'] = file.originalname;
-          }
-          break;
-        case '3':
-          query = { appVersion: appVer };
-          if (file && file.filename) {
-            query['apkFileName'] = file.filename;
-          }
-          break;
-        default:
-          return BadRequestResponse(res, "Invalid type");
+          case '1':
+              query = { forceUpdate: status };
+              if (file && file.originalname) {
+                  query['apkFileName'] = file.originalname;
+              }
+              break;
+          case '2':
+              query = { maintainence: status };
+              if (file && file.originalname) {
+                  query['apkFileName'] = file.originalname;
+              }
+              break;
+          case '3':
+              query = { appVersion: appVer };
+              if (file && file.filename) {
+                  query['apkFileName'] = file.filename;
+              }
+              break;
+          default:
+              return BadRequestResponse(res, "Invalid type");
       }
-  
+
       if (file && file.filename) {
-        const filePath = path.join(__dirname, '../../../../../../public/tempDirectory/', file.filename);
-        const destinationDir = path.join(__dirname, '../../../../../../public/apk/');
-        
-        await fs.mkdir(destinationDir, { recursive: true });
-        const files = await fs.readdir(destinationDir);
-        for (const existingFile of files) {
-          await fs.unlink(path.join(destinationDir, existingFile));
-        }
-        const destinationPath = path.join(destinationDir, file.filename);
-        await fs.rename(filePath, destinationPath);
+          const filePath = path.join(__dirname, '../../../../public/tempDirectory', file.filename);
+          const destinationDir = path.join(__dirname, '../../../../public/apk');
+          
+          console.log("File Path: ", filePath);
+          console.log("Destination Directory: ", destinationDir);
+
+          // Ensure the destination directory exists
+          await fs.mkdir(destinationDir, { recursive: true });
+
+          // Clear existing files in the destination directory
+          const files = await fs.readdir(destinationDir);
+          for (const existingFile of files) {
+              console.log("Deleting existing file: ", existingFile);
+              await fs.unlink(path.join(destinationDir, existingFile));
+          }
+
+          // Move the file to the destination directory
+          const destinationPath = path.join(destinationDir, file.filename);
+          console.log("Destination Path: ", destinationPath);
+          await fs.rename(filePath, destinationPath);
+          console.log("File moved successfully");
       }
-  
-      let a=await update("VersionSetting", { _id: versionId }, { $set: query });
+
+      await update("VersionSetting", { _id: versionId }, { $set: query });
       return SuccessResponse(res, HTTP_MESSAGE.VERSION_SETTING_UPDATE);
-  
-    } catch (err) {
-      console.log(err.message)
+
+  } catch (err) {
+      console.error("Error: ", err);
       return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-    }
-  };
-  
-  const listVersionSetting = async(req,res)=>{
-    try{
-      let{adminId}=req.query;
-  
+  }
+};
+
+const listVersionSetting = async (req, res) => {
+  try {
+      let { adminId } = req.query;
+
       //check if admin is exist
-      const adminDetails = await findOne("Admin",{_id:adminId});
-      if(!adminDetails) return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND);
-       
+      const adminDetails = await findOne("Admin", { _id: adminId });
+      if (!adminDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
       //get the all version list from the version setting table
-      const list = await findAll("VersionSetting",{});
-      return SuccessResponse(res,HTTP_MESSAGE.ALL_VERSION_SETTING_LIST,list)
-      
-    }catch(err){
+      const list = await findAll("VersionSetting", {});
+      return SuccessResponse(res, HTTP_MESSAGE.ALL_VERSION_SETTING_LIST, list);
+
+  } catch (err) {
       return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-    }
-  };
+  }
+};
 
+export { updateVersionSetting, listVersionSetting };
 
-  export { updateVersionSetting, listVersionSetting }; 
+ 

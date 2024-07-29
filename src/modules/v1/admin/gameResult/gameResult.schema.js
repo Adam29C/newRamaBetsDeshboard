@@ -5,7 +5,8 @@ export const addGameResultSchema = Joi.object({
   adminId:Joi.string().required(),
   providerId:Joi.string().required(),
   resultDate: Joi.string().required(),
-  winningDigit:Joi.number().required()
+  winningDigit:Joi.number().required(),
+  gameType:Joi.string().optional()
 });
 
 export const getGameResultSchema = Joi.object({
