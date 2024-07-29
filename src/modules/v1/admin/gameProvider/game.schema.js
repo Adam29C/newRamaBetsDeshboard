@@ -1,7 +1,7 @@
 import Joi from "joi";
 
 export const gameSchema = Joi.object({
-  // game:Joi.string().required(),
+  gameType:Joi.string().required(),
   adminId:Joi.string().required(),
   providerName: Joi.string().required(),
   providerResult:Joi.string().required(),
