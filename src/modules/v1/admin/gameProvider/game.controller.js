@@ -69,7 +69,7 @@ const updateGameProvider = async (req, res) => {
     };
   
     //Return the responce 
-    const responce = await update("GameProvider", { _id: gameProviderId }, option, "findOneAndUpdate", option);
+    const responce = await update("GameProvider", { _id: providerId }, option, "findOneAndUpdate", option);
     return SuccessResponse(res, HTTP_MESSAGE.GAME_PROVIDER_UPDATE, { details: responce })
 
   } catch (err) {
