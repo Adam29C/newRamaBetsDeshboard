@@ -21,10 +21,6 @@ const __dirname = dirname(__filename);
 
 const appSettingRouters = express.Router();
 
-// Ensure body parsers are used before multer
-appSettingRouters.use(express.json());
-appSettingRouters.use(express.urlencoded({ extended: true }));
-
 const storage = multer.diskStorage({
     destination: async function (req, file, cb) {
         const tempDir = path.join(__dirname, '../../../../public/tempDirectory/');
@@ -34,7 +30,7 @@ const storage = multer.diskStorage({
     filename: function (req, file, cb) {
         const originalname = file.originalname;
         const ext = path.extname(originalname);
-        console.log(req.body.appVer, "hhhhhhhhhh");
+        console.log(req.body)
         const filename = `Ramabets-V${req.body.appVer}${ext}`;
         cb(null, filename);
     }
