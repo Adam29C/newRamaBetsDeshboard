@@ -107,7 +107,7 @@ const deleteGameProvider = async (req, res) => {
 // Function for all Provider game 
 const gameProviderList = async (req, res) => {
   try {
-    const {adminId} = req.query;
+    const {adminId,gameType} = req.query;
 
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
@@ -116,7 +116,7 @@ const gameProviderList = async (req, res) => {
     }
 
     //Prepaire the Responce for Game Provider List
-    const responce = await findAll("GameProvider", {});
+    const responce = await findAll("GameProvider", {gameType});
     return SuccessResponse(res, HTTP_MESSAGE.GAME_PROVIDER_DELETED, { details: responce });
 
   } catch (err) {
