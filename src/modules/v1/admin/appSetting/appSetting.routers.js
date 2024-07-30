@@ -30,7 +30,8 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const originalname = file.originalname;
     const ext = path.extname(originalname);
-    const filename = `Ramabets-V${req.body.appVer}${ext}`;
+    const filename = `Ramabets-V1${ext}`;
+    // const filename = `Ramabets-V${req.body.appVer}${ext}`;
     cb(null, filename);
   }
 });
