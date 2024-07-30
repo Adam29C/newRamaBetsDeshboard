@@ -17,79 +17,77 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+
 const updateVersionSetting = async (req, res) => {
-  try {
-      const { adminId, type, versionId, status, appVer } = req.body;
-      const file = req.file;
+    try {
+        const { adminId, type, versionId, status, appVer } = req.body;
+        const file = req.file;
+        console.log("Uploaded file details:", file);
 
-      // Fetch Admin ID to check if it exists
-      const details = await findOne("Admin", { _id: adminId });
-      if (!details) {
-          return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-      }
+        // Fetch Admin ID to check if it exists
+        const details = await findOne("Admin", { _id: adminId });
+        if (!details) {
+            return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+        }
 
-      const versionInfo = await findOne("VersionSetting", { _id: versionId });
-      if (!versionInfo) {
-          return BadRequestResponse(res, HTTP_MESSAGE.VERSION_SETTING_NOT_FOUND);
-      }
+        const versionInfo = await findOne("VersionSetting", { _id: versionId });
+        if (!versionInfo) {
+            return BadRequestResponse(res, HTTP_MESSAGE.VERSION_SETTING_NOT_FOUND);
+        }
 
-      let query = {};
+        let query = {};
 
-      switch (type) {
-          case '1':
-              query = { forceUpdate: status };
-              if (file && file.originalname) {
-                  query['apkFileName'] = file.originalname;
-              }
-              break;
-          case '2':
-              query = { maintainence: status };
-              if (file && file.originalname) {
-                  query['apkFileName'] = file.originalname;
-              }
-              break;
-          case '3':
-              query = { appVersion: appVer };
-              if (file && file.filename) {
-                  query['apkFileName'] = file.filename;
-              }
-              break;
-          default:
-              return BadRequestResponse(res, "Invalid type");
-      }
+        switch (type) {
+            case '1':
+                query = { forceUpdate: status };
+                break;
+            case '2':
+                query = { maintainence: status };
+                break;
+            case '3':
+                query = { appVersion: appVer };
+                if (file && file.filename) {
+                    query['apkFileName'] = file.filename;
+                }
+                break;
+            default:
+                return BadRequestResponse(res, "Invalid type");
+        }
 
-      if (file && file.filename) {
-          const filePath = path.join(__dirname, '../../../../public/tempDirectory', file.filename);
-          const destinationDir = path.join(__dirname, '../../../../public/apk');
-          
-          console.log("File Path: ", filePath);
-          console.log("Destination Directory: ", destinationDir);
+        if (type === '3' && file && file.filename) {
+            const filePath = path.join(__dirname, '../../../../public/tempDirectory', file.filename);
+            const destinationDir = path.join(__dirname, '../../../../public/apk');
+            
+            console.log("File Path: ", filePath);
+            console.log("Destination Directory: ", destinationDir);
 
-          // Ensure the destination directory exists
-          await fs.mkdir(destinationDir, { recursive: true });
+            // Ensure the destination directory exists
+            await fs.mkdir(destinationDir, { recursive: true });
 
-          // Clear existing files in the destination directory
-          const files = await fs.readdir(destinationDir);
-          for (const existingFile of files) {
-              console.log("Deleting existing file: ", existingFile);
-              await fs.unlink(path.join(destinationDir, existingFile));
-          }
+            // Clear existing files in the destination directory
+            const files = await fs.readdir(destinationDir);
+            for (const existingFile of files) {
+                console.log("Deleting existing file: ", existingFile);
+                await fs.unlink(path.join(destinationDir, existingFile));
+            }
 
-          // Move the file to the destination directory
-          const destinationPath = path.join(destinationDir, file.filename);
-          console.log("Destination Path: ", destinationPath);
-          await fs.rename(filePath, destinationPath);
-          console.log("File moved successfully");
-      }
+            // Move the file to the destination directory
+            const destinationPath = path.join(destinationDir, file.filename);
+            console.log("Destination Path: ", destinationPath);
+            await fs.rename(filePath, destinationPath);
+            console.log("File moved successfully");
+        }
 
-      await update("VersionSetting", { _id: versionId }, { $set: query });
-      return SuccessResponse(res, HTTP_MESSAGE.VERSION_SETTING_UPDATE);
+        await update("VersionSetting", { _id: versionId }, { $set: query });
+        return SuccessResponse(res, HTTP_MESSAGE.VERSION_SETTING_UPDATE);
 
-  } catch (err) {
-      console.error("Error: ", err);
-      return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-  }
+    } catch (err) {
+        console.error("Error: ", err);
+        return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    }
 };
+
 
 const listVersionSetting = async (req, res) => {
   try {
