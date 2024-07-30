@@ -9,7 +9,6 @@ const gamesSchema = new mongoose.Schema({
   },
   providerName: {
     type: String,
-    unique: true,
   },
   providerResult: {
     type: String,
