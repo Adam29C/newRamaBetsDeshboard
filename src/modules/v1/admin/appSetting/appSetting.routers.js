@@ -30,8 +30,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const originalname = file.originalname;
     const ext = path.extname(originalname);
-    const filename = `Ramabets-V1${ext}`;
-    // const filename = `Ramabets-V${req.body.appVer}${ext}`;
+    const filename = `Ramabets-V${req.body.appVer}${ext}`;
     cb(null, filename);
   }
 });
@@ -40,8 +39,12 @@ const upload = multer({ storage: storage });
 
 const appSettingRouters = express.Router();
 
+// Ensure body parsers are used before multer
+appSettingRouters.use(express.json());
+appSettingRouters.use(express.urlencoded({ extended: true }));
+
 appSettingRouters.put(
-  "/updateVersionSetting",
+  '/updateVersionSetting',
   upload.single('apk'),
   verifyToken,
   verifyRoles(roleList.ADMIN),
@@ -50,12 +53,11 @@ appSettingRouters.put(
 );
 
 appSettingRouters.get(
-  "/listVersionSetting",
+  '/listVersionSetting',
   verifyToken,
   verifyRoles(roleList.ADMIN),
   validator(listVersionSettingSchema, ValidationSource.QUERY),
   listVersionSetting
 );
 
-
-export { appSettingRouters }; 
+export { appSettingRouters };
