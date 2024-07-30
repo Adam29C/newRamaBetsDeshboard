@@ -96,4 +96,3 @@ const listVersionSetting = async (req, res) => {
 };
 
 export { updateVersionSetting, listVersionSetting };
-
