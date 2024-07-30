@@ -23,7 +23,7 @@ const systemInformition = getMulterStorage("uploads/systemInfo");
 
 const storage = multer.diskStorage({
   destination: async function (req, file, cb) {
-    const tempDir = path.join(__dirname, '../../../../../../public/tempDirectory/');
+    const tempDir = path.join(__dirname, '../../../../public/tempDirectory/');
     await fs.mkdir(tempDir, { recursive: true }); // Ensure directory exists
     cb(null, tempDir); // Temporary storage directory
   },
