@@ -96,6 +96,23 @@ const listVersionSetting = async (req, res) => {
     }
 };
 
+const walledContestList = async (req, res) => { 
+    try {
+        let { adminId } = req.query;
+
+        //check if admin is exist
+        const adminDetails = await findOne("Admin", { _id: adminId });
+        if (!adminDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+        //get the all version list from the version setting table
+        const list = await findAll("WalletContact", {});
+        return SuccessResponse(res, HTTP_MESSAGE.ALL_VERSION_SETTING_LIST, list);
+
+    } catch (err) {
+        return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    }
+};
+
 const updateWalledContest = async (req, res) => {
     try {
         const { adminId, walledId,number ,headline ,upiId  } = req.body;
@@ -122,4 +139,4 @@ const updateWalledContest = async (req, res) => {
 };
 
 
-export { updateVersionSetting, listVersionSetting, updateWalledContest };
+export { updateVersionSetting, listVersionSetting, updateWalledContest, walledContestList };

@@ -11,7 +11,7 @@ import {
   validator,
 } from "../../../../middlewares/validator.js";
 import { verifyToken } from "../../../../helpers/token.js";
-import { listVersionSetting, updateVersionSetting, updateWalledContest } from "./appSetting.controller.js";
+import { listVersionSetting, updateVersionSetting, updateWalledContest, walledContestList } from "./appSetting.controller.js";
 import getMulterStorage from "../../../../helpers/fileUpload.js";
 import { listVersionSettingSchema, updateWalledContestSchema } from "./appSetting.schema.js";
 
@@ -60,5 +60,13 @@ appSettingRouters.put(
     verifyRoles(roleList.ADMIN),
     validator(updateWalledContestSchema, ValidationSource.BODY),
     updateWalledContest
+);
+
+appSettingRouters.get(
+    '/walledContestList',
+    verifyToken,
+    verifyRoles(roleList.ADMIN),
+    validator(listVersionSettingSchema, ValidationSource.QUERY),
+    walledContestList
 );
 export { appSettingRouters };
