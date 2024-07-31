@@ -11,9 +11,9 @@ import {
   validator,
 } from "../../../../middlewares/validator.js";
 import { verifyToken } from "../../../../helpers/token.js";
-import { listVersionSetting, updateVersionSetting, updateWalledContest, walledContestList } from "./appSetting.controller.js";
+import { listVersionSetting, noticeBoardList, updateNoticeBoard, updateVersionSetting, updateWalledContest, walledContestList } from "./appSetting.controller.js";
 import getMulterStorage from "../../../../helpers/fileUpload.js";
-import { listVersionSettingSchema, updateWalledContestSchema } from "./appSetting.schema.js";
+import { listVersionSettingSchema, updateNoticeBoardSchema, updateWalledContestSchema } from "./appSetting.schema.js";
 
 // Get current directory in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -67,5 +67,21 @@ appSettingRouters.get(
     verifyRoles(roleList.ADMIN),
     validator(listVersionSettingSchema, ValidationSource.QUERY),
     walledContestList
+);
+
+appSettingRouters.put(
+    '/updateNoticeBoard',
+    verifyToken,
+    verifyRoles(roleList.ADMIN),
+    validator(updateNoticeBoardSchema, ValidationSource.BODY),
+    updateNoticeBoard
+);
+
+appSettingRouters.get(
+    '/noticeBoardList',
+    verifyToken,
+    verifyRoles(roleList.ADMIN),
+    validator(listVersionSettingSchema, ValidationSource.QUERY),
+    noticeBoardList
 );
 export { appSettingRouters };
