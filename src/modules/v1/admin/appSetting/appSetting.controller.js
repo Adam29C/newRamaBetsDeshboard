@@ -9,6 +9,7 @@ import { createToken } from '../../../../helpers/token.js';
 import { Users } from "../../../../models/users.js"
 import { GameProvider } from '../../../../models/gameProvider.js';
 import { VersionSetting } from '../../../../models/versionSetting.js';
+import {WalletContact} from "../../../../models/walledContect.js"
 import moment from 'moment';
 import path from 'path';
 import fs from 'fs/promises';
@@ -95,4 +96,30 @@ const listVersionSetting = async (req, res) => {
     }
 };
 
-export { updateVersionSetting, listVersionSetting };
+const updateWalledContest = async (req, res) => {
+    try {
+        const { adminId, walledId,number ,headline ,upiId  } = req.body;
+        // Fetch Admin ID to check if it exists
+        const details = await findOne("Admin", { _id: adminId });
+        if (!details) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+        
+        //Use walledInfo if it is exist
+        const walledInfo = await findOne("WalletContact", { _id: walledId });
+        if (!walledInfo) return BadRequestResponse(res, HTTP_MESSAGE.VERSION_SETTING_NOT_FOUND);
+        
+        //make the query for update
+        let query = {};
+        if(number) query={number}
+        if(headline) query={headline}
+        if(upiId) query ={upiId}
+
+        await update("WalletContact", { _id: walledId }, { $set: query });
+        return SuccessResponse(res, HTTP_MESSAGE.VERSION_SETTING_UPDATE);
+
+    } catch (err) {
+        return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    }
+};
+
+
+export { updateVersionSetting, listVersionSetting, updateWalledContest };

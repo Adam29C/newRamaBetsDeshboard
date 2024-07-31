@@ -11,9 +11,9 @@ import {
   validator,
 } from "../../../../middlewares/validator.js";
 import { verifyToken } from "../../../../helpers/token.js";
-import { listVersionSetting, updateVersionSetting } from "./appSetting.controller.js";
+import { listVersionSetting, updateVersionSetting, updateWalledContest } from "./appSetting.controller.js";
 import getMulterStorage from "../../../../helpers/fileUpload.js";
-import { listVersionSettingSchema } from "./appSetting.schema.js";
+import { listVersionSettingSchema, updateWalledContestSchema } from "./appSetting.schema.js";
 
 // Get current directory in ES module
 const __filename = fileURLToPath(import.meta.url);
@@ -54,4 +54,11 @@ appSettingRouters.get(
     listVersionSetting
 );
 
+appSettingRouters.put(
+    '/updateWalledContest',
+    verifyToken,
+    verifyRoles(roleList.ADMIN),
+    validator(updateWalledContestSchema, ValidationSource.BODY),
+    updateWalledContest
+);
 export { appSettingRouters };
