@@ -12,7 +12,6 @@ import { gameDigit } from '../../../../models/digits.js';
 const addGameResult = async (req, res) => {
   try {
     const { providerId, session, resultDate, winningDigit } = req.body;
-     console.log("1")
     // Check if the provider exists
     const providerDetails = await findOne("GameProvider", { _id: providerId });
     if (!providerDetails) {
@@ -22,26 +21,25 @@ const addGameResult = async (req, res) => {
     const winningDigitinfo = await gameDigit.findOne({
       Digit:winningDigit
     }) 
-    console.log(winningDigitinfo,"hhhhhhhhhhhhhhhhhhh")
   
     if(!winningDigitinfo){
       return BadRequestResponse(res,HTTP_MESSAGE.WINNING_DIGIT_NOT_FOUND)
     }
-    console.log("1")
+
     // Get current time and day
     const currentTime = moment().format("h:mm A");
     const todayDay = moment().format("dddd");
-    console.log("2")
+
     // Query GameSetting for today's session
     const findTime = await GameSetting.findOne(
       { providerId, "gameSatingInfo.gameDay": todayDay },
       { "gameSatingInfo.$": 1 }
     );
-    console.log("3")
+
     if (!findTime || !findTime.gameSatingInfo[0]) {
       return BadRequestResponse(res, HTTP_MESSAGE.PROVIDER_SETTING_NOT_FOUND);
     }
-    console.log("4")
+
     const timeCheck = session === "Close" ? findTime.gameSatingInfo[0].CBRT : findTime.gameSatingInfo[0].OBRT;
 
     // Parse and validate resultDate
@@ -71,7 +69,7 @@ const addGameResult = async (req, res) => {
 
     // Fetch digit family based on winning digit
     const digitFamily = await gameDigit.findOne({ Digit: winningDigit });
-    console.log(digitFamily, "1", digitFamily.DigitFamily); // Note the case correction
+
     if (!digitFamily) {
       return BadRequestResponse(res, HTTP_MESSAGE.DIGIT_FAMILY_NOT_FOUND);
     }
