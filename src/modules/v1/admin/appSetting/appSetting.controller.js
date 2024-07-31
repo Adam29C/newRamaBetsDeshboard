@@ -115,20 +115,21 @@ const walledContestList = async (req, res) => {
 
 const updateWalledContest = async (req, res) => {
     try {
-        const { adminId, walledId,number ,headline ,upiId  } = req.body;
+        const { adminId, walledId, number, headline, upiId } = req.body;
+
         // Fetch Admin ID to check if it exists
         const details = await findOne("Admin", { _id: adminId });
         if (!details) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-        
-        //Use walledInfo if it is exist
+
+        // Use walledInfo if it exists
         const walledInfo = await findOne("WalletContact", { _id: walledId });
         if (!walledInfo) return BadRequestResponse(res, HTTP_MESSAGE.VERSION_SETTING_NOT_FOUND);
-        
-        //make the query for update
+
+        // Make the query for update
         let query = {};
-        if(number) query={number}
-        if(headline) query={headline}
-        if(upiId) query ={upiId}
+        if (number) query.number = number;
+        if (headline) query.headline = headline;
+        if (upiId) query.upiId = upiId;
 
         await update("WalletContact", { _id: walledId }, { $set: query });
         return SuccessResponse(res, HTTP_MESSAGE.VERSION_SETTING_UPDATE);
@@ -137,6 +138,5 @@ const updateWalledContest = async (req, res) => {
         return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
     }
 };
-
 
 export { updateVersionSetting, listVersionSetting, updateWalledContest, walledContestList };
