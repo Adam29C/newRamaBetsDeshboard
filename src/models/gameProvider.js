@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 const gamesSchema = new mongoose.Schema({
   gameType: {
     type: String,
+    enum: ['MainGame', 'StarLine', 'JackPot'],
+    required: true,
   },
   game: {
     type: String,
@@ -29,7 +31,4 @@ const gamesSchema = new mongoose.Schema({
 });
 
 const GameProvider = mongoose.model('GameProvider', gamesSchema);
-export { GameProvider }
-
-
-
+export { GameProvider };
