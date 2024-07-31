@@ -31,7 +31,8 @@ export const updateGameSettingSchema = Joi.object({
 });
 
 export const gameProviderListSchema = Joi.object({
-  adminId:Joi.string().required()
+  adminId:Joi.string().required(),
+  gameType:Joi.string().required()
 });
 
 export const gameProviderIdSchema = Joi.object({

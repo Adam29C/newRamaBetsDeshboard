@@ -217,7 +217,7 @@ const deleteGameSetting = async (req, res) => {
 
 const gameSettingList = async (req, res) => {
   try {
-    const { adminId } = req.query;
+    const { adminId, gameType } = req.query;
 
     // Check if the admin exists
     const adminDetails = await findOne("Admin", { _id: adminId });
@@ -226,7 +226,7 @@ const gameSettingList = async (req, res) => {
     }
 
     // Fetch all game settings
-    let gameSettings = await findAll("GameSetting", {});
+    let gameSettings = await findAll("GameSetting", {gameType});
 
     // Sort gameSettings by gameDay
     gameSettings.forEach(setting => {
