@@ -91,7 +91,7 @@ const deleteGameRate = async (req, res) => {
 // Function for listing all game rates
 const gameRateList = async (req, res) => {
   try {
-    const { adminId } = req.query;
+    const { adminId,gameType } = req.query;
 
     // Check if the admin exists
     const adminDetails = await findOne('Admin', { _id: adminId });
@@ -100,7 +100,7 @@ const gameRateList = async (req, res) => {
     }
 
     // Fetch all game rates
-    const gameRates = await findAll('GameRate', {});
+    const gameRates = await findAll('GameRate', {gameType});
     return SuccessResponse(res, HTTP_MESSAGE.GAME_RATE_LIST, gameRates);
 
   } catch (err) {
