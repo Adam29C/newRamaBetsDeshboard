@@ -20,7 +20,8 @@ export const updateGameReteSchema = Joi.object({
 });
 
 export const gameRateListSchema = Joi.object({
-  adminId:Joi.string().required()
+  adminId:Joi.string().required(),
+  gameType:Joi.string().required(),
 });
 
 export const gameReteByIdSchema = Joi.object({
