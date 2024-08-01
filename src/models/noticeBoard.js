@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const noticeBoardSchema = new mongoose.Schema({
     title1: {
@@ -28,4 +28,5 @@ const noticeBoardSchema = new mongoose.Schema({
         // versionKey : false
     });
 
-module.exports = mongoose.model('NoticeBoard', noticeBoardSchema);
+const NoticeBoard = mongoose.model('NoticeBoard', noticeBoardSchema);
+export { NoticeBoard };

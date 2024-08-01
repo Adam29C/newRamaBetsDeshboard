@@ -66,7 +66,13 @@ export const HTTP_MESSAGE = {
   ALL_DELETE_USER_HISTORY: "All Deleted User History Shown Successfully",
   VERSION_SETTING_NOT_FOUND:"Version Setting Not Found",
   VERSION_SETTING_UPDATE:"Version Setting Update Successfully",
-  ALL_VERSION_SETTING_LIST:"All Version List Show Successfully"
+  ALL_VERSION_SETTING_LIST:"All Version List Show Successfully",
+  WALLED_CONTECT_NOT_FOUND:"Wallet Contact Not Found",
+  WALLED_CONTECT_UPDATE:"Wallet Contect Update Successfully",
+  WALLED_CONTECT_LIST:"Wallecd Contect List Show Successfully",
+  NOTICE_BOARD_NOT_FOUND:"Notice Board Not Found",
+  NOTICE_BOARD_UPDATE:"Notice Board Update Successfully",
+  NOTICE_BOARD_LIST:"Notice Board List Show Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {

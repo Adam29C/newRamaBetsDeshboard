@@ -5,7 +5,7 @@ import { GameRate } from '../../../../models/gameRates.js';
 // Function for adding a game rate
 const addGameRate = async (req, res) => {
   try {
-    const { adminId, gameName, gamePrice } = req.body;
+    const { gameType,adminId, gameName, gamePrice } = req.body;
 
     // Check if the admin exists
     const adminDetails = await findOne('Admin', { _id: adminId });
@@ -15,6 +15,7 @@ const addGameRate = async (req, res) => {
 
     // Prepare game rate details
     const gameRateDetails = {
+      gameType,
       gameName,
       gamePrice
     };
@@ -32,7 +33,7 @@ const addGameRate = async (req, res) => {
 // Function for updating a game rate
 const updateGameRate = async (req, res) => {
   try {
-    const { adminId, gameRateId, gameName, gamePrice } = req.body;
+    const { gameType,adminId, gameRateId, gameName, gamePrice } = req.body;
 
     // Check if the admin exists
     const adminDetails = await findOne('Admin', { _id: adminId });

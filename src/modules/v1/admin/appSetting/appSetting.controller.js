@@ -10,6 +10,7 @@ import { Users } from "../../../../models/users.js"
 import { GameProvider } from '../../../../models/gameProvider.js';
 import { VersionSetting } from '../../../../models/versionSetting.js';
 import {WalletContact} from "../../../../models/walledContect.js"
+import {NoticeBoard} from "../../../../models/noticeBoard.js"
 import moment from 'moment';
 import path from 'path';
 import fs from 'fs/promises';
@@ -106,7 +107,7 @@ const walledContestList = async (req, res) => {
 
         //get the all version list from the version setting table
         const list = await findAll("WalletContact", {});
-        return SuccessResponse(res, HTTP_MESSAGE.ALL_VERSION_SETTING_LIST, list);
+        return SuccessResponse(res, HTTP_MESSAGE.WALLED_CONTECT_LIST, list);
 
     } catch (err) {
         return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -123,7 +124,7 @@ const updateWalledContest = async (req, res) => {
 
         // Use walledInfo if it exists
         const walledInfo = await findOne("WalletContact", { _id: walledId });
-        if (!walledInfo) return BadRequestResponse(res, HTTP_MESSAGE.VERSION_SETTING_NOT_FOUND);
+        if (!walledInfo) return BadRequestResponse(res, HTTP_MESSAGE.WALLED_CONTECT_NOT_FOUND);
 
         // Make the query for update
         let query = {};
@@ -132,11 +133,57 @@ const updateWalledContest = async (req, res) => {
         if (upiId) query.upiId = upiId;
 
         await update("WalletContact", { _id: walledId }, { $set: query });
-        return SuccessResponse(res, HTTP_MESSAGE.VERSION_SETTING_UPDATE);
+        return SuccessResponse(res, HTTP_MESSAGE.WALLED_CONTECT_UPDATE);
 
     } catch (err) {
         return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
     }
 };
 
-export { updateVersionSetting, listVersionSetting, updateWalledContest, walledContestList };
+const updateNoticeBoard = async (req, res) => {
+    try {
+        const { adminId, noticeId, title1, title2, title3, description1,description2,description3,contect  } = req.body;
+
+        // Fetch Admin ID to check if it exists
+        const details = await findOne("Admin", { _id: adminId });
+        if (!details) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+        // Use noticeInfo if it exists
+        const noticeInfo = await findOne("NoticeBoard", { _id: noticeId });
+        if (!noticeInfo) return BadRequestResponse(res, HTTP_MESSAGE.NOTICE_BOARD_NOT_FOUND);
+
+        // Make the query for update
+        let query = {};
+        if (title1) query.title1 = title1;
+        if (title2) query.title2 = title2;
+        if (title3) query.title3 = title3;
+        if (description1) query.description1 = description1;
+        if (description2) query.description2 = description2;
+        if (description3) query.description3 = description3;
+        if (contect) query.contect = contect;
+        await update("NoticeBoard", { _id: noticeId }, { $set: query });
+        return SuccessResponse(res, HTTP_MESSAGE.NOTICE_BOARD_UPDATE);
+
+    } catch (err) {
+        return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    }
+};
+
+const noticeBoardList = async (req, res) => { 
+    try {
+        let { adminId } = req.query;
+
+        //check if admin is exist
+        const adminDetails = await findOne("Admin", { _id: adminId });
+        if (!adminDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+        //get the all version list from the version setting table
+        const list = await findAll("NoticeBoard", {});
+        return SuccessResponse(res, HTTP_MESSAGE.NOTICE_BOARD_LIST, list);
+
+    } catch (err) {
+        return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    }
+};
+
+export { updateVersionSetting, listVersionSetting, updateWalledContest, walledContestList, updateNoticeBoard, noticeBoardList };

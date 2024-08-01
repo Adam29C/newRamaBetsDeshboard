@@ -1,6 +1,7 @@
 import Joi from "joi";
 
 export const addGameReteSchema = Joi.object({
+  gameType:Joi.string().required(),
   adminId:Joi.string().required(),
   gameName: Joi.string().required(),
   gamePrice:Joi.number().required()
