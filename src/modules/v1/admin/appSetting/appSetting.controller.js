@@ -142,7 +142,7 @@ const updateWalledContest = async (req, res) => {
 
 const updateNoticeBoard = async (req, res) => {
     try {
-        const { adminId, noticeId, title1, title2, title3, description1,description2,description3,contect  } = req.body;
+        const { adminId, noticeId, title1, title2, title3, description1,description2,description3,contact  } = req.body;
 
         // Fetch Admin ID to check if it exists
         const details = await findOne("Admin", { _id: adminId });
@@ -160,7 +160,7 @@ const updateNoticeBoard = async (req, res) => {
         if (description1) query.description1 = description1;
         if (description2) query.description2 = description2;
         if (description3) query.description3 = description3;
-        if (contect) query.contect = contect;
+        if (contact) query.contact = contact;
         await update("NoticeBoard", { _id: noticeId }, { $set: query });
         return SuccessResponse(res, HTTP_MESSAGE.NOTICE_BOARD_UPDATE);
 

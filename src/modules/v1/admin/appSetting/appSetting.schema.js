@@ -21,5 +21,5 @@ export const updateNoticeBoardSchema = Joi.object({
     description1: Joi.string().optional(),
     description2: Joi.string().optional(),
     description3: Joi.string().optional(),
-    contect: Joi.number().optional()
+    contact: Joi.number().optional()
 });
