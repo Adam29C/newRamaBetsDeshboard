@@ -20,7 +20,7 @@ const noticeBoardSchema = new mongoose.Schema({
         type: String,
     },
     contact: {
-        type: String,
+        type: Number,
     },
 },
     {
