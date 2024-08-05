@@ -11,6 +11,7 @@ import { GameProvider } from '../../../../models/gameProvider.js';
 import { VersionSetting } from '../../../../models/versionSetting.js';
 import {WalletContact} from "../../../../models/walledContect.js"
 import {NoticeBoard} from "../../../../models/noticeBoard.js"
+import {WithDrawAppMessage} from "../../../../models/withdrawMessge.js"
 import moment from 'moment';
 import path from 'path';
 import fs from 'fs/promises';
@@ -186,4 +187,47 @@ const noticeBoardList = async (req, res) => {
     }
 };
 
-export { updateVersionSetting, listVersionSetting, updateWalledContest, walledContestList, updateNoticeBoard, noticeBoardList };
+const updateWithdrawMessage = async (req, res) => {
+    try {
+        const { adminId, widhdrawMessageId,textMain,textSecondry,Number,Timing} = req.body;
+        // Fetch Admin ID to check if it exists
+        const details = await findOne("Admin", { _id: adminId });
+        if (!details) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+        // Use noticeInfo if it exists
+        const widhdrawMessageInfo = await findOne("WithDrawAppMessage", { _id: widhdrawMessageId });
+        if (!widhdrawMessageInfo) return BadRequestResponse(res, HTTP_MESSAGE.WITHDRAW_MESSAGE_INFO);
+
+        // Make the query for update
+        let query = {};
+        if (widhdrawMessageId) query.widhdrawMessageId = widhdrawMessageId;
+        if (textMain) query.textMain = textMain;
+        if (textSecondry) query.textSecondry = textSecondry;
+        if (Number) query.Number = Number;
+        if (Timing) query.Timing = Timing;
+
+        await update("WithDrawAppMessage", { _id: widhdrawMessageId }, { $set: query });
+        return SuccessResponse(res, HTTP_MESSAGE.WITHDRAW_MESSAGE_UPDATE);
+
+    } catch (err) {
+        return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    }
+};
+
+const withdrawMessageList = async (req, res) => { 
+    try {
+        let { adminId } = req.query;
+
+        //check if admin is exist
+        const adminDetails = await findOne("Admin", { _id: adminId });
+        if (!adminDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+        //get the all version list from the version setting table
+        const list = await findAll("WithDrawAppMessage", {});
+        return SuccessResponse(res, HTTP_MESSAGE.WITHDRAW_MESSAGE_LIST, list);
+
+    } catch (err) {
+        return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    }
+};
+export { updateVersionSetting, listVersionSetting, updateWalledContest, walledContestList, updateNoticeBoard, noticeBoardList, updateWithdrawMessage, withdrawMessageList };
