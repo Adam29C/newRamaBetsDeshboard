@@ -77,7 +77,9 @@ export const HTTP_MESSAGE = {
   WITHDRAW_MESSAGE_UPDATE:"Withdraw Message Update Successfully",
   WITHDRAW_MESSAGE_LIST:"Withdraw Message List Show Successfully",
   HOW_TO_PLAY_LIST:"How To Play List Show Successfully",
-  HOW_TO_PLAY_INFO:"How To Play Info Not Found"
+  HOW_TO_PLAY_INFO:"How To Play Info Not Found",
+  HOW_TO_PLAY_UPDATE:"How To Play Update Successfully",
+  GIVEN_ID_NOT_FOUND:"Given Id Not Found"
 };
 
 const handleResponse = (res, status, success, message, data) => {
