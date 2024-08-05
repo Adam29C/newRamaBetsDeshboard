@@ -20,6 +20,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+//Update the version setting from the user
 const updateVersionSetting = async (req, res) => {
     try {
         const { adminId, type, versionId, status, appVer } = req.body;
@@ -81,6 +82,7 @@ const updateVersionSetting = async (req, res) => {
     }
 };
 
+//List of version setting
 const listVersionSetting = async (req, res) => {
     try {
         let { adminId } = req.query;
@@ -98,6 +100,7 @@ const listVersionSetting = async (req, res) => {
     }
 };
 
+//Walled contect list
 const walledContestList = async (req, res) => { 
     try {
         let { adminId } = req.query;
@@ -115,6 +118,7 @@ const walledContestList = async (req, res) => {
     }
 };
 
+//Update the Walled contect
 const updateWalledContest = async (req, res) => {
     try {
         const { adminId, walledId, number, headline, upiId } = req.body;
@@ -141,6 +145,7 @@ const updateWalledContest = async (req, res) => {
     }
 };
 
+//update the notice board
 const updateNoticeBoard = async (req, res) => {
     try {
         const { adminId, noticeId, title1, title2, title3, description1,description2,description3,contact  } = req.body;
@@ -170,6 +175,7 @@ const updateNoticeBoard = async (req, res) => {
     }
 };
 
+//all notice board List
 const noticeBoardList = async (req, res) => { 
     try {
         let { adminId } = req.query;
@@ -187,6 +193,7 @@ const noticeBoardList = async (req, res) => {
     }
 };
 
+//Update withdraw message
 const updateWithdrawMessage = async (req, res) => {
     try {
         const { adminId, widhdrawMessageId,textMain,textSecondry,Number,Timing} = req.body;
@@ -214,6 +221,7 @@ const updateWithdrawMessage = async (req, res) => {
     }
 };
 
+//withdreaw message list
 const withdrawMessageList = async (req, res) => { 
     try {
         let { adminId } = req.query;
@@ -230,4 +238,5 @@ const withdrawMessageList = async (req, res) => {
         return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
     }
 };
+
 export { updateVersionSetting, listVersionSetting, updateWalledContest, walledContestList, updateNoticeBoard, noticeBoardList, updateWithdrawMessage, withdrawMessageList };
