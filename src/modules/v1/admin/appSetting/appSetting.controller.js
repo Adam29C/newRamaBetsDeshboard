@@ -12,14 +12,17 @@ import { VersionSetting } from '../../../../models/versionSetting.js';
 import {WalletContact} from "../../../../models/walledContect.js"
 import {NoticeBoard} from "../../../../models/noticeBoard.js"
 import {WithDrawAppMessage} from "../../../../models/withdrawMessge.js"
+import {HowToPlay} from "../../../../models/howToPlay.js"
 import moment from 'moment';
 import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+//Update the version setting from the user
 const updateVersionSetting = async (req, res) => {
     try {
         const { adminId, type, versionId, status, appVer } = req.body;
@@ -81,6 +84,7 @@ const updateVersionSetting = async (req, res) => {
     }
 };
 
+//List of version setting
 const listVersionSetting = async (req, res) => {
     try {
         let { adminId } = req.query;
@@ -98,6 +102,7 @@ const listVersionSetting = async (req, res) => {
     }
 };
 
+//Walled contect list
 const walledContestList = async (req, res) => { 
     try {
         let { adminId } = req.query;
@@ -115,6 +120,7 @@ const walledContestList = async (req, res) => {
     }
 };
 
+//Update the Walled contect
 const updateWalledContest = async (req, res) => {
     try {
         const { adminId, walledId, number, headline, upiId } = req.body;
@@ -141,6 +147,7 @@ const updateWalledContest = async (req, res) => {
     }
 };
 
+//update the notice board
 const updateNoticeBoard = async (req, res) => {
     try {
         const { adminId, noticeId, title1, title2, title3, description1,description2,description3,contact  } = req.body;
@@ -170,6 +177,7 @@ const updateNoticeBoard = async (req, res) => {
     }
 };
 
+//all notice board List
 const noticeBoardList = async (req, res) => { 
     try {
         let { adminId } = req.query;
@@ -187,6 +195,7 @@ const noticeBoardList = async (req, res) => {
     }
 };
 
+//Update withdraw message
 const updateWithdrawMessage = async (req, res) => {
     try {
         const { adminId, widhdrawMessageId,textMain,textSecondry,Number,Timing} = req.body;
@@ -214,6 +223,7 @@ const updateWithdrawMessage = async (req, res) => {
     }
 };
 
+//withdreaw message list
 const withdrawMessageList = async (req, res) => { 
     try {
         let { adminId } = req.query;
@@ -230,4 +240,56 @@ const withdrawMessageList = async (req, res) => {
         return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
     }
 };
-export { updateVersionSetting, listVersionSetting, updateWalledContest, walledContestList, updateNoticeBoard, noticeBoardList, updateWithdrawMessage, withdrawMessageList };
+
+//withdreaw message list
+const htpList = async (req, res) => { 
+    try {
+        let { adminId } = req.query;
+
+        //check if admin is exist
+        const adminDetails = await findOne("Admin", { _id: adminId });
+        if (!adminDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+        //get the all version list from the version setting table
+        const list = await findAll("HowToPlay", {});
+        return SuccessResponse(res, HTTP_MESSAGE.HOW_TO_PLAY_LIST, list);
+
+    } catch (err) {
+        return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    }
+};
+
+const updateHTP = async (req, res) => {
+    try {
+        const { adminId, htpId, title, description,videoUrl } = req.body;
+
+        // Fetch Admin ID to check if it exists
+        const adminDetails = await findOne("Admin", { _id: adminId });
+        if (!adminDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+        // Fetch HowToPlay document to check if it exists
+        const htpInfo = await HowToPlay.findById(htpId);
+        console.log(htpInfo,"htpInfo")
+        if (!htpInfo) return BadRequestResponse(res, HTTP_MESSAGE.HOW_TO_PLAY_INFO);
+
+        // Make the update query for the nested howtoplay array
+        let updateQuery = {};
+        if (title) updateQuery['howtoplay.$.title'] = title;
+        if (description) updateQuery['howtoplay.$.description'] = description;
+        if (videoUrl) updateQuery['howtoplay.$.videoUrl'] = videoUrl;
+
+        // Perform the update operation
+        await HowToPlay.updateOne(
+            { _id: htpId, 'howtoplay._id': req.body.itemId }, // assuming req.body.itemId contains the ID of the nested item to update
+            { $set: updateQuery }
+        );
+
+        return SuccessResponse(res, HTTP_MESSAGE.HOW_TO_PLAY_UPDATE);
+
+    } catch (err) {
+        console.log(err,"hhhhh")
+        return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    }
+};
+
+export { updateVersionSetting, listVersionSetting, updateWalledContest, walledContestList, updateNoticeBoard, noticeBoardList, updateWithdrawMessage, withdrawMessageList,htpList,updateHTP };

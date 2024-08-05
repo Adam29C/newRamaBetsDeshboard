@@ -11,7 +11,7 @@ import {
   validator,
 } from "../../../../middlewares/validator.js";
 import { verifyToken } from "../../../../helpers/token.js";
-import { listVersionSetting, noticeBoardList, updateNoticeBoard, updateVersionSetting, updateWalledContest, updateWithdrawMessage, walledContestList, withdrawMessageList, } from "./appSetting.controller.js";
+import { htpList, listVersionSetting, noticeBoardList, updateHTP, updateNoticeBoard, updateVersionSetting, updateWalledContest, updateWithdrawMessage, walledContestList, withdrawMessageList, } from "./appSetting.controller.js";
 import getMulterStorage from "../../../../helpers/fileUpload.js";
 import { listVersionSettingSchema, updateNoticeBoardSchema, updateWalledContestSchema } from "./appSetting.schema.js";
 
@@ -101,4 +101,18 @@ appSettingRouters.get(
     withdrawMessageList
 );
 
+appSettingRouters.get(
+    '/htpList',
+    verifyToken,
+    verifyRoles(roleList.ADMIN),
+    // validator(listVersionSettingSchema, ValidationSource.QUERY),
+    htpList
+);
+
+appSettingRouters.put(
+    '/updateHtp',
+    verifyToken,
+    verifyRoles(roleList.ADMIN),
+    updateHTP
+);
 export { appSettingRouters };

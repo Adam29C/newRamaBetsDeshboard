@@ -75,7 +75,9 @@ export const HTTP_MESSAGE = {
   NOTICE_BOARD_LIST:"Notice Board List Show Successfully",
   WITHDRAW_MESSAGE_INFO:"Widhdraw Message Informition Not Found",
   WITHDRAW_MESSAGE_UPDATE:"Withdraw Message Update Successfully",
-  WITHDRAW_MESSAGE_LIST:"Withdraw Message List Show Successfully"
+  WITHDRAW_MESSAGE_LIST:"Withdraw Message List Show Successfully",
+  HOW_TO_PLAY_LIST:"How To Play List Show Successfully",
+  HOW_TO_PLAY_INFO:"How To Play Info Not Found"
 };
 
 const handleResponse = (res, status, success, message, data) => {
