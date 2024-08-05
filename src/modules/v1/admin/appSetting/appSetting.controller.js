@@ -299,7 +299,6 @@ const updateHTP = async (req, res) => {
         return SuccessResponse(res, HTTP_MESSAGE.HOW_TO_PLAY_UPDATE);
 
     } catch (err) {
-        console.log(err, "Error");
         return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
     }
 };
