@@ -72,7 +72,10 @@ export const HTTP_MESSAGE = {
   WALLED_CONTECT_LIST:"Wallecd Contect List Show Successfully",
   NOTICE_BOARD_NOT_FOUND:"Notice Board Not Found",
   NOTICE_BOARD_UPDATE:"Notice Board Update Successfully",
-  NOTICE_BOARD_LIST:"Notice Board List Show Successfully"
+  NOTICE_BOARD_LIST:"Notice Board List Show Successfully",
+  WITHDRAW_MESSAGE_INFO:"Widhdraw Message Informition Not Found",
+  WITHDRAW_MESSAGE_UPDATE:"Withdraw Message Update Successfully",
+  WITHDRAW_MESSAGE_LIST:"Withdraw Message List Show Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {
