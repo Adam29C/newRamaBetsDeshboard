@@ -79,7 +79,13 @@ export const HTTP_MESSAGE = {
   HOW_TO_PLAY_LIST:"How To Play List Show Successfully",
   HOW_TO_PLAY_INFO:"How To Play Info Not Found",
   HOW_TO_PLAY_UPDATE:"How To Play Update Successfully",
-  GIVEN_ID_NOT_FOUND:"Given Id Not Found"
+  GIVEN_ID_NOT_FOUND:"Given Id Not Found",
+  UPI_LIST_SHOW_SUCCESSFULLY:"Upi List Show Successfully",
+  UPI_ADDED_SUCCESSFULLY:"Upi Added Successfully",
+  UPI_ID_NOT_FOUND:"Upi Id Not Found",
+  UPI_STATUS_UPDATE_SUCCESSFULLY:"Upi Status Update Successfully",
+  UPI_ID_DELETE_SUCCESSFULLY:"Upi Id Deleted Successfully",
+  UPI_ID_AlREADY_ACTIVE:"Upi Id Already Active"
 };
 
 const handleResponse = (res, status, success, message, data) => {
