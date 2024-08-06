@@ -85,7 +85,7 @@ export const HTTP_MESSAGE = {
   UPI_ID_NOT_FOUND:"Upi Id Not Found",
   UPI_STATUS_UPDATE_SUCCESSFULLY:"Upi Status Update Successfully",
   UPI_ID_DELETE_SUCCESSFULLY:"Upi Id Deleted Successfully",
-  UPI_ID_AlREADY_ACTIVE:"Upi Id Already Active"
+  UPI_ID_AlREADY_ACTIVE:"UPI Is Already Active. Please Deactivate It First And Then Try Again"
 };
 
 const handleResponse = (res, status, success, message, data) => {
