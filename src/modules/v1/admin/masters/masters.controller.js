@@ -44,15 +44,23 @@ const updateUpiStatus = async (req, res) => {
 
         const upiDetails = await findOne("UpiList", { _id: upiId });
         if (!upiDetails) return BadRequestResponse(res, HTTP_MESSAGE.UPI_ID_NOT_FOUND);
+        let updateObj;
 
-        const activeAllRedyExist = await findAll("UpiList", { status: "true" });
-        if (activeAllRedyExist.length > 0) {
-            return BadRequestResponse(res, HTTP_MESSAGE.UPI_ID_AlREADY_ACTIVE);
+        if (status=="true"){
+            const activeAllRedyExist = await findAll("UpiList", { status: "true" });
+            if (activeAllRedyExist.length > 0) {
+                return BadRequestResponse(res, HTTP_MESSAGE.UPI_ID_AlREADY_ACTIVE);
+            }
+    
+                updateObj = {
+                status: status,
+            };
+        }else{
+            updateObj = {
+                status: status,
+            };
         }
 
-        const updateObj = {
-            status: status,
-        };
 
         await update("UpiList", { _id: upiId }, updateObj)
         return SuccessResponse(res, HTTP_MESSAGE.UPI_STATUS_UPDATE_SUCCESSFULLY)
