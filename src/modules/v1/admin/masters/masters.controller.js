@@ -6,7 +6,7 @@ import { UpiList } from "../../../../models/upiList.js";
 
 const upiList = async (req, res) => {
     try {
-        const { adminId, } = req.body;
+        const { adminId, } = req.query;
         const adminDetails = await findOne("Admin", { _id: adminId });
         if (!adminDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
 
