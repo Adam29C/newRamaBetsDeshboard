@@ -13,4 +13,5 @@ adminRouter.use("/game",gameRateRouters);
 adminRouter.use("/game",gameResultRouters);
 adminRouter.use("/appSetting",appSettingRouters)
 adminRouter.use("/master",mastersRouters)
+adminRouter.use("/wallet",walletRouters)
 export { adminRouter };
