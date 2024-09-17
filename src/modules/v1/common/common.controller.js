@@ -8,16 +8,28 @@ import {
 } from "./../../../helpers/http.js";
 import { JWT_EXPIRES_IN, JWT_SECRET } from "./../../../config/env.config.js";
 import Admin from "../../../models/admin.js";
+import { Users } from "../../../models/users.js";
 import mongoose from "mongoose";
 import { createToken } from "../../../helpers/token.js";
 import System from '../../../models/system.js';
 
 const generateAuthToken = async (req, res) => {
   try {
-    const { id, deviceId } = req.body;
+    const { id, deviceId,mpin,firebaseToken } = req.body;
     let query;
     let details;
     let roles = "USER"; // Default role if not found
+    if(deviceId && mpin && firebaseToken){
+      details = await findOne("Users", { deviceId,mpin });
+      if (!details) {
+        return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+      }
+      query = { id: details._id };
+      let id=details._id
+      const token = await createToken(id, deviceId, roles,firebaseToken, query);
+      return SuccessResponse(res, HTTP_MESSAGE.TOKEN_CREATED, { token });
+        
+    }
     if (id) {
       // Check if ID exists in admin or users collections
       details = await findOne("Admin", { _id: id }) || await findOne("users", { _id: id });

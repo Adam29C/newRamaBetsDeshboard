@@ -24,6 +24,7 @@ export const HTTP_MESSAGE = {
   UPDATE_SYSINFO:"System Informition Updated Successfully",
   DELETE_EMPLOYEE:"Employee Delete Successfully",
   USER_NOT_FOUND:"Admin Or SubAdmin Are Not Found",
+  USER_NOT_FND:"User Not Found",
   EMPLOYEE_NOT_FOUND:"Employee Not Found",
   EMP_UPDATE:"Employee Informition Update successfully",
   GET_PERMISSION:"Get All Permissions",
@@ -85,7 +86,23 @@ export const HTTP_MESSAGE = {
   UPI_ID_NOT_FOUND:"Upi Id Not Found",
   UPI_STATUS_UPDATE_SUCCESSFULLY:"Upi Status Update Successfully",
   UPI_ID_DELETE_SUCCESSFULLY:"Upi Id Deleted Successfully",
-  UPI_ID_AlREADY_ACTIVE:"UPI Is Already Active. Please Deactivate It First And Then Try Again"
+  UPI_ID_AlREADY_ACTIVE:"UPI Is Already Active. Please Deactivate It First And Then Try Again",
+  OTP_SEND:"Otp Send Successfully",
+  USER_EXIST:"This Mobile Number Is Allready Exist",
+  OTP_VARIFIED:"Otp VeriFy Successfully",
+  PLEASE_ENTER_VALID_OTP:"Please Enter Valid Otp",
+  PLEASE_VERIFY_ACCOUNT:"Please Varify Account",
+  USER_REGISTER:"User Register Successfully",
+  MPIN_SET_SUCCESSFULLY:"Mpin Set Successfully",
+  USER_PROFILE:"User Profile Shown Successfully",
+  HTP_RULES:"How To Play Rules Show Successfully",
+  OPEN_GAME_RESULT:"Open Game Result Show Successfully",
+  USER_BANK_ADD:"User Bank Add Successfully",
+  USER_BANK_UPDATE:"User Update Successfully",
+  PLEASE_ENTER_VALID_MPIN:"You Enter A Wrong Old",
+  NEW_MPIN_UPDATE_SUCCESS:"New Mpin set successfully",
+  USER_WALLET:"User Walled Amount Show successfully",
+  GAME_RATES:"Game Rates Show Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {
