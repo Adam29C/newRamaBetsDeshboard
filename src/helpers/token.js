@@ -1,13 +1,17 @@
 import jwt from "jsonwebtoken";
 import { JWT_EXPIRES_IN, JWT_SECRET } from "./../config/env.config.js";
-import { findOne, update,insertQuery } from "../helpers/crudMongo.js";
+import { findOne, update, insertQuery } from "../helpers/crudMongo.js";
 import { TokenData } from "../models/token.js";
 import admin from "../models/admin.js";
+import { Users } from "../models/users.js";
 
 // Middleware to verify the token
 const verifyToken = async (req, res, next) => {
   try {
-    if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
       const token = req.headers.authorization.split(" ")[1];
       let decoded;
 
@@ -30,7 +34,9 @@ const verifyToken = async (req, res, next) => {
       }
 
       if (decoded.info.id !== "") {
-        let details = await admin.findOne({ _id: decoded.info.id });
+        let details =
+          (await admin.findOne({ _id: decoded.info.id })) ||
+          (await Users.findOne({ _id: decoded.info.id }));
 
         if (!details) {
           return res.status(400).send({
@@ -58,7 +64,6 @@ const verifyToken = async (req, res, next) => {
             });
           }
         }
-        
       } else {
         let data = await TokenData.findOne({
           token: token,
@@ -71,10 +76,9 @@ const verifyToken = async (req, res, next) => {
             msg: "Token Not Found In Database",
           });
         }
-        
-      }  
+      }
       req.decoded = decoded;
-      req.roles=[decoded.info.roles];
+      req.roles = [decoded.info.roles];
       next();
     } else {
       return res.status(400).send({
@@ -93,13 +97,14 @@ const verifyToken = async (req, res, next) => {
 };
 
 // Function to create a new token
-const createToken = async (id, deviceId, roles, query) => {
+const createToken = async (id, deviceId, roles, firebaseToken, query) => {
   const token = jwt.sign(
     {
       info: {
         id: id || "",
         deviceId: deviceId || "",
         roles: roles,
+        firebaseToken: firebaseToken || "",
       },
       date: Date.now(),
     },

@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     mobile: {
-      type: String,
+      type: Number,
     },
     deviceName: {
       type: String,
@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema(
     },
     wallet_balance: {
       type: Number,
+      default:0
     },
     wallet_bal_updated_at: {
       type: String,
@@ -93,6 +94,22 @@ const userSchema = new mongoose.Schema(
     lastLoginDate: {
       type: String,
     },
+    otp:{
+      type:Number
+    },
+    isVerified:{
+      type:Number
+    },
+    language:{
+      type:String
+    },
+    state:{
+      type:String
+    },
+    city:{
+      type:String
+    },
+    
   },
   {
     versionKey: false,
