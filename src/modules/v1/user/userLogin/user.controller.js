@@ -92,7 +92,7 @@ const signup = async (req, res) => {
 
     if (!userDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    if (userDetails.isVerified === false)
+    if (!userDetails.isVerified === false)
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_VERIFY_ACCOUNT);
     const userObj = { name, language, city, state };
 
