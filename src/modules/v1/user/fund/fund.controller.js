@@ -16,7 +16,7 @@ import { wallet } from "../../../../models/walledHistory.js";
 
 const addFond = async (req, res) => {
   try {
-    const { deviceId, userId, fullname, username, mobile,amount } = req.body;
+    const { deviceId, userId, fullname, username, mobile, amount } = req.body;
     const userDetails = await findOne("Users", { _id: userId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
     const fundInfo = {
@@ -30,8 +30,32 @@ const addFond = async (req, res) => {
       reqStatus: "Pending",
     };
     const data = await insertQuery("fundRequest", fundInfo);
-    return SuccessResponse(res, HTTP_MESSAGE.OTP_SEND, { details: data });
+    return SuccessResponse(res, HTTP_MESSAGE.ADD_FOUND, { details: data });
   } catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const fondHistory = async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const userDetails = await findOne("Users", { _id: userId });
+
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+    const data = await findOne("fundRequest", { userId });
+    let updatedAtDateObj = Date.now(data.updatedAt);
+
+    let updatedDate = updatedAtDateObj.toLocaleString();
+
+    console.log(updatedDate, "hhhhh");
+    console.log(data, "data");
+    return SuccessResponse(res, HTTP_MESSAGE.ADD_FOUND, { details: data });
+  } catch (err) {
+    console.log(err, "gggggggggg");
     return InternalServerErrorResponse(
       res,
       HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
@@ -42,10 +66,10 @@ const addFond = async (req, res) => {
 
 const userFundRequestList = async (req, res) => {
   try {
-    const {userId} = req.body;
+    const { userId } = req.body;
     const userDetails = await findOne("Users", { _id: userId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
-    const data = await findOne("fundRequest", {userId:userId});
+    const data = await findOne("fundRequest", { userId: userId });
     return SuccessResponse(res, HTTP_MESSAGE.OTP_SEND, { details: data });
   } catch (err) {
     return InternalServerErrorResponse(
@@ -60,11 +84,16 @@ const showUserWallet = async (req, res) => {
   try {
     const { userId } = req.body;
 
-    const userDetails = await findOne("Users", { _id:userId },{_id:1,name:1,mobile:1,wallet_balance:1});
+    const userDetails = await findOne(
+      "Users",
+      { _id: userId },
+      { _id: 1, name: 1, mobile: 1, wallet_balance: 1 }
+    );
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
 
-    return SuccessResponse(res,HTTP_MESSAGE.USER_WALLET,{details:userDetails})
-  
+    return SuccessResponse(res, HTTP_MESSAGE.USER_WALLET, {
+      details: userDetails,
+    });
   } catch (err) {
     return BadRequestResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
@@ -79,24 +108,6 @@ const addBankDetails = async (req, res) => {
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
     const accObj = { userId, deviceId, accNumber, ifscCode, bankName, accName };
     const data = await insertQuery("bank", accObj);
-    return SuccessResponse(res, HTTP_MESSAGE.USER_BANK_ADD, { details: data });
-  } catch (err) {
-    console.log(err);
-    return InternalServerErrorResponse(
-      res,
-      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
-      err
-    );
-  }
-};
-
-const bankList = async (req, res) => {
-  try {
-    const { deviceId } = req.body;
-    const userDetails = await findOne("Users", { deviceId: deviceId });
-    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
-
-    const data = await bank.find({ deviceId }, { __v: 0 });
     return SuccessResponse(res, HTTP_MESSAGE.USER_BANK_ADD, { details: data });
   } catch (err) {
     console.log(err);
@@ -134,6 +145,73 @@ const updateBankDetails = async (req, res) => {
   }
 };
 
+const changeBankDetailHistory = async (req, res) => {
+  try {
+    const { deviceId } = req.body;
+    const userDetails = await findOne("Users", { deviceId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    const bankDetails = await findOne("bank", { deviceId });
+    if (!bankDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.BANK_DETAILS_NOT_FOUND);
+    const { accNumber, ifscCode, bankName, accName, createdAt, updatedAt } =
+      bankDetails;
+    const updatedAtDateObj = new Date(updatedAt);
+
+    const updatedAtDate = updatedAtDateObj.toLocaleDateString();
+    const updatedAtTime = updatedAtDateObj.toLocaleTimeString();
+
+    return SuccessResponse(res, HTTP_MESSAGE.USER_BANK_DETILS_HISTORY, {
+      details: {
+        accNumber,
+        ifscCode,
+        bankName,
+        accName,
+        createdAt,
+        updatedAtDate,
+        updatedAtTime,
+      },
+    });
+  } catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const bankList = async (req, res) => {
+  try {
+    const { deviceId } = req.body;
+    const userDetails = await findOne("Users", { deviceId: deviceId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    const data = await bank.aggregate([
+      {
+        $match: {
+          deviceId,
+        },
+      },
+      {
+        $project: {
+          createdAt: 0,
+          updatedAt: 0,
+          __v: 0,
+        },
+      },
+    ]);
+    return SuccessResponse(res, HTTP_MESSAGE.USER_BANK_ADD, { details: data });
+  } catch (err) {
+    console.log(err);
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
 const withdrawFund = async (req, res) => {
   try {
     const {
@@ -149,19 +227,18 @@ const withdrawFund = async (req, res) => {
       withdrawalMode,
     } = req.body;
 
-    // Find user by deviceId
     const userDetails = await findOne("Users", { deviceId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
-    // Check if the withdrawal process is enabled for the current day
+
     const dt = moment();
-    const dayName = dt.format("W");
-    console.log(dayName, "gggg");
-    console.log(dayName, "gggg");
-    let a = await reqONoFF.find();
-    console.log(a, "ggg");
-    const checkDayoff = await reqONoFF.findOne(
-      { dayName },
-      { enabled: 1, message: 1 }
+    const dayName = dt.format("dddd");
+    const checkDayoff = await reqONoFF.findOne({ dayName }, { enabled: 1 });
+
+    console.log(checkDayoff, "bbbbbb");
+    console.log(
+      "this test file",
+      "this is anather test file",
+      "this is anather test file"
     );
 
     if (!checkDayoff || !checkDayoff.enabled) {
@@ -174,14 +251,15 @@ const withdrawFund = async (req, res) => {
     }
 
     // Check withdrawal time and limits
-    const withdrawDetails = await checkONOff.findOne(
+    const withdrawDetails = await reqONoFF.findOne(
       { isRequest: true },
       { startTime: 1, endTime: 1, requestCount: 1 }
     );
+    console.log(withdrawDetails, "withdrawDetails");
     const currentTime = moment();
     const startMoment = moment(withdrawDetails.startTime, "HH:mm");
     const endMoment = moment(withdrawDetails.endTime, "HH:mm");
-    console.log(currentTime, startMoment, endMoment);
+
     if (!currentTime.isBetween(startMoment, endMoment, null, "[)")) {
       return res.status(400).json({
         status: 0,
@@ -288,4 +366,6 @@ export {
   updateBankDetails,
   withdrawFund,
   showUserWallet,
+  changeBankDetailHistory,
+  fondHistory,
 };

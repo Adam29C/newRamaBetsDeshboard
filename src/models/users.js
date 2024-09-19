@@ -98,7 +98,8 @@ const userSchema = new mongoose.Schema(
       type:Number
     },
     isVerified:{
-      type:Number
+      type:Boolean,
+      default:false
     },
     language:{
       type:String

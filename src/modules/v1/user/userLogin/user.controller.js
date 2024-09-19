@@ -19,7 +19,6 @@ const getOtp = async (req, res) => {
     if (userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_EXIST);
     const userInfo = { otp, mobile, deviceId };
     const data = await insertQuery("Users", userInfo);
-
     return SuccessResponse(res, HTTP_MESSAGE.OTP_SEND, { details: data });
   } catch (err) {
     return InternalServerErrorResponse(
@@ -38,9 +37,12 @@ const varifiedOtp = async (req, res) => {
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
     if (userDetails.otp !== otp)
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_ENTER_VALID_OTP);
-    if (userDetails.otp === otp)
+    if (userDetails.otp === otp){
+      await Users.updateOne({ deviceId: deviceId }, { $set: { isVerified: true } });
       return SuccessResponse(res, HTTP_MESSAGE.OTP_VARIFIED);
-    await Users.updateOne({ mobile: mobile }, { $set: { isVerified: true } });
+    }
+      
+    
   } catch (err) {
     return InternalServerErrorResponse(
       res,
@@ -89,10 +91,10 @@ const signup = async (req, res) => {
   try {
     const { deviceId, name, language, city, state } = req.body;
     const userDetails = await findOne("Users", { deviceId });
-
+    console.log(userDetails,"ggggg")
     if (!userDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    if (userDetails.isVerified === false)
+    if (!userDetails.isVerified === false)
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_VERIFY_ACCOUNT);
     const userObj = { name, language, city, state };
 

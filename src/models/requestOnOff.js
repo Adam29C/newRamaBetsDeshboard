@@ -41,5 +41,5 @@ const reqOnOffSchema = new mongoose.Schema(
   }
 );
 
-const reqONoFF = mongoose.model("reqONoFF", reqOnOffSchema);
+const reqONoFF = mongoose.model("reqonoff", reqOnOffSchema);
 export { reqONoFF };
