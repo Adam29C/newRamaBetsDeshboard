@@ -34,13 +34,13 @@ const varifiedOtp = async (req, res) => {
   try {
     const { deviceId, otp } = req.body;
     const userDetails = await findOne("Users", { deviceId });
-
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
     if (userDetails.otp !== otp)
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_ENTER_VALID_OTP);
-    if (userDetails.otp === otp)
+    if (userDetails.otp === otp) {
+      await Users.updateOne({ deviceId }, { $set: { isVerified: true} });
       return SuccessResponse(res, HTTP_MESSAGE.OTP_VARIFIED);
-    await Users.updateOne({ mobile: mobile }, { $set: { isVerified: true } });
+    }
   } catch (err) {
     return InternalServerErrorResponse(
       res,
@@ -92,12 +92,12 @@ const signup = async (req, res) => {
 
     if (!userDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    if (!userDetails.isVerified === false)
+    if (userDetails.isVerified === false)
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_VERIFY_ACCOUNT);
     const userObj = { name, language, city, state };
 
     await Users.updateOne({ deviceId }, { $set: userObj });
-    
+
     return SuccessResponse(res, HTTP_MESSAGE.USER_REGISTER);
   } catch (err) {
     return InternalServerErrorResponse(
@@ -111,11 +111,7 @@ const signup = async (req, res) => {
 const userPrfile = async (req, res) => {
   try {
     const { userId } = req.query;
-    const userDetails = await findOne(
-      "Users",
-      { _id: userId },
-     
-    );
+    const userDetails = await findOne("Users", { _id: userId });
     if (!userDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     return SuccessResponse(res, HTTP_MESSAGE.USER_PROFILE, {
@@ -174,7 +170,6 @@ const games = async (req, res) => {
       details: openGamesresult,
     });
   } catch (err) {
-    console.log(err);
     return InternalServerErrorResponse(
       res,
       HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
