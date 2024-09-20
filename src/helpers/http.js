@@ -102,7 +102,9 @@ export const HTTP_MESSAGE = {
   PLEASE_ENTER_VALID_MPIN:"You Enter A Wrong Old",
   NEW_MPIN_UPDATE_SUCCESS:"New Mpin set successfully",
   USER_WALLET:"User Walled Amount Show successfully",
-  GAME_RATES:"Game Rates Show Successfully"
+  GAME_RATES:"Game Rates Show Successfully",
+  USR_EXIST:"User Is Exist",
+  USER_NOT_EXIST:"User Does Not Exist"
 };
 
 const handleResponse = (res, status, success, message, data) => {

@@ -27,7 +27,7 @@ const generateAuthToken = async (req, res) => {
       query = { id: details._id };
       let id=details._id
       const token = await createToken(id, deviceId, roles,firebaseToken, query);
-      return SuccessResponse(res, HTTP_MESSAGE.TOKEN_CREATED, { token });
+      return SuccessResponse(res, HTTP_MESSAGE.TOKEN_CREATED, { token ,id});
         
     }
     if (id) {

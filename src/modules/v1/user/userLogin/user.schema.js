@@ -35,3 +35,14 @@ export const gamesSchema = Joi.object({
   userId:Joi.string().required(),
   gameType:Joi.string().required()
 });
+
+export const upadateUserPrfileSchema = Joi.object({
+  userId:Joi.string().required(),
+  name:Joi.string().optional(),
+  language:Joi.string().optional(),
+  city:Joi.string().optional()
+});
+
+export const checkUserSchema = Joi.object({
+  deviceId:Joi.string().required(),
+});
