@@ -162,10 +162,11 @@ const games = async (req, res) => {
 
 		// Respond with success and the result data
     return SuccessResponse(res, HTTP_MESSAGE.ALL_GAME_LIST, {
-      details: gamesList,
+      details: result,
     });
 
 	} catch (err) {
+    
     return InternalServerErrorResponse(
       res,
       HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
