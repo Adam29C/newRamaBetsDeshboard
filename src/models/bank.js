@@ -7,6 +7,8 @@ const mongooseSchema = new mongoose.Schema({
   ifscCode: { type: String },
   bankName: { type: String },
   accName: { type: String },
+},{
+  timestamps:true
 });
 
 const bank = new mongoose.model("bank",mongooseSchema);

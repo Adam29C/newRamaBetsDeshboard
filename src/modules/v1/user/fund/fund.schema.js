@@ -52,3 +52,7 @@ export const userFundRequestListSchema = Joi.object({
 });
 
 
+export const fondHistorySchema = Joi.object({
+  userId: Joi.string().required()
+});
+

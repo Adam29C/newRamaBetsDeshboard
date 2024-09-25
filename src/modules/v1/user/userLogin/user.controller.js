@@ -31,7 +31,6 @@ const getOtp = async (req, res) => {
     if (userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_EXIST);
     const userInfo = { otp, mobile, deviceId };
     const data = await insertQuery("Users", userInfo);
-
     return SuccessResponse(res, HTTP_MESSAGE.OTP_SEND, { details: data });
   } catch (err) {
     return InternalServerErrorResponse(
@@ -79,6 +78,52 @@ const setMpin = async (req, res) => {
   }
 };
 
+const forgotMpinSendOtp = async (req, res) => {
+  try {
+    const { deviceId, mobile } = req.body;
+    const userDetails = await findOne("Users", { deviceId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+    const checkMobile = await findOne("Users", { mobile: mobile });
+    if (!checkMobile)
+      return BadRequestResponse(res, HTTP_MESSAGE.MOBILE_NOT_FOUND);
+
+    const otp = 1234;
+    const info = await Users.updateOne(
+      { deviceId: deviceId },
+      { $set: { otp } }
+    );
+    return SuccessResponse(res, HTTP_MESSAGE.MPIN_SET_SUCCESSFULLY, {
+      details: info,
+    });
+  } catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const forgotPasswordVerifyOtp = async (req, res) => {
+  try {
+    const { deviceId, otp } = req.body;
+    const userDetails = await findOne("Users", { deviceId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    if (userDetails.otp !== otp) {
+      return BadRequestResponse(res, HTTP_MESSAGE.OTP_NOT_VARIFIED);
+    }
+
+    return SuccessResponse(res, HTTP_MESSAGE.OTP_VARIFIED);
+  } catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
 const updateMpin = async (req, res) => {
   try {
     const { deviceId, oldMpin, newMpin } = req.body;
@@ -101,10 +146,10 @@ const signup = async (req, res) => {
   try {
     const { deviceId, name, language, city, state } = req.body;
     const userDetails = await findOne("Users", { deviceId });
-
+    console.log(userDetails, "ggggg");
     if (!userDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    if (userDetails.isVerified === false)
+    if (!userDetails.isVerified === false)
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_VERIFY_ACCOUNT);
     const userObj = { name, language, city, state };
 
@@ -226,5 +271,7 @@ export {
   games,
   updateMpin,
   upadateUserPrfile,
-  checkUser
+  checkUser,
+  forgotMpinSendOtp,
+  forgotPasswordVerifyOtp,
 };

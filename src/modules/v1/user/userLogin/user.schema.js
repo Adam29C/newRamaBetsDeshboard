@@ -46,3 +46,13 @@ export const upadateUserPrfileSchema = Joi.object({
 export const checkUserSchema = Joi.object({
   deviceId:Joi.string().required(),
 });
+
+export const forgotMpinSendOtpSchema = Joi.object({
+  deviceId:Joi.string().required(),
+  mobile:Joi.number().required()
+});
+
+export const forgotPasswordVerifyOtpSchema = Joi.object({
+  deviceId:Joi.string().required(),
+  otp:Joi.number().required()
+});
