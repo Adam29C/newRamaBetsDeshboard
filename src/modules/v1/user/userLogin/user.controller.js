@@ -92,9 +92,7 @@ const forgotMpinSendOtp = async (req, res) => {
       { deviceId: deviceId },
       { $set: { otp } }
     );
-    return SuccessResponse(res, HTTP_MESSAGE.MPIN_SET_SUCCESSFULLY, {
-      details: info,
-    });
+    return SuccessResponse(res, HTTP_MESSAGE.OTP_SEND);
   } catch (err) {
     return InternalServerErrorResponse(
       res,
