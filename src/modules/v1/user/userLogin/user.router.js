@@ -1,6 +1,6 @@
 import express from "express";
-import { checkUser, games, getOtp,htp,setMpin,signup,upadateUserPrfile,updateMpin,userPrfile,varifiedOtp } from "./user.controller.js";
-import { checkUserSchema, gamesSchema, getOtpSchema, htpSchema, setMpinSchema, signupSchema, upadateUserPrfileSchema, userPrfileSchema, verifySchema } from "./user.schema.js";
+import { checkUser, forgotMpinSendOtp, forgotPasswordVerifyOtp, games, getOtp,htp,setMpin,signup,upadateUserPrfile,updateMpin,userPrfile,varifiedOtp } from "./user.controller.js";
+import { checkUserSchema, forgotMpinSendOtpSchema, forgotPasswordVerifyOtpSchema, gamesSchema, getOtpSchema, htpSchema, setMpinSchema, signupSchema, upadateUserPrfileSchema, userPrfileSchema, verifySchema } from "./user.schema.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import { ValidationSource, validator } from "../../../../middlewares/validator.js";
@@ -73,4 +73,19 @@ userLoginRouter.post(
   checkUser
 );
 
+
+userLoginRouter.post(
+  "/forgotMpinSendOtp",
+  // verifyToken,
+  validator(forgotMpinSendOtpSchema,ValidationSource.BODY),
+  forgotMpinSendOtp
+);
+
+forgotPasswordVerifyOtp
+userLoginRouter.post(
+  "/forgotPasswordVerifyOtp",
+  // verifyToken,
+  validator(forgotPasswordVerifyOtpSchema,ValidationSource.BODY),
+  forgotPasswordVerifyOtp
+);
 export {userLoginRouter}

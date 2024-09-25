@@ -104,7 +104,9 @@ export const HTTP_MESSAGE = {
   USER_WALLET:"User Walled Amount Show successfully",
   GAME_RATES:"Game Rates Show Successfully",
   USR_EXIST:"User Is Exist",
-  USER_NOT_EXIST:"User Does Not Exist"
+  USER_NOT_EXIST:"User Does Not Exist",
+  MOBILE_NOT_FOUND:"Mobile Number Not Found",
+  OTP_NOT_VARIFIED:"Please Enter Valid Otp"
 };
 
 const handleResponse = (res, status, success, message, data) => {

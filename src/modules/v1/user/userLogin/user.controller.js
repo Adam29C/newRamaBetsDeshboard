@@ -78,6 +78,52 @@ const setMpin = async (req, res) => {
   }
 };
 
+const forgotMpinSendOtp = async (req, res) => {
+  try {
+    const { deviceId, mobile } = req.body;
+    const userDetails = await findOne("Users", { deviceId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+    const checkMobile = await findOne("Users", { mobile: mobile });
+    if (!checkMobile)
+      return BadRequestResponse(res, HTTP_MESSAGE.MOBILE_NOT_FOUND);
+
+    const otp = 1234;
+    const info = await Users.updateOne(
+      { deviceId: deviceId },
+      { $set: { otp } }
+    );
+    return SuccessResponse(res, HTTP_MESSAGE.MPIN_SET_SUCCESSFULLY, {
+      details: info,
+    });
+  } catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const forgotPasswordVerifyOtp = async (req, res) => {
+  try {
+    const { deviceId, otp } = req.body;
+    const userDetails = await findOne("Users", { deviceId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    if (userDetails.otp !== otp) {
+      return BadRequestResponse(res, HTTP_MESSAGE.OTP_NOT_VARIFIED);
+    }
+
+    return SuccessResponse(res, HTTP_MESSAGE.OTP_VARIFIED);
+  } catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
 const updateMpin = async (req, res) => {
   try {
     const { deviceId, oldMpin, newMpin } = req.body;
@@ -226,4 +272,6 @@ export {
   updateMpin,
   upadateUserPrfile,
   checkUser,
+  forgotMpinSendOtp,
+  forgotPasswordVerifyOtp,
 };
