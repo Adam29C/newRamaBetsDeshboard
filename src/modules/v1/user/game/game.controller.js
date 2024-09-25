@@ -50,7 +50,10 @@ import { GameProvider } from "../../../../models/gameProvider.js";
 // };
 const games = async (req, res) => {
 	try {
-
+    const { userId } = req.body;
+    const userDetails = await findOne("Users", { _id: userId });
+    if (!userDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
 		const currentDate = new Date();
 		const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 		const dayName = dayNames[currentDate.getDay()]; // Get current day name
