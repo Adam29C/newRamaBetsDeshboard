@@ -10,6 +10,18 @@ import { HowToPlay } from "../../../../models/howToPlay.js";
 import { Users } from "../../../../models/users.js";
 import jwt from "jsonwebtoken";
 
+const checkUser = async (req, res) => {
+  try {
+    const { deviceId } = req.body;
+    let checkUserInfo = await Users.findOne({ deviceId });
+    if (checkUserInfo) return SuccessResponse(res, HTTP_MESSAGE.USR_EXIST);
+    if (!checkUserInfo)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_EXIST);
+  } catch (err) {
+    return BadRequestResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
 const getOtp = async (req, res) => {
   try {
     const { mobile, deviceId } = req.body;
@@ -33,16 +45,13 @@ const varifiedOtp = async (req, res) => {
   try {
     const { deviceId, otp } = req.body;
     const userDetails = await findOne("Users", { deviceId });
-
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
     if (userDetails.otp !== otp)
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_ENTER_VALID_OTP);
-    if (userDetails.otp === otp){
-      await Users.updateOne({ deviceId: deviceId }, { $set: { isVerified: true } });
+    if (userDetails.otp === otp) {
+      await Users.updateOne({ deviceId }, { $set: { isVerified: true } });
       return SuccessResponse(res, HTTP_MESSAGE.OTP_VARIFIED);
     }
-      
-    
   } catch (err) {
     return InternalServerErrorResponse(
       res,
@@ -91,7 +100,7 @@ const signup = async (req, res) => {
   try {
     const { deviceId, name, language, city, state } = req.body;
     const userDetails = await findOne("Users", { deviceId });
-    console.log(userDetails,"ggggg")
+    console.log(userDetails, "ggggg");
     if (!userDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     if (!userDetails.isVerified === false)
@@ -99,7 +108,7 @@ const signup = async (req, res) => {
     const userObj = { name, language, city, state };
 
     await Users.updateOne({ deviceId }, { $set: userObj });
-    
+
     return SuccessResponse(res, HTTP_MESSAGE.USER_REGISTER);
   } catch (err) {
     return InternalServerErrorResponse(
@@ -113,13 +122,35 @@ const signup = async (req, res) => {
 const userPrfile = async (req, res) => {
   try {
     const { userId } = req.query;
-    const userDetails = await findOne(
-      "Users",
-      { _id: userId },
-     
-    );
+    const userDetails = await findOne("Users", { _id: userId });
     if (!userDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    return SuccessResponse(res, HTTP_MESSAGE.USER_PROFILE, {
+      details: userDetails,
+    });
+  } catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const upadateUserPrfile = async (req, res) => {
+  try {
+    const { userId, name, language, city, state } = req.body;
+    const userDetails = await findOne("Users", { _id: userId });
+    if (!userDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+    let updateObj = {};
+    if (name) updateObj.name = name;
+    if (language) updateObj.name = language;
+    if (city) updateObj.name = city;
+    if (state) updateObj.name = state;
+
+    await Users.updateOne({ _id: userId }, { $set: updateObj });
     return SuccessResponse(res, HTTP_MESSAGE.USER_PROFILE, {
       details: userDetails,
     });
@@ -176,7 +207,6 @@ const games = async (req, res) => {
       details: openGamesresult,
     });
   } catch (err) {
-    console.log(err);
     return InternalServerErrorResponse(
       res,
       HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
@@ -194,4 +224,6 @@ export {
   htp,
   games,
   updateMpin,
+  upadateUserPrfile,
+  checkUser,
 };

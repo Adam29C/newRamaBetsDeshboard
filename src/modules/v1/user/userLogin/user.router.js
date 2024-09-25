@@ -1,6 +1,6 @@
 import express from "express";
-import { games, getOtp,htp,setMpin,signup,updateMpin,userPrfile,varifiedOtp } from "./user.controller.js";
-import { gamesSchema, getOtpSchema, htpSchema, setMpinSchema, signupSchema, userPrfileSchema, verifySchema } from "./user.schema.js";
+import { checkUser, games, getOtp,htp,setMpin,signup,upadateUserPrfile,updateMpin,userPrfile,varifiedOtp } from "./user.controller.js";
+import { checkUserSchema, gamesSchema, getOtpSchema, htpSchema, setMpinSchema, signupSchema, upadateUserPrfileSchema, userPrfileSchema, verifySchema } from "./user.schema.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import { ValidationSource, validator } from "../../../../middlewares/validator.js";
@@ -45,6 +45,13 @@ userLoginRouter.get(
   userPrfile
 );
 
+userLoginRouter.put(
+  "/upadateUserPrfile",
+  verifyToken,
+  validator(upadateUserPrfileSchema,ValidationSource.QUERY),
+  upadateUserPrfile
+);
+
 userLoginRouter.get(
   "/htp",
   verifyToken,
@@ -58,4 +65,12 @@ userLoginRouter.post(
   validator(gamesSchema,ValidationSource.BODY),
   games
 );
+
+userLoginRouter.post(
+  "/checkUser",
+  // verifyToken,
+  validator(checkUserSchema,ValidationSource.BODY),
+  checkUser
+);
+
 export {userLoginRouter}
