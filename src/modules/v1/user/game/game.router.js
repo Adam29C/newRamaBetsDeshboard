@@ -1,5 +1,5 @@
 import express from "express";
-import {  gameById, games, gamesList, gamesRates, gamesRatesById } from "./game.controller.js";
+import {  gameById, allGames, gamesList, gamesRates, gamesRatesById } from "./game.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import { ValidationSource, validator } from "../../../../middlewares/validator.js";
@@ -9,10 +9,10 @@ import { gameByIdSchema, gameListSchema, gameSchema, gamesRatesByIdSchema } from
 const gameRouters =express.Router();
 
 gameRouters.post(
-  "/games",
+  "/allGames",
   verifyToken,
   validator(gameSchema,ValidationSource.BODY),
-  games
+  allGames
 );
 
 gameRouters.post(
