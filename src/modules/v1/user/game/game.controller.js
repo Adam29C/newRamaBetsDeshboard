@@ -14,7 +14,7 @@ import {
 
 import { GameSetting } from "../../../../models/gameSetting.js";
 import { GameRate } from "../../../../models/gameRates.js";
-
+import { GameProvider } from "../../../../models/gameProvider.js";
 // const games = async (req, res) => {
 //   try {
 //     const { userId, gameType } = req.body;
@@ -50,96 +50,123 @@ import { GameRate } from "../../../../models/gameRates.js";
 // };
 const games = async (req, res) => {
 	try {
-		// Get the current day name using JavaScript's Date object
+		// Get current day name using JavaScript's Date object
 		const currentDate = new Date();
 		const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 		const dayName = dayNames[currentDate.getDay()]; // Get current day name
 
-		// Fetch active game providers
-		const providers = await gameProvider.find(
-			{ activeStatus: true },
-			{ _id: 1, providerName: 1, providerResult: 1, resultStatus: 1 }
-		);
+		// Get the current time in "HH:mm a" format
+		const currentTime = moment().format("HH:mm a");
 
-		// Fetch game open/close times for the current day
-		const ocTimes = await gameOCtime.find(
-			{ gameDay: dayName },
+		// Aggregation pipeline
+		const result = await GameProvider.aggregate([
+			// Match active providers
 			{
-				gameDay: 1,
-				OBT: 1,  // Open Bid Time
-				CBT: 1,  // Close Bid Time
-				isClosed: 1,
-				providerId: 1,
-				OBRT: 1, // Open Bid Result Time
-				CBRT: 1, // Close Bid Result Time
-			}
-		);
-
-		// Initialize the final result object
-		let resultData = {};
-
-		// Populate the resultData object with providers' info
-		providers.forEach((provider) => {
-			resultData[provider._id] = {
-				providerName: provider.providerName,
-				providerResult: provider.providerResult,
-				resultStatus: provider.resultStatus,
-				OpenBidTime: "",
-				CloseBidTime: "",
-				OpenBidResultTime: "",
-				CloseBidResultTime: "",
-				isClosed: "",
-				providerId: provider._id,
-				gameDay: "",
-				displayText: "",
-				colorCode: "",
-			};
-		});
-
-		// Update resultData with open/close times and status
-		ocTimes.forEach((ocTime) => {
-			const currentTime = moment(); // Current time as a moment object
-			const OpenTime = moment(ocTime.OBT, "HH:mm a"); // Open Bid Time as moment object
-			const CloseTime = moment(ocTime.CBT, "HH:mm a"); // Close Bid Time as moment object
-			const isClosed = ocTime.isClosed;
-			let displayText = "Closed For Today";
-			let colorCode = "#ff0000"; // Default to red for closed
-
-			// Compare current time with OpenTime and CloseTime
-			if (isClosed === 1) {
-				// If the game is still open
-				if (currentTime.isBefore(OpenTime)) {
-					displayText = "Running For Open";
-					colorCode = "#a4c639"; // Green for open
-				} else if (currentTime.isBefore(CloseTime)) {
-					displayText = "Running For Close";
-					colorCode = "#a4c639"; // Green for closing soon
+				$match: { activeStatus: true },
+			},
+			// Lookup corresponding game settings (open/close times) for the current day
+			{
+				$lookup: {
+					from: "gamesettings", // The collection where game settings are stored
+					localField: "_id", // Field from GameProvider
+					foreignField: "providerId", // Field from GameSetting
+					as: "gameSettings", // Alias for matched results
+					pipeline: [
+						{ $match: { gameDay: dayName } }, // Filter game settings by the current day
+						{
+							$project: {
+								OBT: 1,  // Open Bid Time
+								CBT: 1,  // Close Bid Time
+								OBRT: 1, // Open Bid Result Time
+								CBRT: 1, // Close Bid Result Time
+								isClosed: 1,
+								gameDay: 1,
+							}
+						}
+					]
+				}
+			},
+			// Unwind the gameSettings array (in case no settings exist for a provider, preserve the document)
+			{
+				$unwind: {
+					path: "$gameSettings",
+					preserveNullAndEmptyArrays: true,
+				}
+			},
+			// Add custom fields for display text and color code
+			{
+				$addFields: {
+					displayText: {
+						$cond: {
+							if: {
+								$eq: ["$gameSettings.isClosed", 1], // If the game is closed
+							},
+							then: {
+								$cond: [
+									{
+										$lt: [currentTime, "$gameSettings.OBT"], // If current time is before Open Bid Time
+									},
+									"Running For Open",
+									{
+										$cond: [
+											{
+												$lt: [currentTime, "$gameSettings.CBT"], // If current time is before Close Bid Time
+											},
+											"Running For Close",
+											"Closed For Today",
+										]
+									}
+								]
+							},
+							else: "Closed For Today",
+						}
+					},
+					colorCode: {
+						$cond: {
+							if: {
+								$eq: ["$gameSettings.isClosed", 1], // If the game is closed
+							},
+							then: {
+								$cond: [
+									{
+										$or: [
+											{ $lt: [currentTime, "$gameSettings.OBT"] }, // Before Open Time
+											{ $lt: [currentTime, "$gameSettings.CBT"] }, // Before Close Time
+										]
+									},
+									"#a4c639", // Green when open or closing soon
+									"#ff0000", // Red when closed
+								]
+							},
+							else: "#ff0000", // Red for closed
+						}
+					}
+				}
+			},
+			// Project the final result fields
+			{
+				$project: {
+					_id: 1,
+					providerName: 1,
+					providerResult: 1,
+					resultStatus: 1,
+					"gameSettings.OBT": 1,
+					"gameSettings.CBT": 1,
+					"gameSettings.OBRT": 1,
+					"gameSettings.CBRT": 1,
+					"gameSettings.isClosed": 1,
+					"gameSettings.gameDay": 1,
+					displayText: 1,
+					colorCode: 1,
 				}
 			}
-
-			// Update the corresponding provider in resultData
-			const providerId = ocTime.providerId;
-			if (resultData[providerId]) {
-				resultData[providerId] = {
-					...resultData[providerId],
-					OpenBidTime: ocTime.OBT,
-					CloseBidTime: ocTime.CBT,
-					OpenBidResultTime: ocTime.OBRT,
-					CloseBidResultTime: ocTime.CBRT,
-					isClosed: isClosed,
-					gameDay: ocTime.gameDay,
-					displayText: displayText,
-					colorCode: colorCode,
-				};
-			}
-		});
+		]);
 
 		// Respond with success and the result data
-		res.status(200).json({
-			status: 1,
-			message: "Success",
-			result: resultData,
-		});
+    return SuccessResponse(res, HTTP_MESSAGE.ALL_GAME_LIST, {
+      details: gamesList,
+    });
+
 	} catch (error) {
 		// Log the error for easier debugging
 		console.error("Error in /games API:", error);
