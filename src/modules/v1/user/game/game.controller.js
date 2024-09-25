@@ -50,12 +50,10 @@ import { GameProvider } from "../../../../models/gameProvider.js";
 // };
 const games = async (req, res) => {
 	try {
-		// Get current day name using JavaScript's Date object
+
 		const currentDate = new Date();
 		const dayNames = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 		const dayName = dayNames[currentDate.getDay()]; // Get current day name
-
-		// Get the current time in "HH:mm a" format
 		const currentTime = moment().format("HH:mm a");
 
 		// Aggregation pipeline
@@ -167,17 +165,13 @@ const games = async (req, res) => {
       details: gamesList,
     });
 
-	} catch (error) {
-		// Log the error for easier debugging
-		console.error("Error in /games API:", error);
-
-		// Respond with an error status
-		res.status(400).json({
-			status: 0,
-			message: "Something went wrong",
-			error: error.message, // Provide error message for more details
-		});
-	}
+	} catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
 };
 
 const gamesList = async (req, res) => {
