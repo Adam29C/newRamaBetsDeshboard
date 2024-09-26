@@ -107,7 +107,8 @@ export const HTTP_MESSAGE = {
   USER_NOT_EXIST:"User Does Not Exist",
   MOBILE_NOT_FOUND:"Mobile Number Not Found",
   OTP_NOT_VARIFIED:"Please Enter Valid Otp",
-  ALL_GAME_LIST:"ALL GAME RESULT SHOW SUCCESSFULLY"
+  ALL_GAME_LIST:"ALL GAME RESULT SHOW SUCCESSFULLY",
+  GET_NUMBER_INFO:"Get Number Info"
 };
 
 const handleResponse = (res, status, success, message, data) => {

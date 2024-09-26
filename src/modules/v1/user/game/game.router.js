@@ -1,5 +1,5 @@
 import express from "express";
-import {  gameById, allGames, gamesList, gamesRates, gamesRatesById, starLineAllGames } from "./game.controller.js";
+import {  gameById, allGames, gamesRates, gamesRatesById, starLineAllGames, getNumber } from "./game.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import { ValidationSource, validator } from "../../../../middlewares/validator.js";
@@ -37,10 +37,10 @@ gameRouters.post(
 );
 
 gameRouters.post(
-  "/gameList",
+  "/getNumber",
   verifyToken,
   validator(gameListSchema,ValidationSource.BODY),
-  gamesList
+  getNumber
 );
 
 gameRouters.post(

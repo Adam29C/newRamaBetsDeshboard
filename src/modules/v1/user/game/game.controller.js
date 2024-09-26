@@ -16,6 +16,7 @@ import { GameSetting } from "../../../../models/gameSetting.js";
 import { GameRate } from "../../../../models/gameRates.js";
 import { GameProvider } from "../../../../models/gameProvider.js";
 import  dateTime from "node-datetime";
+import { WalletContact } from "../../../../models/walledContect.js";
 // const games = async (req, res) => {
 //   try {
 //     const { userId, gameType } = req.body;
@@ -599,22 +600,17 @@ const starLineAllGames = async (req, res) => {
     }
 };
 
-const gamesList = async (req, res) => {
+const getNumber = async (req, res) => {
   try {
-    const { userId, gameType } = req.body;
+    const { userId } = req.body;
     const userDetails = await findOne("Users", { _id: userId });
     if (!userDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
 
-    const gamesList = await GameSetting.find({});
-    const gamesList1 = await GameSetting.aggregate([
-      { $match: { gameType: "MainGame" } },
-      { $unwind: "$gameSatingInfo" },
-      { $match: { "gameSatingInfo.isClosed": false } },
-    ]);
+    const info = await WalletContact.findOne({},{number:1,mobileNumber:1});
 
-    return SuccessResponse(res, HTTP_MESSAGE.OPEN_GAME_RESULT, {
-      details: gamesList,
+    return SuccessResponse(res, HTTP_MESSAGE.GET_NUMBER_INFO, {
+      details: info,
     });
   } catch (err) {
     return InternalServerErrorResponse(
@@ -687,4 +683,4 @@ const gamesRatesById = async (req, res) => {
   }
 };
  
-export { allGames,starLineAllGames, gameById, gamesRates, gamesRatesById, gamesList };
+export { allGames,starLineAllGames, gameById, gamesRates, gamesRatesById, getNumber };

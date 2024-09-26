@@ -10,6 +10,7 @@ export const updateWalledContestSchema = Joi.object({
     number: Joi.number().optional(),
     headline: Joi.string().optional(),
     upiId: Joi.string().optional(),
+    mobileNumber:Joi.number().optional()
 });
 
 export const updateNoticeBoardSchema = Joi.object({
