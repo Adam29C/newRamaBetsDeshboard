@@ -13,9 +13,12 @@ import jwt from "jsonwebtoken";
 const checkUser = async (req, res) => {
   try {
     const { deviceId } = req.body;
-    let checkUserInfo = await Users.findOne({ deviceId });
+    let checkUserInfo = await Users.findOne({ deviceId,isRegister:true });
     if (checkUserInfo) return SuccessResponse(res, HTTP_MESSAGE.USR_EXIST);
-    if (!checkUserInfo)
+    let checkuserwitoutregister= await Users.findOne({ deviceId,isRegister:false });
+    if(checkuserwitoutregister) await Users.deleteOne({deviceId})
+    let checkUser = await Users.findOne({ deviceId}); 
+    if (!checkUser)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_EXIST);
   } catch (err) {
     return BadRequestResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -149,7 +152,7 @@ const signup = async (req, res) => {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     if (userDetails.isVerified === false)
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_VERIFY_ACCOUNT);
-    const userObj = { name, language, city, state };
+    const userObj = { name, language, city, state, isRegister:true };
 
     await Users.updateOne({ deviceId }, { $set: userObj });
 

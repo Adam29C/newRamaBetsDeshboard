@@ -42,6 +42,10 @@ const userSchema = new mongoose.Schema(
     wallet_bal_updated_at: {
       type: String,
     },
+    isRegister:{
+      type:Boolean,
+      default:false
+    },
     mpin: {
       type: String,
     },
