@@ -123,7 +123,7 @@ const walledContestList = async (req, res) => {
 //Update the Walled contect
 const updateWalledContest = async (req, res) => {
     try {
-        const { adminId, walledId, number, headline, upiId } = req.body;
+        const { adminId, walledId, number,mobileNumber, headline, upiId } = req.body;
 
         // Fetch Admin ID to check if it exists
         const details = await findOne("Admin", { _id: adminId });
@@ -138,6 +138,7 @@ const updateWalledContest = async (req, res) => {
         if (number) query.number = number;
         if (headline) query.headline = headline;
         if (upiId) query.upiId = upiId;
+        if (mobileNumber) query.mobileNumber = mobileNumber
 
         await update("WalletContact", { _id: walledId }, { $set: query });
         return SuccessResponse(res, HTTP_MESSAGE.WALLED_CONTECT_UPDATE);

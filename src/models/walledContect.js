@@ -4,6 +4,9 @@ const walletContactSchema = new mongoose.Schema({
         number: {
             type: Number,
         },
+        mobileNumber:{
+            type:Number
+        },
         headline:{
             type:String,
         },
