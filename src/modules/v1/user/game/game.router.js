@@ -1,5 +1,5 @@
 import express from "express";
-import {  gameById, allGames, gamesList, gamesRates, gamesRatesById } from "./game.controller.js";
+import {  gameById, allGames, gamesList, gamesRates, gamesRatesById, starLineAllGames } from "./game.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import { ValidationSource, validator } from "../../../../middlewares/validator.js";
@@ -42,4 +42,12 @@ gameRouters.post(
   validator(gameListSchema,ValidationSource.BODY),
   gamesList
 );
+
+gameRouters.post(
+  "/starLineAllGames",
+  verifyToken,
+  validator(gameListSchema,ValidationSource.BODY),
+  starLineAllGames
+);
+
 export {gameRouters}
