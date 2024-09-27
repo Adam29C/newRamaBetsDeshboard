@@ -11,7 +11,7 @@ import {
   validator,
 } from "../../../../middlewares/validator.js";
 import { verifyToken } from "../../../../helpers/token.js";
-import { htpList, listVersionSetting, noticeBoardList, updateHTP, updateNoticeBoard, updateVersionSetting, updateWalledContest, updateWithdrawMessage, walledContestList, withdrawMessageList, } from "./appSetting.controller.js";
+import { addNotification, deleteNotification, htpList, listVersionSetting, noticeBoardList, updateHTP, updateNoticeBoard, updateNotification, updateVersionSetting, updateWalledContest, updateWithdrawMessage, walledContestList, withdrawMessageList, } from "./appSetting.controller.js";
 import getMulterStorage from "../../../../helpers/fileUpload.js";
 import { listVersionSettingSchema, updateNoticeBoardSchema, updateWalledContestSchema } from "./appSetting.schema.js";
 
@@ -114,5 +114,26 @@ appSettingRouters.put(
     verifyToken,
     verifyRoles(roleList.ADMIN),
     updateHTP
+);
+
+appSettingRouters.post(
+    '/addNotification',
+    verifyToken,
+    verifyRoles(roleList.ADMIN),
+    addNotification
+);
+
+appSettingRouters.put(
+    '/updateNotification',
+    verifyToken,
+    verifyRoles(roleList.ADMIN),
+    updateNotification
+);
+
+appSettingRouters.put(
+    '/deleteNotification',
+    verifyToken,
+    verifyRoles(roleList.ADMIN),
+    deleteNotification
 );
 export { appSettingRouters };

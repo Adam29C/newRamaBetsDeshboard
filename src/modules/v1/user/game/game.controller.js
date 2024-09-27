@@ -197,7 +197,6 @@ const starLineAllGames = async (req, res) => {
   }
 };
 
-
 const jackPotAllGames = async (req, res) => {
   try {
     // Get the current day name
@@ -289,7 +288,6 @@ const jackPotAllGames = async (req, res) => {
     });
   }
 };
-
 
 const getNumber = async (req, res) => {
   try {
