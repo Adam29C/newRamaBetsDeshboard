@@ -74,10 +74,6 @@ const result = async (type) => {
         OpenBidTime: OpenTime,
         CloseBidTime: CloseTime,
       });
-    } else {
-      console.log(
-        `No matching setting found for provider: ${provider.providerName}, providerId: ${provider._id}`
-      );
     }
   }
   return arrayFinal;
