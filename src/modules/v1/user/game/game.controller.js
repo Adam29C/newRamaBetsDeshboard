@@ -21,271 +21,304 @@ import { WalletContact } from "../../../../models/walledContect.js";
 const allGames = async (req, res) => {
   try {
     const { userId } = req.body;
+
+    // Validate user
     const userDetails = await findOne("Users", { _id: userId });
-    if (!userDetails)
+    if (!userDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
 
+    // Get current day of the week
     const dt4 = dateTime.create();
-    let dayName = dt4.format("W"); 
+    let dayName = dt4.format("W");  // Ensure that the format matches the data in the DB (e.g., "Monday", "Tuesday")
 
-    const providersWithSettings = await GameProvider.aggregate([
-      {
-        $match: { activeStatus: true, gameType: "MainGame" }, // Only active providers
-      },
-      {
-        $lookup: {
-          from: "gamesettings", // Reference the GameSetting collection
-          let: { providerId: "$_id" },
-          pipeline: [
-            {
-              $match: {
-                $expr: {
-                  $and: [
-                    { $eq: ["$providerId", "$$providerId"] },
-                    { $eq: ["$gameDay", dayName] },
-                  ],
-                },
-              },
-            },
-          ],
-          as: "gameSettingInfo",
-        },
-      },
-      {
-        $unwind: { path: "$gameSettingInfo", preserveNullAndEmptyArrays: true },
+    // Fetch providers with active status and gameType: 'MainGame'
+    const providers = await GameProvider.find(
+      { activeStatus: true, gameType: "MainGame" },
+      { _id: 1, providerName: 1, providerResult: 1, resultStatus: 1 }
+    );
+
+    console.log("Fetched providers:", providers);  // Ensure providers data is correctly fetched
+
+    // Fetch game settings with GameSetting aggregation
+    const ocTimes = await GameSetting.aggregate([
+      { $unwind: "$gameSatingInfo" },
+      { 
+        $match: {
+          "gameSatingInfo.gameDay": dayName,  // Match current day
+          gameType: "MainGame"                // Ensure it matches the gameType
+        }
       },
       {
         $project: {
-          _id: 1,
-          providerName: 1,
-          providerResult: 1,
-          resultStatus: 1,
-          OpenBidTime: { $ifNull: ["$gameSettingInfo.OBT", ""] },
-          CloseBidTime: { $ifNull: ["$gameSettingInfo.CBT", ""] },
-          OpenBidResultTime: { $ifNull: ["$gameSettingInfo.OBRT", ""] },
-          CloseBidResultTime: { $ifNull: ["$gameSettingInfo.CBRT", ""] },
-          isClosed: { $ifNull: ["$gameSettingInfo.isClosed", false] },
-          gameDay: { $ifNull: ["$gameSettingInfo.gameDay", ""] },
-          providerId: "$_id",
-        },
-      },
+          providerId: 1,
+          gameDay: "$gameSatingInfo.gameDay",
+          OBT: "$gameSatingInfo.OBT",
+          CBT: "$gameSatingInfo.CBT",
+          OBRT: "$gameSatingInfo.OBRT",
+          CBRT: "$gameSatingInfo.CBRT",
+          isClosed: "$gameSatingInfo.isClosed"
+        }
+      }
     ]);
+
+    console.log("Fetched ocTimes:", ocTimes);  // Ensure ocTimes data is correctly fetched
 
     let arrayFinal = [];
     const dt3 = dateTime.create();
-    let time = dt3.format("I:M p"); // Get current time in HH:mm a format
-    const current = moment(time, "HH:mm a");
+    let time = dt3.format("I:M p"); 
+    const current = moment(time, "HH:mm a");  // Convert to Moment.js time format
 
-    for (const providerItem of providersWithSettings) {
-      let OpenTime = providerItem.OpenBidTime;
-      let CloseTime = providerItem.CloseBidTime;
-      let isClosed = providerItem.isClosed;
-      let startTime = moment(OpenTime, "HH:mm a");
-      let endTime = moment(CloseTime, "HH:mm a");
-      let appDisplayText = "Closed For Today";
-      let colorCode = "#ff0000";
+    // Combine provider data with the game settings (ocTimes)
+    for (const provider of providers) {
+      // Convert both provider._id and ocTimes.providerId to strings to match properly
+      const setting = ocTimes.find(item => item.providerId.toString() === provider._id.toString());
 
-      // Determine display text and color code based on current time and closed status
-      if (isClosed) {
-        if (startTime > current) {
-          appDisplayText = "Running For Open";
-          colorCode = "#a4c639";
-        } else if (endTime > current) {
-          appDisplayText = "Running For Close";
-          colorCode = "#a4c639";
+      if (setting) {
+        // Parse Open and Close times
+        let OpenTime = setting.OBT;
+        let CloseTime = setting.CBT;
+        let isClosed = setting.isClosed;
+        let startTime = moment(OpenTime, "HH:mm a");
+        let endTime = moment(CloseTime, "HH:mm a");
+        let appDisplayText = "Closed For Today";
+        let colorCode = "#ff0000"; // Red if closed
+
+        if (!isClosed) {
+          if (current.isBefore(startTime)) {
+            appDisplayText = "Running For Open";
+            colorCode = "#a4c639"; 
+          } else if (current.isBefore(endTime)) {
+            appDisplayText = "Running For Close";
+            colorCode = "#a4c639"; 
+          }
         }
-      }
 
-      arrayFinal.push({
-        providerName: providerItem.providerName,
-        providerResult: providerItem.providerResult,
-        resultStatus: providerItem.resultStatus,
-        isClosed: providerItem.isClosed,
-        displayText: appDisplayText,
-        colorCode: colorCode,
-        providerId: providerItem.providerId,
-      });
+        arrayFinal.push({
+          providerName: provider.providerName,
+          providerResult: provider.providerResult,
+          resultStatus: provider.resultStatus,
+          isClosed: isClosed,
+          displayText: appDisplayText,
+          colorCode: colorCode,
+          providerId: provider._id,
+          OpenBidTime: OpenTime,  
+          CloseBidTime: CloseTime 
+        });
+      } else {
+        // Log when no matching setting is found for the provider
+        console.log(`No matching setting found for provider: ${provider.providerName}, providerId: ${provider._id}`);
+      }
     }
 
+    // Return success response with the final array
     return SuccessResponse(res, HTTP_MESSAGE.ALL_GAME_LIST, arrayFinal);
+
   } catch (err) {
-    return InternalServerErrorResponse(
-      res,
-      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
-      err
-    );
+    // Log error for debugging
+    console.error("Error:", err);
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
 
 const starLineAllGames = async (req, res) => {
   try {
     const { userId } = req.body;
+
+    // Validate user
     const userDetails = await findOne("Users", { _id: userId });
-    if (!userDetails)
+    if (!userDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
 
-    const currentDate = new Date();
-    const dayNames = [
-      "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-    ];
-    const dayName = dayNames[currentDate.getDay()]; // Get current day
-    console.log("Current Day Name:", dayName); // Debugging: Log the current day name
+    // Get current day of the week
+    const dt4 = dateTime.create();
+    let dayName = dt4.format("W");  // Ensure that the format matches the data in the DB (e.g., "Monday", "Tuesday")
 
-    // Fetch game settings for StarLine game type
-    const gameSettingInfo = await GameSetting.aggregate([
-      {
+    // Fetch providers with active status and gameType: 'MainGame'
+    const providers = await GameProvider.find(
+      { activeStatus: true, gameType: "StarLine" },
+      { _id: 1, providerName: 1, providerResult: 1, resultStatus: 1 }
+    );
+
+    console.log("Fetched providers:", providers);  // Ensure providers data is correctly fetched
+
+    // Fetch game settings with GameSetting aggregation
+    const ocTimes = await GameSetting.aggregate([
+      { $unwind: "$gameSatingInfo" },
+      { 
         $match: {
-          gameType: "StarLine",
-        },
-      },
-      {
-        $unwind: "$gameSatingInfo", // Unwind to access fields directly
+          "gameSatingInfo.gameDay": dayName,  // Match current day
+          gameType: "StarLine"                // Ensure it matches the gameType
+        }
       },
       {
         $project: {
-          _id: 0,
-          providerId: "$providerId",
-          providerName: "$providerName",
+          providerId: 1,
           gameDay: "$gameSatingInfo.gameDay",
           OBT: "$gameSatingInfo.OBT",
           CBT: "$gameSatingInfo.CBT",
           OBRT: "$gameSatingInfo.OBRT",
           CBRT: "$gameSatingInfo.CBRT",
-          isClosed: "$gameSatingInfo.isClosed",
-        },
-      },
+          isClosed: "$gameSatingInfo.isClosed"
+        }
+      }
     ]);
 
-    const date = moment().format("MM/DD/YYYY");
-    let arrayFinal = []; // Change to an array
+    console.log("Fetched ocTimes:", ocTimes);  // Ensure ocTimes data is correctly fetched
 
-    const currentTime = moment().format("HH:mm a");
-    const current = moment(currentTime, "HH:mm a");
+    let arrayFinal = [];
+    const dt3 = dateTime.create();
+    let time = dt3.format("I:M p"); 
+    const current = moment(time, "HH:mm a");  // Convert to Moment.js time format
 
-    for (const setting of gameSettingInfo) {
-      const {
-        providerId,
-        providerName,
-        OBT,
-        CBT,
-        isClosed,
-      } = setting;
+    // Combine provider data with the game settings (ocTimes)
+    for (const provider of providers) {
+      // Convert both provider._id and ocTimes.providerId to strings to match properly
+      const setting = ocTimes.find(item => item.providerId.toString() === provider._id.toString());
 
-      const appDisplayText = isClosed ? "Betting Is Closed For Today" : "Betting Is Running Now";
-      const colorCode = isClosed ? "#ff0000" : "#a4c639";
+      if (setting) {
+        // Parse Open and Close times
+        let OpenTime = setting.OBT;
+        let CloseTime = setting.CBT;
+        let isClosed = setting.isClosed;
+        let startTime = moment(OpenTime, "HH:mm a");
+        let endTime = moment(CloseTime, "HH:mm a");
+        let appDisplayText = "Closed For Today";
+        let colorCode = "#ff0000"; // Red if closed
 
-      // Push provider data directly as an object into arrayFinal
-      arrayFinal.push({
-        providerName,
-        OpenBidTime: OBT,
-        CloseBidTime: CBT,
-        isClosed,
-        providerId,
-        displayText: appDisplayText,
-        colorCode,
-        gameDate: date,
-      });
+        if (!isClosed) {
+          if (current.isBefore(startTime)) {
+            appDisplayText = "Running For Open";
+            colorCode = "#a4c639"; 
+          } else if (current.isBefore(endTime)) {
+            appDisplayText = "Running For Close";
+            colorCode = "#a4c639"; 
+          }
+        }
+
+        arrayFinal.push({
+          providerName: provider.providerName,
+          providerResult: provider.providerResult,
+          resultStatus: provider.resultStatus,
+          isClosed: isClosed,
+          displayText: appDisplayText,
+          colorCode: colorCode,
+          providerId: provider._id,
+          OpenBidTime: OpenTime,  
+          CloseBidTime: CloseTime 
+        });
+      } else {
+        // Log when no matching setting is found for the provider
+        console.log(`No matching setting found for provider: ${provider.providerName}, providerId: ${provider._id}`);
+      }
     }
 
+    // Return success response with the final array
     return SuccessResponse(res, HTTP_MESSAGE.ALL_GAME_LIST, arrayFinal);
+
   } catch (err) {
-    return InternalServerErrorResponse(
-      res,
-      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
-      err
-    );
+    // Log error for debugging
+    console.error("Error:", err);
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
 
 const jackPotAllGames = async (req, res) => {
   try {
-    // Get the current day name
-    const currentDate = new Date();
-    const dayNames = [
-      "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
-    ];
-    const dayName = dayNames[currentDate.getDay()]; // Get current day
-    console.log("Current Day Name:", dayName); // Debugging: Log the current day name
+    const { userId } = req.body;
 
-    // Fetch game settings for JackPot game type
-    const gameSettingInfo = await GameSetting.aggregate([
-      {
+    // Validate user
+    const userDetails = await findOne("Users", { _id: userId });
+    if (!userDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
+
+    // Get current day of the week
+    const dt4 = dateTime.create();
+    let dayName = dt4.format("W");  // Ensure that the format matches the data in the DB (e.g., "Monday", "Tuesday")
+
+    // Fetch providers with active status and gameType: 'MainGame'
+    const providers = await GameProvider.find(
+      { activeStatus: true, gameType: "JackPot" },
+      { _id: 1, providerName: 1, providerResult: 1, resultStatus: 1 }
+    );
+
+    console.log("Fetched providers:", providers);  // Ensure providers data is correctly fetched
+
+    // Fetch game settings with GameSetting aggregation
+    const ocTimes = await GameSetting.aggregate([
+      { $unwind: "$gameSatingInfo" },
+      { 
         $match: {
-          gameType: "JackPot",
-        },
-      },
-      {
-        $unwind: "$gameSatingInfo", // Unwind to access fields directly
+          "gameSatingInfo.gameDay": dayName,  // Match current day
+          gameType: "JackPot"                // Ensure it matches the gameType
+        }
       },
       {
         $project: {
-          _id: 0,
-          providerId: "$providerId",
-          providerName: "$providerName",
+          providerId: 1,
           gameDay: "$gameSatingInfo.gameDay",
           OBT: "$gameSatingInfo.OBT",
           CBT: "$gameSatingInfo.CBT",
           OBRT: "$gameSatingInfo.OBRT",
           CBRT: "$gameSatingInfo.CBRT",
-          isClosed: "$gameSatingInfo.isClosed",
-        },
-      },
+          isClosed: "$gameSatingInfo.isClosed"
+        }
+      }
     ]);
 
-    console.log("Game Setting Info:", gameSettingInfo); // Log the aggregation result
+    console.log("Fetched ocTimes:", ocTimes);  // Ensure ocTimes data is correctly fetched
 
-    // Prepare the final response array
-    const date = moment().format("MM/DD/YYYY");
-    const arrayFinal = []; // Initialize as an array
+    let arrayFinal = [];
+    const dt3 = dateTime.create();
+    let time = dt3.format("I:M p"); 
+    const current = moment(time, "HH:mm a");  // Convert to Moment.js time format
 
-    // Current time for display
-    const currentTime = moment().format("HH:mm a");
-    const current = moment(currentTime, "HH:mm a");
+    // Combine provider data with the game settings (ocTimes)
+    for (const provider of providers) {
+      // Convert both provider._id and ocTimes.providerId to strings to match properly
+      const setting = ocTimes.find(item => item.providerId.toString() === provider._id.toString());
 
-    // Construct the final result array
-    for (const setting of gameSettingInfo) {
-      const {
-        providerId,
-        providerName,
-        OBT,
-        CBT,
-        isClosed,
-      } = setting;
+      if (setting) {
+        // Parse Open and Close times
+        let OpenTime = setting.OBT;
+        let CloseTime = setting.CBT;
+        let isClosed = setting.isClosed;
+        let startTime = moment(OpenTime, "HH:mm a");
+        let endTime = moment(CloseTime, "HH:mm a");
+        let appDisplayText = "Closed For Today";
+        let colorCode = "#ff0000"; // Red if closed
 
-      // Check the OpenBidTime and CloseBidTime values
-      console.log(`Provider ID: ${providerId}, OpenBidTime: ${OBT}, CloseBidTime: ${CBT}`); // Debugging
+        if (!isClosed) {
+          if (current.isBefore(startTime)) {
+            appDisplayText = "Running For Open";
+            colorCode = "#a4c639"; 
+          } else if (current.isBefore(endTime)) {
+            appDisplayText = "Running For Close";
+            colorCode = "#a4c639"; 
+          }
+        }
 
-      // Set display text and color code based on the current status
-      const appDisplayText = isClosed ? "Betting Is Closed For Today" : "Betting Is Running Now";
-      const colorCode = isClosed ? "#ff0000" : "#a4c639";
-
-      // Push provider data into the arrayFinal
-      arrayFinal.push({
-        providerName,
-        OpenBidTime: OBT,
-        CloseBidTime: CBT,
-        isClosed,
-        providerId,
-        displayText: appDisplayText,
-        colorCode,
-        gameDate: date,
-      });
+        arrayFinal.push({
+          providerName: provider.providerName,
+          providerResult: provider.providerResult,
+          resultStatus: provider.resultStatus,
+          isClosed: isClosed,
+          displayText: appDisplayText,
+          colorCode: colorCode,
+          providerId: provider._id,
+          OpenBidTime: OpenTime,  
+          CloseBidTime: CloseTime 
+        });
+      } else {
+        console.log(`No matching setting found for provider: ${provider.providerName}, providerId: ${provider._id}`);
+      }
     }
-
-    // Send the final response as an array
-    return res.status(200).json({
-      status: 200,
-      success: true,
-      data: arrayFinal, // Sending the array as is
-      message: "ALL GAME RESULT SHOW SUCCESSFULLY",
-    });
+    return SuccessResponse(res, HTTP_MESSAGE.ALL_GAME_LIST, arrayFinal);
   } catch (err) {
-    return res.status(500).json({
-      status: 500,
-      success: false,
-      message: "Internal Server Error",
-      error: err.message,
-    });
+    console.error("Error:", err);
+    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
 };
 
