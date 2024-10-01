@@ -39,4 +39,8 @@ export const gameProviderIdSchema = Joi.object({
   gameSettingId:Joi.string().required()
 });
 
-
+export const addCardSchema = Joi.object({
+  adminId:Joi.string().required(),
+  cardName:Joi.string().required(),
+  cardGameType:Joi.string().required(),
+});
