@@ -12,8 +12,7 @@ const s3 = new S3Client({
 const getMulterStorage = (storagePath) => {
     const s3Storage = multerS3({
         s3: s3,
-        bucket: "ramabetsfile",
-        acl: "public-read",
+        bucket: "bhaubuckettest",
         metadata: (req, file, cb) => {
             cb(null, { fieldname: file.fieldname });
         },

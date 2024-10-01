@@ -18,18 +18,24 @@ import { GameProvider } from "../../../../models/gameProvider.js";
 import dateTime from "node-datetime";
 import { WalletContact } from "../../../../models/walledContect.js";
 import { result } from "../../../../helpers/gameResult.js";
+import { Card } from "../../../../models/card.js";
 
 const allGames = async (req, res) => {
   try {
     const { userId } = req.body;
     const userDetails = await findOne("Users", { _id: userId });
-    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    
-    let gameType="MainGame"
-    let arrayFinal= await result(gameType);
+    if (!userDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+    let gameType = "MainGame";
+    let arrayFinal = await result(gameType);
     return SuccessResponse(res, HTTP_MESSAGE.ALL_GAME_LIST, arrayFinal);
   } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
   }
 };
 
@@ -37,13 +43,18 @@ const starLineAllGames = async (req, res) => {
   try {
     const { userId } = req.body;
     const userDetails = await findOne("Users", { _id: userId });
-    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    
-    let gameType="StarLine"
-    let arrayFinal= await result(gameType);
+    if (!userDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+    let gameType = "StarLine";
+    let arrayFinal = await result(gameType);
     return SuccessResponse(res, HTTP_MESSAGE.ALL_GAME_LIST, arrayFinal);
   } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
   }
 };
 
@@ -51,13 +62,18 @@ const jackPotAllGames = async (req, res) => {
   try {
     const { userId } = req.body;
     const userDetails = await findOne("Users", { _id: userId });
-    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    
-    let gameType="JackPot"
-    let arrayFinal= await result(gameType);
+    if (!userDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+    let gameType = "JackPot";
+    let arrayFinal = await result(gameType);
     return SuccessResponse(res, HTTP_MESSAGE.ALL_GAME_LIST, arrayFinal);
   } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
   }
 };
 
@@ -147,6 +163,35 @@ const gamesRatesById = async (req, res) => {
   }
 };
 
+const cardList = async (req, res) => {
+  try {
+    const { userId, gameType } = req.body;
+    const userDetails = await findOne("Users", { _id: userId });
+    if (!userDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    }
+    const data = await Card.find(
+      {
+        status: true,
+        [`cardInfo.${gameType}`]: true,
+      },
+      {
+        cardName: 1,
+        cardImage: 1,
+      }
+    );
+    return SuccessResponse(res, HTTP_MESSAGE.CARD_LIST_SHOW_SUCCESSFULLY, {
+      card: data,
+    });
+  } catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
 export {
   allGames,
   starLineAllGames,
@@ -155,4 +200,5 @@ export {
   gamesRates,
   gamesRatesById,
   getNumber,
+  cardList,
 };
