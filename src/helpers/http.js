@@ -112,7 +112,8 @@ export const HTTP_MESSAGE = {
   CARD_UPDATED_SUCCESSFULLY:"Card Add Successfully",
   CARD_NOT_FOUND:"Card Not Found",
   CARD_LIST_SHOW_SUCCESSFULLY:"Card List Show Successfully",
-  CARD_DELETE_SUCCESSFULLY:"Card Delete Successfully"
+  CARD_DELETE_SUCCESSFULLY:"Card Delete Successfully",
+  WALLET_UPDATE_SUCCESSFULLY:"Wallet Update Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {
