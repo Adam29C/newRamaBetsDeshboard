@@ -12,7 +12,7 @@ import { GameSetting } from "../../../../models/gameSetting.js";
 import { HowToPlay } from "../../../../models/howToPlay.js";
 import { Users } from "../../../../models/users.js";
 import { reqONoFF } from "../../../../models/requestOnOff.js";
-import { wallet } from "../../../../models/walledHistory.js";
+//import { wallet } from "../../../../models/walledHistory.js";
 
 const addFond = async (req, res) => {
   try {
