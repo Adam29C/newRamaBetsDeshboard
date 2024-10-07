@@ -19,6 +19,10 @@ import dateTime from "node-datetime";
 import { WalletContact } from "../../../../models/walledContect.js";
 import { result } from "../../../../helpers/gameResult.js";
 import { Card } from "../../../../models/card.js";
+import { Users } from "../../../../models/users.js";
+import { validateBidTime } from "../../../../helpers/validateTime.js";
+import { insertBidHistory } from "../../../../helpers/insertBid.js";
+import { gameBid } from "../../../../models/gameBid.js";
 
 const allGames = async (req, res) => {
   try {
@@ -192,6 +196,96 @@ const cardList = async (req, res) => {
   }
 };
 
+const addGameBids = async (req, res) => {
+  try {
+    // Destructuring request body
+    const {
+      userId,
+      bidData: bidDatarray,
+      bidSum: Balance,
+      providerId,
+      gameDate,
+      gameSession,
+      cardId,
+      cardName,
+      providerName,
+      gameType,
+    } = req.body;
+
+    // Step 1: Validate User
+    const user = await Users.findOne({ _id: userId });
+    if (!user) {
+      return res.status(200).send({ status: 0, message: "User Not Found" });
+    }
+
+    // Step 2: Validate Bid Time
+    const bidTimeValidation = await validateBidTime(providerId, gameDate, gameSession);
+    if (bidTimeValidation.status !== 1) {
+      return res.status(200).send(bidTimeValidation);
+    }
+
+    // Step 3: Check Wallet Balance
+    const walletBal = user.wallet_balance;
+    if (walletBal < Balance) {
+      return res.status(200).send({
+        status: 2,
+        message: "Insufficient Wallet Amount",
+      });
+    }
+
+    // Step 4: Prepare Bid Data with additional fields like cardId, cardName, providerName
+    const dt = dateTime.create();
+    const currentDate = dt.format("d/m/Y");
+    const bidsWithExtraInfo = bidDatarray.map(bid => ({
+      ...bid,
+      userId,
+      cardId,
+      cardName,
+      providerId,
+      providerName,
+      gameDate,
+      gameSession,
+      gameType,
+      bidTime: dt.format("H:M:S"),
+    }));
+
+    // Step 5: Place Bids
+    const placedBids = await gameBid.insertMany(bidsWithExtraInfo);
+    const updatedWallet = walletBal - Balance;
+
+    // Step 6: Update Wallet Balance
+    await Users.updateOne(
+      { _id: userId },
+      { $set: { wallet_balance: updatedWallet } }
+    );
+
+    // Step 7: Insert Bid History (assuming a helper function exists)
+    await insertBidHistory(
+      userId,
+      user.userName,  // Assuming user's name is needed here
+      placedBids,
+      walletBal,
+      currentDate,
+      dt
+    );
+
+    // Step 8: Return Success Response
+    return res.status(200).send({
+      status: 1,
+      message: "Bids Placed Successfully",
+      updatedWalletBal: updatedWallet,
+    });
+
+  } catch (error) {
+    // Error Handling
+    return res.status(400).json({
+      status: 0,
+      message: "Something Bad Happened. Contact Support",
+      error,
+    });
+  }
+};
+
 export {
   allGames,
   starLineAllGames,
@@ -201,4 +295,5 @@ export {
   gamesRatesById,
   getNumber,
   cardList,
+  addGameBids,
 };
