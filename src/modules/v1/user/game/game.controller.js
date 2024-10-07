@@ -271,8 +271,8 @@ const addGameBids = async (req, res) => {
 
     // Step 8: Return Success Response
     return res.status(200).send({
-      status: 1,
-      message: "Bids Placed Successfully",
+      status: 200,
+      message: "Bids Add Successfully",
       updatedWalletBal: updatedWallet,
     });
 
