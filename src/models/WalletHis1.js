@@ -1,10 +1,7 @@
 import mongoose from 'mongoose';
-
-
 const walletHistorySchema = new mongoose.Schema({
     userId: {
-        type: String,
-        required: true
+        type: String,   
     },
     bidId: {
         type: String,
@@ -32,31 +29,31 @@ const walletHistorySchema = new mongoose.Schema({
     },
     previous_amount: {
         type: Number,
-        required: true
+        
     },
     current_amount: {
         type: Number,
-        required: true
+        
     },
     transaction_amount: {
         type: Number,
-        required: true
+        
     },
     description: {
         type: String,
-        required: true
+        
     },
     transaction_date: {
         type: String,
-        required: true
+        
     },
     transaction_time: {
         type: String,
-        required: true
+        
     },
     transaction_status: {
         type: String,
-        required: true
+        
     },
     win_revert_status: {
         type: Number,
@@ -81,7 +78,7 @@ const walletHistorySchema = new mongoose.Schema({
     },
     username: {
         type: String,
-        required: true
+        
     },
     mobile: {
         type: String,
@@ -100,7 +97,5 @@ const walletHistorySchema = new mongoose.Schema({
         }
     }
 );
-
-
 const WalletHis = mongoose.model('WalletHis', walletHistorySchema);
 export{WalletHis}
