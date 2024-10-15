@@ -3,7 +3,9 @@ import { UnauthorizedResponse } from "../helpers/http.js";
 import { HTTP_MESSAGE } from "../helpers/http.js";
 
 const verifyRoles = (...allowedRoles) => { 
+
     return (req, res, next) => {
+        console.log(req)
         try {
             if (!req?.roles) {
                 return UnauthorizedResponse(res, HTTP_MESSAGE.UNAUTHORIZED);

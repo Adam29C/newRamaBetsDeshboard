@@ -1,0 +1,15 @@
+import mongoose from "mongoose";
+
+const mongooseSchema = new mongoose.Schema({
+  userId: { type: String },
+  deviceId: { type: String },
+  accNumber: { type: Number },
+  ifscCode: { type: String },
+  bankName: { type: String },
+  accName: { type: String },
+},{
+  timestamps:true
+});
+
+const bank = new mongoose.model("bank",mongooseSchema);
+export{bank}
