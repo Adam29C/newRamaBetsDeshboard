@@ -8,13 +8,13 @@ const walletRouters = express.Router();
 import { verifyToken } from "../../../../helpers/token.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import {updateWallet, walletHestory, walletHestoryCreditDebit } from "./wallet.controller.js";
-import {walletHestorySchema } from "./wallet.schema.js";
+// import {walletHestorySchema } from "./wallet.schema.js";
 
 walletRouters.get(
   "/walletHestory",
   verifyToken,
   verifyRoles(roleList.ADMIN),
-  validator(walletHestorySchema, ValidationSource.QUERY),
+  //validator(walletHestorySchema, ValidationSource.QUERY),
   walletHestory
 );
 

@@ -1,158 +1,206 @@
-import { deleteQuery, findAll, findOne, insertQuery, update } from '../../../../helpers/crudMongo.js';
-import { HTTP_MESSAGE, InternalServerErrorResponse, SuccessResponse, BadRequestResponse, UnauthorizedResponse } from '../../../../helpers/http.js';
-import Admin from '../../../../models/admin.js';
-import { DeletedUser } from '../../../../models/deleteUser.js';
-import { UserIdea } from '../../../../models/userIdia.js';
-import { Users } from '../../../../models/users.js';
+import moment from "moment";
+import {
+  findAll,
+  findOne,
+  insertQuery,
+  update,
+} from "../../../../helpers/crudMongo.js";
+import {
+  BadRequestResponse,
+  HTTP_MESSAGE,
+  InternalServerErrorResponse,
+  SuccessResponse,
+} from "../../../../helpers/http.js";
+import Admin from "../../../../models/admin.js";
+import { UpiList } from "../../../../models/upiList.js";
+import { Users } from "../../../../models/users.js";
+import { fundRequest } from "../../../../models/fundRequest.js";
+import { WalletHis } from "../../../../models/WalletHis1.js";
 
-//All User List Api function 
-const userList = async (req, res) => {
-  try {
-    const adminId = req.params.adminId;
-
-    //check If the admin exist
-    const adminDetails = await findOne("Admin", { _id: adminId });
-    if (!adminDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
-
-    //fatch all user list
-    const list = await findAll("Users", {})
-    return SuccessResponse(res, HTTP_MESSAGE.USER_LIST, list)
-
-  } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-  }
-};
-
-//All userInfoById Api function 
-const userInfoById = async (req, res) => {
-  try {
-    const { adminId, userId } = req.body;
-
-    //check If the admin exist
-    const adminDetails = await findOne("Admin", { _id: adminId });
-    if (!adminDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
-
-    //check If the user exist
-    const userDetails = await findOne("Users", { _id: userId });
-    if (!userDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
-
-    return SuccessResponse(res, HTTP_MESSAGE.USER_INFO, userDetails)
-
-  } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-  }
-};
-
-//Function For Admin Block User api
-const blockUser = async (req, res) => {
-  try {
-    const { adminId, userId, isBlock } = req.body;
-
-    // Validate adminId
-    const adminDetails = await findOne("Admin", { _id: adminId });
-    if (!adminDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
-
-    // Validate userId
-    const userDetails = await findOne("Users", { _id: userId });
-    if (!userDetails) {
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    }
-
-    // Update User block status
-    await update("Users", { _id: userId }, { isBlock });
-
-    // Determine the response message
-    const message = isBlock ? HTTP_MESSAGE.BLOCK_USER : HTTP_MESSAGE.UNBLOCK_USER;
-
-    // Respond with the appropriate message
-    return SuccessResponse(res, message);
-
-  } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-  }
-};
-
-//delete user
-const deleteUser = async (req, res) => {
-  try {
-    let { adminId, userId,reason } = req.body;
-
-    // Check if admin exists
-    const adminInfo = await findOne("Admin", { _id: adminId });
-    if (!adminInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-
-    // Check if user exists
-    const userInfo = await findOne("Users", { _id: userId });
-    if (!userInfo) return BadRequestResponse(res, HTTP_MESSAGE.USER_ALREADY_DELETED);
-
-    // Create delete user object
-    const deleteUserObj = {
-      userId: userInfo._id,
-      name: userInfo.name,
-      username: userInfo.username,
-      mobile: userInfo.mobile,
-      createdAt: userInfo.createdAt,
-      deviceId:userInfo.deviceId,
-      deviceName:userInfo.deviceName,
-      reason:reason  
-    };
-
-
-    // Insert the deleted user object into DeletedUser collection
-    await insertQuery("DeletedUser", deleteUserObj);
-
-    // Delete the user from Users collection
-    await deleteQuery("Users", { _id: userId });
-
-    return SuccessResponse(res, HTTP_MESSAGE.USER_DELETED_SUCCESS);
-  } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-  }
-}
-
-//All userInfoById Api function 
-const getUserIdea = async (req, res) => {
+const walletHestory = async (req, res) => {
   try {
     const { adminId } = req.query;
+    const adminDetails = await findOne("Admin", { _id: adminId });
+    if (!adminDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+    let list = await findAll(
+      "Users",
+      {},
+      { name: 1, mobile: 1, wallet_balance: 1, updatedAt: 1 }
+    );
+    const formatDate = (date) => {
+      const options = {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: true,
+      };
+      const formattedDate = new Intl.DateTimeFormat("en-GB", options).format(
+        date
+      );
+      const [datePart, timePart] = formattedDate.split(", ");
+      return `${datePart}${timePart.replace(/\./g, "")}`;
+    };
 
-    // Check if the admin exists
+    list = list.map((user) => {
+      return {
+        ...user,
+        updatedAt: user.updatedAt ? formatDate(new Date(user.updatedAt)) : null, // Convert to desired format
+      };
+    });
+    return SuccessResponse(res, HTTP_MESSAGE.UPI_LIST_SHOW_SUCCESSFULLY, list);
+  } catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const updateWallet = async (req, res) => {
+  try {
+    const { adminId, userId, amount, type, particular } = req.body;
+
+    // Fetch admin details
     const adminDetails = await findOne("Admin", { _id: adminId });
     if (!adminDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
 
-    // Find user ideas
-    const userIdeaInfo = await findAll("UserIdea", {});
-    return SuccessResponse(res, HTTP_MESSAGE.USER_IDIA_INFO, userIdeaInfo);
+    // Fetch user details
+    const userDetails = await Users.findOne({ _id: userId });
+    if (!userDetails) {
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+    }
 
+    // Calculate updated balance and prepare transaction details
+    let update_bal, detail, reqType, filter;
+    if (type === 1) {
+      update_bal = userDetails.wallet_balance + parseInt(amount);
+      detail = `Amount Added To Wallet By ${adminDetails.username}`;
+      reqType = "Credit";
+      filter = 4; // Credit filter type
+    } else {
+      update_bal = userDetails.wallet_balance - parseInt(amount);
+      detail = `Amount Withdrawn From Wallet By ${adminDetails.username}`;
+      reqType = "Debit";
+      filter = 5; // Debit filter type
+    }
+
+    // Format date, time, and timestamp
+    const formattedDate = moment().format("DD/MM/YYYY");
+    const formattedTime = moment().format("hh:mm:ss A");
+    const timestamp = moment(formattedDate, "DD/MM/YYYY").unix();
+
+    // Create a new fund request
+    const addReq = new fundRequest({
+      userId,
+      reqAmount: amount,
+      fullname: userDetails.name,
+      mobile: userDetails.mobile,
+      reqType,
+      reqStatus: "Approved",
+      reqDate: formattedDate,
+      reqTime: formattedTime,
+      withdrawalMode: particular || "Bank", // Default to 'Bank' if not provided
+      UpdatedBy: adminDetails.username,
+      reqUpdatedAt: `${formattedDate} ${formattedTime}`,
+      fromExport: false,
+      from: 1,
+      timestamp,
+    });
+
+    // Save the fund request
+    const saveReq = await addReq.save();
+
+    // Update user's wallet balance
+    await Users.updateOne(
+      { _id: userId },
+      {
+        $set: {
+          wallet_balance: update_bal,
+          wallet_bal_updated_at: `${formattedDate} ${formattedTime}`,
+        },
+      }
+    );
+
+    // Record the transaction in wallet history
+    const history = new WalletHis({
+      userId,
+      bidId: saveReq._id,
+      filterType: filter,
+      previous_amount: userDetails.wallet_balance,
+      current_amount: update_bal,
+      transaction_amount: parseInt(amount),
+      description: detail,
+      transaction_date: formattedDate,
+      transaction_time: formattedTime,
+      transaction_status: "Success",
+      adminId,
+      particular: particular || "Bank",
+      upiId: "null",
+      timestamp,
+      username: userDetails.name,
+      reqType,
+      addedBy_name: adminDetails.username,
+      mobile: userDetails.mobile,
+    });
+
+    // Save wallet history
+    await history.save();
+
+    // (Optional) Send notification logic can go here
+
+    // Respond with success and transaction details
+    const data = update_bal;
+    return SuccessResponse(res, HTTP_MESSAGE.WALLET_UPDATE_SUCCESSFULLY, data);
   } catch (err) {
-    return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+    // Handle any errors
+    console.error("Error in updateWallet:", err);
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
   }
 };
 
-//list of delete user
-const getDeleteUser =async(req,res)=>{
-try{
-  const {adminId}=req.query;
-  
-  //chack if admin exist
-  const adminDetails =await ("Admin",{_id:adminId})
-  if(!adminDetails) return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FOUND)
-  
-  const list = await DeletedUser.find({},{createdAt:0,updatedAt:0,deletedAt:0})
-  
-  return SuccessResponse(res,HTTP_MESSAGE.ALL_DELETE_USER_HISTORY,list)
-}catch(err){
-  return InternalServerErrorResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
-}
+const walletHestoryCreditDebit = async (req, res) => {
+  try {
+    const { adminId, userId, type } = req.body;
+    const adminDetails = await findOne("Admin", { _id: adminId });
+    if (!adminDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+    const userDetails = Users.findOne({ _id: userId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    const list = await fundRequest.find({ reqType: type });
+    return SuccessResponse(res, HTTP_MESSAGE.WALLET_HESTORY_SHOW_SUCCESSFULY, list);
+  } catch (err) {
+    BadRequestResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
 };
 
-export { userList, userInfoById, blockUser,deleteUser,getUserIdea,getDeleteUser }
+const fundHis = async (req, res) => {
+  try {
+    const { adminId, userId } = req.body;
+    const adminDetails = await findOne("Admin", { _id: adminId });
+    if (!adminDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+    const userDetails = Users.findOne({ _id: userId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    const list = await fundRequest.find({ reqType: type });
+    return SuccessResponse(res, HTTP_MESSAGE.WALLET_UPDATE_SUCCESSFULLY, list);
+  } catch (err) {
+    BadRequestResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+export { walletHestory, updateWallet, walletHestoryCreditDebit };

@@ -220,7 +220,7 @@ const withdrawFund = async (req, res) => {
       ifscCode,
       bankName,
       accName,
-      user_id,
+      userId,
       req_amount,
       username,
       mobile,
@@ -233,13 +233,6 @@ const withdrawFund = async (req, res) => {
     const dt = moment();
     const dayName = dt.format("dddd");
     const checkDayoff = await reqONoFF.findOne({ dayName }, { enabled: 1 });
-
-    console.log(checkDayoff, "bbbbbb");
-    console.log(
-      "this test file",
-      "this is anather test file",
-      "this is anather test file"
-    );
 
     if (!checkDayoff || !checkDayoff.enabled) {
       return res.status(200).json({
@@ -257,6 +250,7 @@ const withdrawFund = async (req, res) => {
     );
     console.log(withdrawDetails, "withdrawDetails");
     const currentTime = moment();
+    console.log(currentTime,"currentTime")
     const startMoment = moment(withdrawDetails.startTime, "HH:mm");
     const endMoment = moment(withdrawDetails.endTime, "HH:mm");
 
@@ -284,11 +278,12 @@ const withdrawFund = async (req, res) => {
     }
 
     // Check for pending requests
-    const existingRequest = await fundReq.findOne({
-      userId: user_id,
+    const existingRequest = await fundRequest.findOne({
+      userId: userId,
       reqStatus: "Pending",
       reqType: "Debit",
     });
+    console.log(existingRequest,"existingRequest")
     if (existingRequest) {
       return res.status(400).json({
         status: 0,
@@ -296,33 +291,33 @@ const withdrawFund = async (req, res) => {
       });
     }
 
-    // Check last UPI request time if exists
-    const lastUpi = await upi.findOne({ userId: user_id });
-    if (lastUpi) {
-      const lastRequestTime = moment(
-        `${lastUpi.reqDate} ${lastUpi.reqTime}`,
-        "DD/MM/YYYY HH:mm:ss A"
-      );
-      const timeDifference = moment
-        .duration(moment().diff(lastRequestTime))
-        .asMinutes();
+    // // Check last UPI request time if exists
+    // const lastUpi = await upi.findOne({ userId: userId });
+    // if (lastUpi) {
+    //   const lastRequestTime = moment(
+    //     `${lastUpi.reqDate} ${lastUpi.reqTime}`,
+    //     "DD/MM/YYYY HH:mm:ss A"
+    //   );
+    //   const timeDifference = moment
+    //     .duration(moment().diff(lastRequestTime))
+    //     .asMinutes();
 
-      if (timeDifference < 5) {
-        const waitTime = Math.ceil(5 - timeDifference); // Wait time in minutes
-        return res.status(400).json({
-          status: 5,
-          message: `Please wait for ${waitTime} minute(s) to raise another withdraw request.`,
-        });
-      }
-    }
+    //   if (timeDifference < 5) {
+    //     const waitTime = Math.ceil(5 - timeDifference); // Wait time in minutes
+    //     return res.status(400).json({
+    //       status: 5,
+    //       message: `Please wait for ${waitTime} minute(s) to raise another withdraw request.`,
+    //     });
+    //   }
+    // }
 
     // Create and save new withdrawal request
     const formattedDate = dt.format("DD/MM/YYYY");
     const timestamp = dt.unix();
 
     console.log(formattedDate, "fff");
-    const newFundReq = new fundReq({
-      userId: user_id,
+    const newFundReq = new fundRequest({
+      userId: userId,
       reqAmount: req_amount,
       fullname: userDetails.name,
       username,
@@ -339,7 +334,7 @@ const withdrawFund = async (req, res) => {
     });
 
     await newFundReq.save();
-    await User.findByIdAndUpdate(user_id, {
+    await Users.findByIdAndUpdate(userId, {
       withdrawalCount: count,
       withdrawalTime: currentTime.format(),
     });

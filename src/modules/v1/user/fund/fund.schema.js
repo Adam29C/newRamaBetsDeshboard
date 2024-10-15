@@ -30,7 +30,7 @@ export const updateBankDetailsSchema = Joi.object({
 });
 
 export const withdrawFundSchema = Joi.object({
-  deviceId: Joi.number().required(),
+  deviceId: Joi.string().required(),
   accNumber:Joi.number().required(),
   ifscCode:Joi.string().required(),
   bankName:Joi.string().required(),

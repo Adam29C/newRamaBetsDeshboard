@@ -16,7 +16,7 @@ fundRouter.post(
 
 fundRouter.put(
   "/addBank",
-  validator(addBankSchema,ValidationSource.BODY),
+  //validator(addBankSchema,ValidationSource.BODY),
   addBankDetails
 );
 
