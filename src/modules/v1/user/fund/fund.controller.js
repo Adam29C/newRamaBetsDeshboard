@@ -257,6 +257,7 @@ const withdrawFund = async (req, res) => {
     );
     console.log(withdrawDetails, "withdrawDetails");
     const currentTime = moment();
+    console.log(currentTime,"currentTime")
     const startMoment = moment(withdrawDetails.startTime, "HH:mm");
     const endMoment = moment(withdrawDetails.endTime, "HH:mm");
 
