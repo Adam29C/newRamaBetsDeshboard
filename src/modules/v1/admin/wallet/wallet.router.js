@@ -7,7 +7,7 @@ import { roleList } from "../../../../consts/authorization.js";
 const walletRouters = express.Router();
 import { verifyToken } from "../../../../helpers/token.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
-import {updateWallet, walletHestory, walletHestoryCreditDebit } from "./wallet.controller.js";
+import {approveCreditDebitRequest, updateWallet, walletHestory, walletHestoryCreditDebit } from "./wallet.controller.js";
 // import {walletHestorySchema } from "./wallet.schema.js";
 
 walletRouters.get(
@@ -39,6 +39,14 @@ walletRouters.get(
   verifyRoles(roleList.ADMIN),
   walletHestoryCreditDebit
 );
+
+walletRouters.get(
+  "/approveCreditDebitRequest",
+  verifyToken,
+  verifyRoles(roleList.ADMIN),
+  approveCreditDebitRequest
+);
+
 
 // mastersRouters.delete(
 //   "/deleteUpi",

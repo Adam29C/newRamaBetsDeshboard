@@ -160,7 +160,6 @@ const updateWallet = async (req, res) => {
     return SuccessResponse(res, HTTP_MESSAGE.WALLET_UPDATE_SUCCESSFULLY, data);
   } catch (err) {
     // Handle any errors
-    console.error("Error in updateWallet:", err);
     return InternalServerErrorResponse(
       res,
       HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
@@ -179,8 +178,31 @@ const walletHestoryCreditDebit = async (req, res) => {
     const userDetails = Users.findOne({ _id: userId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
 
-    const list = await fundRequest.find({ reqType: type });
+    const list = await fundRequest.find({ reqType: type },{_id:1,userId:1,reqType:1,reqStatus:1});
     return SuccessResponse(res, HTTP_MESSAGE.WALLET_HESTORY_SHOW_SUCCESSFULY, list);
+  } catch (err) {
+    BadRequestResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+const approveCreditDebitRequest = async (req, res) => {
+  try {
+    const { adminId, userId, fundRequestId,reqStatus } = req.body;
+    const adminDetails = await Users.findOne({ _id: adminId });
+    if (!adminDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+
+    const userDetails = await Users.findOne({ _id: userId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    const fundRequestDetails = await fundRequest.findOne({ _id: fundRequestId});
+    if (!fundRequestDetails) return BadRequestResponse(res, HTTP_MESSAGE.FUND_REQUEST_ID_NOT_EXIST);
+    
+    const updateAmount=userDetails.wallet_balance-fundRequestDetails.reqAmount
+    const updateRequest = await fundRequest.updateOne({ _id:fundRequestId },{$set:{reqStatus}});
+    const updateWallet =await Users.updateOne({_id:userId},{$set:{wallet_balance:updateAmount}})
+    
+    return SuccessResponse(res, HTTP_MESSAGE.REQUEST_UPDATE_SUCCESSFULLY, updateRequest);
   } catch (err) {
     BadRequestResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
@@ -203,4 +225,4 @@ const fundHis = async (req, res) => {
   }
 };
 
-export { walletHestory, updateWallet, walletHestoryCreditDebit };
+export { walletHestory, updateWallet, walletHestoryCreditDebit,approveCreditDebitRequest };

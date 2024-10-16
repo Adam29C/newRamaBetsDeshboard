@@ -214,18 +214,7 @@ const bankList = async (req, res) => {
 
 const withdrawFund = async (req, res) => {
   try {
-    const {
-      deviceId,
-      accNumber,
-      ifscCode,
-      bankName,
-      accName,
-      userId,
-      req_amount,
-      username,
-      mobile,
-      withdrawalMode,
-    } = req.body;
+    const { deviceId, userId, reqAmount } = req.body;
 
     const userDetails = await findOne("Users", { deviceId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
@@ -235,11 +224,10 @@ const withdrawFund = async (req, res) => {
     const checkDayoff = await reqONoFF.findOne({ dayName }, { enabled: 1 });
 
     if (!checkDayoff || !checkDayoff.enabled) {
-      return res.status(200).json({
-        status: 0,
-        message: checkDayoff
-          ? checkDayoff.message
-          : "Withdrawal requests are currently disabled.",
+      return res.json({
+        status: false,
+        statusCode:400,
+        message: checkDayoff ? checkDayoff.message : "Withdrawal requests are currently disabled.",
       });
     }
 
@@ -248,16 +236,16 @@ const withdrawFund = async (req, res) => {
       { isRequest: true },
       { startTime: 1, endTime: 1, requestCount: 1 }
     );
-    console.log(withdrawDetails, "withdrawDetails");
+
     const currentTime = moment();
-    console.log(currentTime,"currentTime")
     const startMoment = moment(withdrawDetails.startTime, "HH:mm");
     const endMoment = moment(withdrawDetails.endTime, "HH:mm");
 
     if (!currentTime.isBetween(startMoment, endMoment, null, "[)")) {
-      return res.status(400).json({
-        status: 0,
-        message: `Withdraw Time Over. Please Try ${withdrawDetails.startTime} To ${withdrawDetails.endTime}. Thank you`,
+      return res.json({
+        status: 400,
+        success: false,
+        message: `Withdraw time over. Please try ${withdrawDetails.startTime} to ${withdrawDetails.endTime}. Thank you.`,
       });
     }
 
@@ -267,70 +255,49 @@ const withdrawFund = async (req, res) => {
 
     if (storedDate.isSame(todayDate, "day")) {
       if (count >= withdrawDetails.requestCount) {
-        return res.status(400).json({
-          status: 0,
-          message: "Your Withdraw Limit Is Over",
-        });
+        return BadRequestResponse(res, HTTP_MESSAGE.YOUR_WITHDRAWAL_LIMIT_IS_OVER);
       }
       count++;
     } else {
       count = 1;
     }
 
+    const bankInfo = await bank.findOne({ deviceId });
+    
     // Check for pending requests
     const existingRequest = await fundRequest.findOne({
       userId: userId,
       reqStatus: "Pending",
       reqType: "Debit",
     });
-    console.log(existingRequest,"existingRequest")
+
     if (existingRequest) {
-      return res.status(400).json({
-        status: 0,
-        message: "Your Previous Debit Request Is Pending",
-      });
+      return BadRequestResponse(res, HTTP_MESSAGE.YOUR_PREVIOUS_DEBIT_REQUEST_IS_PENDING);
     }
-
-    // // Check last UPI request time if exists
-    // const lastUpi = await upi.findOne({ userId: userId });
-    // if (lastUpi) {
-    //   const lastRequestTime = moment(
-    //     `${lastUpi.reqDate} ${lastUpi.reqTime}`,
-    //     "DD/MM/YYYY HH:mm:ss A"
-    //   );
-    //   const timeDifference = moment
-    //     .duration(moment().diff(lastRequestTime))
-    //     .asMinutes();
-
-    //   if (timeDifference < 5) {
-    //     const waitTime = Math.ceil(5 - timeDifference); // Wait time in minutes
-    //     return res.status(400).json({
-    //       status: 5,
-    //       message: `Please wait for ${waitTime} minute(s) to raise another withdraw request.`,
-    //     });
-    //   }
-    // }
+    
+    // Check wallet balance
+    if (userDetails.wallet_balance < reqAmount) {
+      return BadRequestResponse(res, HTTP_MESSAGE.INSUFFICIENT_BALANCE);
+    }
 
     // Create and save new withdrawal request
     const formattedDate = dt.format("DD/MM/YYYY");
-    const timestamp = dt.unix();
-
-    console.log(formattedDate, "fff");
     const newFundReq = new fundRequest({
       userId: userId,
-      reqAmount: req_amount,
+      reqAmount: reqAmount,
       fullname: userDetails.name,
-      username,
-      mobile,
+      username: userDetails.username,
+      mobile: userDetails.mobile,
       reqType: "Debit",
       reqStatus: "Pending",
-      toAccount: { accNumber, ifscCode, bankName, accName },
+      toAccount: {
+        accNumber: bankInfo.accNumber,
+        ifscCode: bankInfo.ifscCode,
+        bankName: bankInfo.bankName,
+        accName: bankInfo.accName,
+      },
       reqDate: formattedDate,
       reqTime: currentTime.format("HH:mm"),
-      withdrawalMode,
-      UpdatedBy: "null",
-      reqUpdatedAt: "null",
-      timestamp,
     });
 
     await newFundReq.save();
@@ -339,17 +306,13 @@ const withdrawFund = async (req, res) => {
       withdrawalTime: currentTime.format(),
     });
 
-    return res.status(200).json({
-      status: 1,
-      message: "Withdraw Request Raised Successfully",
-    });
+    return SuccessResponse(res, HTTP_MESSAGE.WITHDRAW_REQUEST_SUCCESS);
   } catch (error) {
-    console.error("Withdraw Fund Error:", error);
-    return res.status(500).json({
-      status: 0,
-      message: "Something went wrong. Please contact support.",
-      error: error.toString(),
-    });
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      error
+    );
   }
 };
 
