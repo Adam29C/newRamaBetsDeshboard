@@ -198,7 +198,6 @@ const cardList = async (req, res) => {
 
 const addGameBids = async (req, res) => {
   try {
-    // Destructuring request body
     const {
       userId,
       bidData: bidDatarray,
@@ -215,7 +214,7 @@ const addGameBids = async (req, res) => {
     // Step 1: Validate User
     const user = await Users.findOne({ _id: userId });
     if (!user) {
-      return res.status(200).send({ status: 0, message: "User Not Found" });
+      return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FND)
     }
 
     // Step 2: Validate Bid Time
@@ -227,10 +226,7 @@ const addGameBids = async (req, res) => {
     // Step 3: Check Wallet Balance
     const walletBal = user.wallet_balance;
     if (walletBal < Balance) {
-      return res.status(200).send({
-        status: 2,
-        message: "Insufficient Wallet Amount",
-      });
+      return BadRequestResponse(res,HTTP_MESSAGE.INSUFFICIENT_BALANCE)
     }
 
     // Step 4: Prepare Bid Data with additional fields like cardId, cardName, providerName
@@ -262,7 +258,7 @@ const addGameBids = async (req, res) => {
     // Step 7: Insert Bid History (assuming a helper function exists)
     await insertBidHistory(
       userId,
-      user.userName,  // Assuming user's name is needed here
+      user.username,  // Assuming user's name is needed here
       placedBids,
       walletBal,
       currentDate,
@@ -276,13 +272,13 @@ const addGameBids = async (req, res) => {
       updatedWalletBal: updatedWallet,
     });
 
+    //Bids Add Successfully
   } catch (error) {
-    // Error Handling
-    return res.status(400).json({
-      status: 0,
-      message: "Something Bad Happened. Contact Support",
-      error,
-    });
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
   }
 };
 

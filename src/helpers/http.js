@@ -114,7 +114,13 @@ export const HTTP_MESSAGE = {
   CARD_LIST_SHOW_SUCCESSFULLY:"Card List Show Successfully",
   CARD_DELETE_SUCCESSFULLY:"Card Delete Successfully",
   WALLET_UPDATE_SUCCESSFULLY:"Wallet Update Successfully",
-  WALLET_HESTORY_SHOW_SUCCESSFULY:"Wallet Hestory show successfully"
+  WALLET_HESTORY_SHOW_SUCCESSFULY:"Wallet Hestory show successfully",
+  INSUFFICIENT_BALANCE:"Insufficient Balance Please try another Amount",
+  YOUR_WITHDRAWAL_LIMIT_IS_OVER:"Your Withdrawal Limit Is Over",
+  YOUR_PREVIOUS_DEBIT_REQUEST_IS_PENDING:"Your Previous Debit Request Is Pending",
+  WITHDRAW_REQUEST_SUCCESS:"Withdraw Request Raised Successfully",
+  FUND_REQUEST_ID_NOT_EXIST:"Fund_Request_Id_Not_Exist",
+  REQUEST_UPDATE_SUCCESSFULLY:"Request Update Successfully"  
 };
 
 const handleResponse = (res, status, success, message, data) => {
