@@ -151,11 +151,11 @@ const addBankDetails = async (req, res) => {
       if (isDifferent) {
         // Store old details for change history
         changeDetails.push({
-          old_acc_no: findBank.accNumber,  // Updated to match the field in your schema
-          old_bank_name: findBank.bankName, // Updated to match the field in your schema
-          old_ifsc: findBank.ifscCode,      // Updated to match the field in your schema
-          old_acc_name: findBank.accName,    // Updated to match the field in your schema
-          old_paytm_no: null,
+          oldAccNumber: accNumber,  // Updated to match the field in your schema
+          oldBankName: bankName, // Updated to match the field in your schema
+          oldIfscCode: ifscCode,      // Updated to match the field in your schema
+          oldAccName: accName,    // Updated to match the field in your schema
+          oldPaytmNo: null,
           changeDate: formatted,
         });
         counter++;
