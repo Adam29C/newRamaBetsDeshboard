@@ -262,7 +262,7 @@ const withdrawFund = async (req, res) => {
       count = 1;
     }
 
-    const bankInfo = await bank.findOne({ deviceId });
+    const bankInfo = await bank.findOne({ userId });
     
     // Check for pending requests
     const existingRequest = await fundRequest.findOne({
@@ -308,6 +308,7 @@ const withdrawFund = async (req, res) => {
 
     return SuccessResponse(res, HTTP_MESSAGE.WITHDRAW_REQUEST_SUCCESS);
   } catch (error) {
+    console.log(error,"gggg")
     return InternalServerErrorResponse(
       res,
       HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
