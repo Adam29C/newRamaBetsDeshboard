@@ -10,7 +10,7 @@ const fundRouter =express.Router();
 fundRouter.post(
     "/addFund",
     verifyToken,
-    validator(addFundSchema,ValidationSource.BODY),
+    //validator(addFundSchema,ValidationSource.BODY),
     addFond
 );
 
