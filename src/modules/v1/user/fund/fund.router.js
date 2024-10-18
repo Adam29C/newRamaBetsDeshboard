@@ -34,7 +34,7 @@ fundRouter.put(
 
 fundRouter.post(
   "/withdrawFund",
-  validator(withdrawFundSchema,ValidationSource.BODY),
+  //validator(withdrawFundSchema,ValidationSource.BODY),
   withdrawFund
 );
 

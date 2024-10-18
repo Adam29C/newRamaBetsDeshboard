@@ -27,7 +27,7 @@ const adminSchema = new mongoose.Schema(
 		},
         permission: {
             type: Object,
-            default:{}
+            default:{}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          
         },
         loginPermission:{
          type:Number,
