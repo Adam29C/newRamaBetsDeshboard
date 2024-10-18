@@ -288,7 +288,7 @@ const withdrawFund = async (req, res) => {
   try {
     const { userId, reqAmount } = req.body;
 
-    const userDetails = await findOne("Users", { userId });
+    const userDetails = await findOne("Users", {_id: userId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
 
     const dt = moment();
