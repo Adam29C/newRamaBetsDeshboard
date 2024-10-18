@@ -188,7 +188,7 @@ const walletHestoryCreditDebit = async (req, res) => {
 const approveCreditDebitRequest = async (req, res) => {
   try {
     const { adminId, userId, fundRequestId,reqStatus } = req.body;
-    const adminDetails = await Users.findOne({ _id: adminId });
+    const adminDetails = await Admin.findOne({ _id: adminId });
     if (!adminDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
 

@@ -120,7 +120,8 @@ export const HTTP_MESSAGE = {
   YOUR_PREVIOUS_DEBIT_REQUEST_IS_PENDING:"Your Previous Debit Request Is Pending",
   WITHDRAW_REQUEST_SUCCESS:"Withdraw Request Raised Successfully",
   FUND_REQUEST_ID_NOT_EXIST:"Fund_Request_Id_Not_Exist",
-  REQUEST_UPDATE_SUCCESSFULLY:"Request Update Successfully"  
+  REQUEST_UPDATE_SUCCESSFULLY:"Request Update Successfully",
+  USER_BANK_UPDATED:"User Bank Update Successfully"  
 };
 
 const handleResponse = (res, status, success, message, data) => {

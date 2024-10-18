@@ -12,6 +12,7 @@ import { GameSetting } from "../../../../models/gameSetting.js";
 import { HowToPlay } from "../../../../models/howToPlay.js";
 import { Users } from "../../../../models/users.js";
 import { reqONoFF } from "../../../../models/requestOnOff.js";
+import  dateTime from "node-datetime";
 //import { wallet } from "../../../../models/walledHistory.js";
 
 const addFond = async (req, res) => {
@@ -101,16 +102,86 @@ const showUserWallet = async (req, res) => {
 
 const addBankDetails = async (req, res) => {
   try {
-    const { userId, deviceId, accNumber, ifscCode, bankName, accName } =
-      req.body;
-    const userDetails = await findOne("Users", { deviceId: deviceId });
-    console.log(userDetails, "ggggg");
+    const dt = dateTime.create();
+    const formatted = dt.format("d/m/Y I:m:S p");
+    const { userId, deviceId, accNumber, ifscCode, bankName, accName } = req.body;
+
+    // Find user by deviceId
+    const userDetails = await findOne("Users", { deviceId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
-    const accObj = { userId, deviceId, accNumber, ifscCode, bankName, accName };
-    const data = await insertQuery("bank", accObj);
-    return SuccessResponse(res, HTTP_MESSAGE.USER_BANK_ADD, { details: data });
+
+    // Check for existing bank profile
+    const findBank = await bank.findOne({ userId });
+    const username = userDetails.username || "Unknown User"; // Fallback if username not found
+
+    if (!findBank) {
+      // Create new bank details if findBank doesn't exist
+      const bankDetails = new bank({
+        userId,
+        address: null,
+        city: null,
+        pincode: null,
+        username,
+        accNumber,  // Updated to match the field in your schema
+        bankName,   // Updated to match the field in your schema
+        ifscCode,   // Updated to match the field in your schema
+        accName,    // Updated to match the field in your schema
+        paytm_number: null,
+        profileChangeCounter: 0,
+        created_at: formatted,
+      });
+
+      const savedUser = await bankDetails.save();
+
+      return SuccessResponse(res, HTTP_MESSAGE.USER_BANK_ADD, {
+        details: savedUser,
+      });
+    } else {
+      // Update existing bank details
+      let changeDetails = findBank.changeDetails || [];
+      let counter = findBank.profileChangeCounter;
+
+      // Check if the new details are different from the existing ones
+      const isDifferent =
+        findBank.accNumber !== accNumber ||
+        findBank.ifscCode !== ifscCode ||
+        findBank.bankName !== bankName ||
+        findBank.accName !== accName;
+
+      if (isDifferent) {
+        // Store old details for change history
+        changeDetails.push({
+          old_acc_no: findBank.accNumber,  // Updated to match the field in your schema
+          old_bank_name: findBank.bankName, // Updated to match the field in your schema
+          old_ifsc: findBank.ifscCode,      // Updated to match the field in your schema
+          old_acc_name: findBank.accName,    // Updated to match the field in your schema
+          old_paytm_no: null,
+          changeDate: formatted,
+        });
+        counter++;
+      }
+
+      await bank.updateOne(
+        { userId },
+        {
+          $set: {
+            accNumber, // Updated to match the field in your schema
+            bankName,  // Updated to match the field in your schema
+            ifscCode,  // Updated to match the field in your schema
+            accName,   // Updated to match the field in your schema
+            changeDetails,
+            profileChangeCounter: counter,
+            updatedAt: formatted,
+          },
+        }
+      );
+
+      return SuccessResponse(res, HTTP_MESSAGE.USER_BANK_UPDATED, {
+        details: findBank,
+      });
+    }
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return InternalServerErrorResponse(
       res,
       HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
@@ -118,6 +189,7 @@ const addBankDetails = async (req, res) => {
     );
   }
 };
+
 
 const updateBankDetails = async (req, res) => {
   try {
@@ -226,8 +298,10 @@ const withdrawFund = async (req, res) => {
     if (!checkDayoff || !checkDayoff.enabled) {
       return res.json({
         status: false,
-        statusCode:400,
-        message: checkDayoff ? checkDayoff.message : "Withdrawal requests are currently disabled.",
+        statusCode: 400,
+        message: checkDayoff
+          ? checkDayoff.message
+          : "Withdrawal requests are currently disabled.",
       });
     }
 
@@ -255,7 +329,10 @@ const withdrawFund = async (req, res) => {
 
     if (storedDate.isSame(todayDate, "day")) {
       if (count >= withdrawDetails.requestCount) {
-        return BadRequestResponse(res, HTTP_MESSAGE.YOUR_WITHDRAWAL_LIMIT_IS_OVER);
+        return BadRequestResponse(
+          res,
+          HTTP_MESSAGE.YOUR_WITHDRAWAL_LIMIT_IS_OVER
+        );
       }
       count++;
     } else {
@@ -263,7 +340,7 @@ const withdrawFund = async (req, res) => {
     }
 
     const bankInfo = await bank.findOne({ deviceId });
-    
+
     // Check for pending requests
     const existingRequest = await fundRequest.findOne({
       userId: userId,
@@ -272,9 +349,12 @@ const withdrawFund = async (req, res) => {
     });
 
     if (existingRequest) {
-      return BadRequestResponse(res, HTTP_MESSAGE.YOUR_PREVIOUS_DEBIT_REQUEST_IS_PENDING);
+      return BadRequestResponse(
+        res,
+        HTTP_MESSAGE.YOUR_PREVIOUS_DEBIT_REQUEST_IS_PENDING
+      );
     }
-    
+
     // Check wallet balance
     if (userDetails.wallet_balance < reqAmount) {
       return BadRequestResponse(res, HTTP_MESSAGE.INSUFFICIENT_BALANCE);
