@@ -286,9 +286,9 @@ const bankList = async (req, res) => {
 
 const withdrawFund = async (req, res) => {
   try {
-    const { deviceId, userId, reqAmount } = req.body;
+    const { userId, reqAmount } = req.body;
 
-    const userDetails = await findOne("Users", { deviceId });
+    const userDetails = await findOne("Users", { userId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
 
     const dt = moment();
