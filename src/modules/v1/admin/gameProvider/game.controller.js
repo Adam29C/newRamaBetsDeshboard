@@ -12,7 +12,10 @@ const addGameProvider = async (req, res) => {
     if (!adminDetails) {
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     }
-
+    const gameProviderInfo = await GameProvider.findOne({providerName});
+    if(gameProviderInfo){
+      return BadRequestResponse(res, HTTP_MESSAGE.THIS_GAME_ALLREADY_EXIST);
+    }
     // Prepare game provider details
     const gameDetails = {
       gameType,
