@@ -40,7 +40,7 @@ userDetailsRouters.delete(
   "/users",
   verifyToken,
   verifyRoles(roleList.ADMIN),
-  validator(deleteUserSchema,ValidationSource.BODY),
+  //validator(deleteUserSchema,ValidationSource.BODY),
   deleteUser
 );
 
