@@ -166,7 +166,7 @@ adminDetailsRouters.put(
 adminDetailsRouters.get(
   "/getPermission/:id",
   verifyToken,
-  verifyRoles(roleList.ADMIN),
+  //verifyRoles(roleList.ADMIN),
   validator(commonSchema, ValidationSource.PARAM),
   getPermission
 );

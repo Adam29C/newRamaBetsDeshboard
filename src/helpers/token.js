@@ -52,17 +52,17 @@ const verifyToken = async (req, res, next) => {
         );
 
         if (details.role !== "ADMIN") {
-          let data = await TokenData.findOne({
-            token: token,
-            id: decoded.info.id,
-          });
-          if (!data) {
-            return res.status(401).send({
-              statusCode: 401,
-              status: "Failure",
-              msg: "Token Not Found In Database",
-            });
-          }
+          // let data = await TokenData.findOne({
+          //   token: token,
+          //   id: decoded.info.id,
+          // });
+          // if (!data) {
+          //   return res.status(401).send({
+          //     statusCode: 401,
+          //     status: "Failure",
+          //     msg: "Token Not Found In Database",
+          //   });
+          // }
         }
       } else {
         let data = await TokenData.findOne({
