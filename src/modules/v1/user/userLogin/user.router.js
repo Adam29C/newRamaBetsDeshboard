@@ -81,7 +81,6 @@ userLoginRouter.post(
   forgotMpinSendOtp
 );
 
-forgotPasswordVerifyOtp
 userLoginRouter.post(
   "/forgotPasswordVerifyOtp",
   // verifyToken,

@@ -32,7 +32,7 @@ const generateAuthToken = async (req, res) => {
     }
     if (id) {
       // Check if ID exists in admin or users collections
-      details = await findOne("Admin", { _id: id }) || await findOne("users", { _id: id });
+      details = await findOne("Admin", { _id: id }) || await findOne("Users", { _id: id });
       if (!details) {
         return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
       }

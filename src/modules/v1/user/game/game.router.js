@@ -10,8 +10,8 @@ const gameRouters =express.Router();
 
 gameRouters.post(
   "/allGames",
-  verifyToken,
-  validator(gameSchema,ValidationSource.BODY),
+  //verifyToken,
+  //validator(gameSchema,ValidationSource.BODY),
   allGames
 );
 

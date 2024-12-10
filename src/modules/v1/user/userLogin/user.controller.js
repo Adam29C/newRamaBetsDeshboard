@@ -81,6 +81,28 @@ const setMpin = async (req, res) => {
   }
 };
 
+const signup = async (req, res) => {
+  try {
+    const { deviceId, name, language, city, state } = req.body;
+    const userDetails = await findOne("Users", { deviceId });
+    if (!userDetails)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+    if (userDetails.isVerified === false)
+      return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_VERIFY_ACCOUNT);
+    const userObj = { name, language, city, state, isRegister:true };
+
+    await Users.updateOne({ deviceId }, { $set: userObj });
+
+    return SuccessResponse(res, HTTP_MESSAGE.USER_REGISTER);
+  } catch (err) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
 const forgotMpinSendOtp = async (req, res) => {
   try {
     const { deviceId, mobile } = req.body;
@@ -134,29 +156,6 @@ const updateMpin = async (req, res) => {
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_ENTER_VALID_MPIN);
     await Users.findOneAndUpdate({ deviceId }, { $set: { mpin: newMpin } });
     return SuccessResponse(res, HTTP_MESSAGE.NEW_MPIN_UPDATE_SUCCESS);
-  } catch (err) {
-    return InternalServerErrorResponse(
-      res,
-      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
-      err
-    );
-  }
-};
-
-const signup = async (req, res) => {
-  try {
-    const { deviceId, name, language, city, state } = req.body;
-    const userDetails = await findOne("Users", { deviceId });
-    console.log(userDetails, "ggggg");
-    if (!userDetails)
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
-    if (userDetails.isVerified === false)
-      return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_VERIFY_ACCOUNT);
-    const userObj = { name, language, city, state, isRegister:true };
-
-    await Users.updateOne({ deviceId }, { $set: userObj });
-
-    return SuccessResponse(res, HTTP_MESSAGE.USER_REGISTER);
   } catch (err) {
     return InternalServerErrorResponse(
       res,

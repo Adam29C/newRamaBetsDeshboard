@@ -47,7 +47,6 @@ walletRouters.get(
   approveCreditDebitRequest
 );
 
-
 // mastersRouters.delete(
 //   "/deleteUpi",
 //   verifyToken,
@@ -55,4 +54,5 @@ walletRouters.get(
 //   validator(deleteUpiSchema, ValidationSource.BODY),
 //   deleteUpi
 // )
-export { walletRouters }; 
+
+export { walletRouters };
