@@ -48,7 +48,7 @@ userLoginRouter.get(
 userLoginRouter.put(
   "/upadateUserPrfile",
   verifyToken,
-  validator(upadateUserPrfileSchema,ValidationSource.QUERY),
+  validator(upadateUserPrfileSchema,ValidationSource.BODY),
   upadateUserPrfile
 );
 

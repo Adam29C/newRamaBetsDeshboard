@@ -40,14 +40,14 @@ fundRouter.post(
 
 fundRouter.get(
   "/showUserWallet",
-  validator(showUserWalletSchema,ValidationSource.BODY),
+  validator(showUserWalletSchema,ValidationSource.QUERY),
   showUserWallet
 );
 
 fundRouter.get(
   "/userFundRequestList",
   verifyToken,
-  validator(userFundRequestListSchema,ValidationSource.BODY),
+  validator(userFundRequestListSchema,ValidationSource.QUERY),
   userFundRequestList
 );
 

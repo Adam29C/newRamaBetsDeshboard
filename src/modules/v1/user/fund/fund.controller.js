@@ -51,12 +51,9 @@ const fondHistory = async (req, res) => {
     let updatedAtDateObj = Date.now(data.updatedAt);
 
     let updatedDate = updatedAtDateObj.toLocaleString();
-
-    console.log(updatedDate, "hhhhh");
-    console.log(data, "data");
+    
     return SuccessResponse(res, HTTP_MESSAGE.ADD_FOUND, { details: data });
   } catch (err) {
-    console.log(err, "gggggggggg");
     return InternalServerErrorResponse(
       res,
       HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
@@ -83,7 +80,7 @@ const userFundRequestList = async (req, res) => {
 
 const showUserWallet = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { userId } = req.query;
 
     const userDetails = await findOne(
       "Users",
@@ -189,7 +186,6 @@ const addBankDetails = async (req, res) => {
     );
   }
 };
-
 
 const updateBankDetails = async (req, res) => {
   try {
@@ -305,7 +301,6 @@ const withdrawFund = async (req, res) => {
       });
     }
 
-    // Check withdrawal time and limits
     const withdrawDetails = await reqONoFF.findOne(
       { isRequest: true },
       { startTime: 1, endTime: 1, requestCount: 1 }
@@ -341,7 +336,6 @@ const withdrawFund = async (req, res) => {
 
     const bankInfo = await bank.findOne({ userId });
     
-    // Check for pending requests
     const existingRequest = await fundRequest.findOne({
       userId: userId,
       reqStatus: "Pending",
@@ -355,12 +349,10 @@ const withdrawFund = async (req, res) => {
       );
     }
 
-    // Check wallet balance
     if (userDetails.wallet_balance < reqAmount) {
       return BadRequestResponse(res, HTTP_MESSAGE.INSUFFICIENT_BALANCE);
     }
 
-    // Create and save new withdrawal request
     const formattedDate = dt.format("DD/MM/YYYY");
     const newFundReq = new fundRequest({
       userId: userId,
@@ -388,7 +380,6 @@ const withdrawFund = async (req, res) => {
 
     return SuccessResponse(res, HTTP_MESSAGE.WITHDRAW_REQUEST_SUCCESS);
   } catch (error) {
-    console.log(error,"gggg")
     return InternalServerErrorResponse(
       res,
       HTTP_MESSAGE.INTERNAL_SERVER_ERROR,

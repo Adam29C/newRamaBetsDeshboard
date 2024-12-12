@@ -18,8 +18,7 @@ const checkUser = async (req, res) => {
     let checkuserwitoutregister= await Users.findOne({ deviceId,isRegister:false });
     if(checkuserwitoutregister) await Users.deleteOne({deviceId})
     let checkUser = await Users.findOne({ deviceId}); 
-    if (!checkUser)
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_EXIST);
+    if (!checkUser) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_EXIST);
   } catch (err) {
     return BadRequestResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
   }
@@ -151,7 +150,6 @@ const updateMpin = async (req, res) => {
   try {
     const { deviceId, oldMpin, newMpin } = req.body;
     const findUser = await Users.findOne({ deviceId });
-
     if (findUser.mpin !== oldMpin)
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_ENTER_VALID_MPIN);
     await Users.findOneAndUpdate({ deviceId }, { $set: { mpin: newMpin } });
@@ -168,7 +166,7 @@ const updateMpin = async (req, res) => {
 const userPrfile = async (req, res) => {
   try {
     const { userId } = req.query;
-    const userDetails = await findOne("Users", { _id: userId });
+    const userDetails = await findOne("Users", { _id: userId },{otp:0,mpin:0});
     if (!userDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
     return SuccessResponse(res, HTTP_MESSAGE.USER_PROFILE, {
@@ -186,7 +184,7 @@ const userPrfile = async (req, res) => {
 const upadateUserPrfile = async (req, res) => {
   try {
     const { userId, name, language, city, state } = req.body;
-    const userDetails = await findOne("Users", { _id: userId });
+    const userDetails = await findOne("Users", { _id: userId },{mpin:0,otp:0});
     if (!userDetails)
       return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
 

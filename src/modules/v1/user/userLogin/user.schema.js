@@ -40,7 +40,8 @@ export const upadateUserPrfileSchema = Joi.object({
   userId:Joi.string().required(),
   name:Joi.string().optional(),
   language:Joi.string().optional(),
-  city:Joi.string().optional()
+  city:Joi.string().optional(),
+  state:Joi.string().optional()
 });
 
 export const checkUserSchema = Joi.object({
