@@ -1,5 +1,5 @@
 import express from "express";
-import { addBankDetails, addFond, bankList, changeBankDetailHistory, fondHistory, showUserWallet, updateBankDetails, userFundRequestList, withdrawFund } from "./fund.controller.js";
+import { addBankDetails, addFund, bankList, changeBankDetailHistory, fundHistory, showUserWallet, updateBankDetails, userFundRequestList, withdrawFund } from "./fund.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import { ValidationSource, validator } from "../../../../middlewares/validator.js";
@@ -11,7 +11,7 @@ fundRouter.post(
     "/addFund",
     verifyToken,
     //validator(addFundSchema,ValidationSource.BODY),
-    addFond
+    addFund
 );
 
 fundRouter.put(
@@ -20,9 +20,9 @@ fundRouter.put(
   addBankDetails
 );
 
-fundRouter.get(
+fundRouter.post(
   "/bankList",
-  validator(bankListSchema,ValidationSource.BODY),
+  //validator(bankListSchema,ValidationSource.BODY),
   bankList
 );
 
@@ -57,10 +57,10 @@ fundRouter.get(
   changeBankDetailHistory
 );
 
-fundRouter.get(
-  "/fondHistory",
+fundRouter.post(
+  "/fundHistory",
   validator(fondHistorySchema,ValidationSource.BODY),
-  fondHistory
+  fundHistory
 );
 
 export {fundRouter}

@@ -15,26 +15,31 @@ import System from '../../../models/system.js';
 
 const generateAuthToken = async (req, res) => {
   try {
-    const { id, deviceId,mpin,firebaseToken } = req.body;
+    const { id, deviceId, mpin, firebaseToken } = req.body;
     let query;
     let details;
     let roles = "USER"; // Default role if not found
-    if(deviceId && mpin && firebaseToken){
-      details = await findOne("Users", { deviceId,mpin });
+
+    if (deviceId && mpin && firebaseToken) {
+      // Check if deviceId and mpin match a user
+      details = await findOne("Users", { deviceId, mpin });
+
       if (!details) {
-        return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+        // If user is not found, return error with specific message
+        return BadRequestResponse(res, HTTP_MESSAGE.INVALID_MPIN);  // You can customize the message in your constants
       }
+
       query = { id: details._id };
-      let id=details._id
-      const token = await createToken(id, deviceId, roles,firebaseToken, query);
-      return SuccessResponse(res, HTTP_MESSAGE.TOKEN_CREATED, { token ,id});
-        
+      let id = details._id;
+      const token = await createToken(id, deviceId, roles, firebaseToken, query);
+      return SuccessResponse(res, HTTP_MESSAGE.TOKEN_CREATED, { token, id });
     }
+
     if (id) {
       // Check if ID exists in admin or users collections
       details = await findOne("Admin", { _id: id }) || await findOne("Users", { _id: id });
       if (!details) {
-        return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);
+        return BadRequestResponse(res, HTTP_MESSAGE.NOT_FOUND);  // Handle user not found
       }
       roles = details.role; // Set roles from found details
       query = { id: id };
@@ -47,6 +52,7 @@ const generateAuthToken = async (req, res) => {
     // Create the token
     const token = await createToken(id, deviceId, roles, query);
     return SuccessResponse(res, HTTP_MESSAGE.TOKEN_CREATED, { token });
+    
   } catch (err) {
     return InternalServerErrorResponse(
       res,
@@ -55,6 +61,7 @@ const generateAuthToken = async (req, res) => {
     );
   }
 };
+
 
 //Function For List Of Employee api
 const systemInforList = async (req, res) => {

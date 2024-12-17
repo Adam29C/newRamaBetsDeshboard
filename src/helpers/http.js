@@ -122,7 +122,9 @@ export const HTTP_MESSAGE = {
   FUND_REQUEST_ID_NOT_EXIST:"Fund_Request_Id_Not_Exist",
   REQUEST_UPDATE_SUCCESSFULLY:"Request Update Successfully",
   USER_BANK_UPDATED:"User Bank Update Successfully",
-  THIS_GAME_ALLREADY_EXIST:"This Game Allready Exist"  
+  THIS_GAME_ALLREADY_EXIST:"This Game Allready Exist",  
+  USER_FUND_LIST:"User Fund List Show successfully",
+  INVALID_MPIN:"Please Enter Currect Mpin"
 };
 
 const handleResponse = (res, status, success, message, data) => {

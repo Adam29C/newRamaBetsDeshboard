@@ -34,7 +34,7 @@ userLoginRouter.post(
 userLoginRouter.post(
   "/updateMpin",
   verifyToken,
-  // validator(setMpinSchema,ValidationSource.BODY),
+  //validator(setMpinSchema,ValidationSource.BODY),
   updateMpin
 );
 

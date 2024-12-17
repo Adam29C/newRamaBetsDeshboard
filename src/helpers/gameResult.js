@@ -40,7 +40,7 @@ const result = async (type) => {
 
   for (const provider of providers) {
     const setting = ocTimes.find(
-      (item) => item.providerId.toString() === provider._id.toString()
+      item=>item.providerId.toString() === provider._id.toString() 
     );
 
     if (setting) {

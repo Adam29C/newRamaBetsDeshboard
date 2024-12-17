@@ -25,7 +25,7 @@ gameRouters.post(
 gameRouters.post(
   "/gamesRates",
   verifyToken,
-  validator(gameSchema,ValidationSource.BODY),
+  //validator(gameSchema,ValidationSource.BODY),
   gamesRates
 );
 

@@ -15,7 +15,7 @@ import { reqONoFF } from "../../../../models/requestOnOff.js";
 import  dateTime from "node-datetime";
 //import { wallet } from "../../../../models/walledHistory.js";
 
-const addFond = async (req, res) => {
+const addFund = async (req, res) => {
   try {
     const { deviceId, userId, fullname, username, mobile, amount } = req.body;
     const userDetails = await findOne("Users", { _id: userId });
@@ -41,7 +41,7 @@ const addFond = async (req, res) => {
   }
 };
 
-const fondHistory = async (req, res) => {
+const fundHistory = async (req, res) => {
   try {
     const { userId } = req.body;
     const userDetails = await findOne("Users", { _id: userId });
@@ -68,7 +68,7 @@ const userFundRequestList = async (req, res) => {
     const userDetails = await findOne("Users", { _id: userId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
     const data = await findOne("fundRequest", { userId: userId });
-    return SuccessResponse(res, HTTP_MESSAGE.OTP_SEND, { details: data });
+    return SuccessResponse(res, HTTP_MESSAGE.USER_FUND_LIST, { details: data });
   } catch (err) {
     return InternalServerErrorResponse(
       res,
@@ -79,6 +79,25 @@ const userFundRequestList = async (req, res) => {
 };
 
 const showUserWallet = async (req, res) => {
+  try {
+    const { userId } = req.query;
+
+    const userDetails = await findOne(
+      "Users",
+      { _id: userId },
+      { _id: 1, name: 1, mobile: 1, wallet_balance: 1 }
+    );
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    return SuccessResponse(res, HTTP_MESSAGE.USER_WALLET, {
+      details: userDetails,
+    });
+  } catch (err) {
+    return BadRequestResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
+  }
+};
+
+const termsAndCondition = async (req, res) => {
   try {
     const { userId } = req.query;
 
@@ -389,7 +408,7 @@ const withdrawFund = async (req, res) => {
 };
 
 export {
-  addFond,
+  addFund,
   userFundRequestList,
   addBankDetails,
   bankList,
@@ -397,5 +416,5 @@ export {
   withdrawFund,
   showUserWallet,
   changeBankDetailHistory,
-  fondHistory,
+  fundHistory,
 };

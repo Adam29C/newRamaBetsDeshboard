@@ -150,6 +150,8 @@ const updateMpin = async (req, res) => {
   try {
     const { deviceId, oldMpin, newMpin } = req.body;
     const findUser = await Users.findOne({ deviceId });
+    if(!findUser)
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_EXIST);
     if (findUser.mpin !== oldMpin)
       return BadRequestResponse(res, HTTP_MESSAGE.PLEASE_ENTER_VALID_MPIN);
     await Users.findOneAndUpdate({ deviceId }, { $set: { mpin: newMpin } });
@@ -168,7 +170,7 @@ const userPrfile = async (req, res) => {
     const { userId } = req.query;
     const userDetails = await findOne("Users", { _id: userId },{otp:0,mpin:0});
     if (!userDetails)
-      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FOUND);
+      return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_EXIST);
     return SuccessResponse(res, HTTP_MESSAGE.USER_PROFILE, {
       details: userDetails,
     });
