@@ -12,7 +12,9 @@ import { GameSetting } from "../../../../models/gameSetting.js";
 import { HowToPlay } from "../../../../models/howToPlay.js";
 import { Users } from "../../../../models/users.js";
 import { reqONoFF } from "../../../../models/requestOnOff.js";
-import  dateTime from "node-datetime";
+import { TermCond } from "../../../../models/termsAndCondition.js";
+
+import dateTime from "node-datetime";
 //import { wallet } from "../../../../models/walledHistory.js";
 
 const addFund = async (req, res) => {
@@ -51,7 +53,7 @@ const fundHistory = async (req, res) => {
     let updatedAtDateObj = Date.now(data.updatedAt);
 
     let updatedDate = updatedAtDateObj.toLocaleString();
-    
+
     return SuccessResponse(res, HTTP_MESSAGE.ADD_FOUND, { details: data });
   } catch (err) {
     return InternalServerErrorResponse(
@@ -101,15 +103,12 @@ const termsAndCondition = async (req, res) => {
   try {
     const { userId } = req.query;
 
-    const userDetails = await findOne(
-      "Users",
-      { _id: userId },
-      { _id: 1, name: 1, mobile: 1, wallet_balance: 1 }
-    );
+    const userDetails = await findOne("Users", { _id: userId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
 
-    return SuccessResponse(res, HTTP_MESSAGE.USER_WALLET, {
-      details: userDetails,
+    const TermCond = await findOne("TermCond", {});
+    return SuccessResponse(res, HTTP_MESSAGE.SHOW_TERM_COND, {
+      details: TermCond,
     });
   } catch (err) {
     return BadRequestResponse(res, HTTP_MESSAGE.INTERNAL_SERVER_ERROR, err);
@@ -120,7 +119,8 @@ const addBankDetails = async (req, res) => {
   try {
     const dt = dateTime.create();
     const formatted = dt.format("d/m/Y I:m:S p");
-    const { userId, deviceId, accNumber, ifscCode, bankName, accName } = req.body;
+    const { userId, deviceId, accNumber, ifscCode, bankName, accName } =
+      req.body;
 
     // Find user by deviceId
     const userDetails = await findOne("Users", { deviceId });
@@ -138,10 +138,10 @@ const addBankDetails = async (req, res) => {
         city: null,
         pincode: null,
         username,
-        accNumber,  // Updated to match the field in your schema
-        bankName,   // Updated to match the field in your schema
-        ifscCode,   // Updated to match the field in your schema
-        accName,    // Updated to match the field in your schema
+        accNumber, // Updated to match the field in your schema
+        bankName, // Updated to match the field in your schema
+        ifscCode, // Updated to match the field in your schema
+        accName, // Updated to match the field in your schema
         paytm_number: null,
         profileChangeCounter: 0,
         created_at: formatted,
@@ -167,10 +167,10 @@ const addBankDetails = async (req, res) => {
       if (isDifferent) {
         // Store old details for change history
         changeDetails.push({
-          oldAccNumber: accNumber,  // Updated to match the field in your schema
+          oldAccNumber: accNumber, // Updated to match the field in your schema
           oldBankName: bankName, // Updated to match the field in your schema
-          oldIfscCode: ifscCode,      // Updated to match the field in your schema
-          oldAccName: accName,    // Updated to match the field in your schema
+          oldIfscCode: ifscCode, // Updated to match the field in your schema
+          oldAccName: accName, // Updated to match the field in your schema
           oldPaytmNo: null,
           changeDate: formatted,
         });
@@ -182,9 +182,9 @@ const addBankDetails = async (req, res) => {
         {
           $set: {
             accNumber, // Updated to match the field in your schema
-            bankName,  // Updated to match the field in your schema
-            ifscCode,  // Updated to match the field in your schema
-            accName,   // Updated to match the field in your schema
+            bankName, // Updated to match the field in your schema
+            ifscCode, // Updated to match the field in your schema
+            accName, // Updated to match the field in your schema
             changeDetails,
             profileChangeCounter: counter,
             updatedAt: formatted,
@@ -299,11 +299,44 @@ const bankList = async (req, res) => {
   }
 };
 
+const bankDetailsHistory = async (req, res) => {
+  try {
+    const { userId } = req.query;
+    const userDetails = await findOne("Users", { _id: userId });
+
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    const data = await bank.aggregate([
+      {
+        $match: {
+          userId,
+        },
+      },
+      {
+        $project: {
+          accNumber:1,
+          bankName:1,
+          accName:1
+
+        },
+      },
+    ]);
+    return SuccessResponse(res, HTTP_MESSAGE.USER_BANK_ADD, { details: data });
+  } catch (err) {
+    console.log(err);
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
 const withdrawFund = async (req, res) => {
   try {
     const { userId, reqAmount } = req.body;
 
-    const userDetails = await findOne("Users", {_id: userId });
+    const userDetails = await findOne("Users", { _id: userId });
     if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
 
     const dt = moment();
@@ -354,7 +387,7 @@ const withdrawFund = async (req, res) => {
     }
 
     const bankInfo = await bank.findOne({ userId });
-    
+
     const existingRequest = await fundRequest.findOne({
       userId: userId,
       reqStatus: "Pending",
@@ -407,6 +440,49 @@ const withdrawFund = async (req, res) => {
   }
 };
 
+const withdrawHistory=async(req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const userDetails = await findOne("Users", { _id: userId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    const info = await fundRequest.find({userId:userId,reqType:"Debit",reqStatus:"Approved"},{reqStatus:1,reqDate:1,reqTime:1,reqAmount:1});
+    if(info.length===0){
+      return BadRequestResponse(res, HTTP_MESSAGE.WITHDRAW_HISTORY_NOT_FOUND);
+    }
+    
+    return SuccessResponse(res, HTTP_MESSAGE.WITHDRAW_HISTORY_FOUND,info);
+  } catch (error) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      error
+    );
+  }
+};
+
+const depositHistory=async(req, res) => {
+  try {
+    const { userId } = req.body;
+
+    const userDetails = await findOne("Users", { _id: userId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+
+    const info = await fundRequest.find({userId:userId,reqType:"Credit",reqStatus:"Pending"},{reqStatus:1,reqDate:1,reqTime:1,amount:1});
+    if(info.length===0){
+      return BadRequestResponse(res, HTTP_MESSAGE.WITHDRAW_HISTORY_NOT_FOUND);
+    }
+    
+    return SuccessResponse(res, HTTP_MESSAGE.WITHDRAW_HISTORY_FOUND,info);
+  } catch (error) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      error
+    );
+  }
+};
 export {
   addFund,
   userFundRequestList,
@@ -417,4 +493,8 @@ export {
   showUserWallet,
   changeBankDetailHistory,
   fundHistory,
+  termsAndCondition,
+  bankDetailsHistory,
+  withdrawHistory,
+  depositHistory
 };

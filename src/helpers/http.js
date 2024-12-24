@@ -124,7 +124,10 @@ export const HTTP_MESSAGE = {
   USER_BANK_UPDATED:"User Bank Update Successfully",
   THIS_GAME_ALLREADY_EXIST:"This Game Allready Exist",  
   USER_FUND_LIST:"User Fund List Show successfully",
-  INVALID_MPIN:"Please Enter Currect Mpin"
+  INVALID_MPIN:"Please Enter Currect Mpin",
+  SHOW_TERM_COND:"Term And Condition Show Successfully",
+  WITHDRAW_HISTORY_NOT_FOUND:"Withdraw History Not Found",
+  WITHDRAW_HISTORY_FOUND:"Withdraw History Found Successfully"
 };
 
 const handleResponse = (res, status, success, message, data) => {

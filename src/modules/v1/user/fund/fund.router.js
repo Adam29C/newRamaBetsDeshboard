@@ -1,5 +1,5 @@
 import express from "express";
-import { addBankDetails, addFund, bankList, changeBankDetailHistory, fundHistory, showUserWallet, updateBankDetails, userFundRequestList, withdrawFund } from "./fund.controller.js";
+import { addBankDetails, addFund, bankDetailsHistory, bankList, changeBankDetailHistory, depositHistory, fundHistory, showUserWallet, termsAndCondition, updateBankDetails, userFundRequestList, withdrawFund, withdrawHistory } from "./fund.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import { ValidationSource, validator } from "../../../../middlewares/validator.js";
@@ -61,6 +61,30 @@ fundRouter.post(
   "/fundHistory",
   validator(fondHistorySchema,ValidationSource.BODY),
   fundHistory
+);
+
+fundRouter.get(
+  "/termsAndCondition",
+  // validator(fondHistorySchema,ValidationSource.QUERY),
+  termsAndCondition
+);
+
+fundRouter.get(
+  "/bankDetailsHistory",
+  // validator(fondHistorySchema,ValidationSource.QUERY),
+  bankDetailsHistory
+);
+
+fundRouter.get(
+  "/withdrawHistory",
+  // validator(fondHistorySchema,ValidationSource.QUERY),
+  withdrawHistory
+);
+
+fundRouter.get(
+  "/depositHistory",
+  // validator(fondHistorySchema,ValidationSource.QUERY),
+  depositHistory
 );
 
 export {fundRouter}

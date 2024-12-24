@@ -23,6 +23,8 @@ import { Users } from "../../../../models/users.js";
 import { validateBidTime } from "../../../../helpers/validateTime.js";
 import { insertBidHistory } from "../../../../helpers/insertBid.js";
 import { gameBid } from "../../../../models/gameBid.js";
+import { GameResult } from "../../../../models/GameResult.js";
+import { starline_game_Result } from "../../../../models/starline_game_Result.js";
 
 const allGames = async (req, res) => {
   try {
@@ -282,6 +284,81 @@ const addGameBids = async (req, res) => {
   }
 };
 
+const gameResult =async (req, res) => {
+  try {
+    const {
+      userId,
+      gameDate  
+    } = req.body;
+    const userDetails = await findOne("Users", { _id: userId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+    const data=await GameResult.find({resultDate:gameDate},{providerName:1,providerId:1,winningDigit:1});
+    return res.status(200).send({
+      status: 200,
+      message: "Show Game Result Successfully",
+      data: data,
+    });
+
+    //Bids Add Successfully
+  } catch (error) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const starGameResult =async (req, res) => {
+  try {
+    const {
+      userId,
+      gameDate  
+    } = req.body;
+    const userDetails = await findOne("Users", { _id: userId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+    const data=await starline_game_Result.find({resultDate:gameDate},{providerName:1,providerId:1,winningDigit:1});
+    return res.status(200).send({
+      status: 200,
+      message: "Show Game Result Successfully",
+      data: data,
+    });
+
+    //Bids Add Successfully
+  } catch (error) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const anderBaharGameResult =async (req, res) => {
+  try {
+    const {
+      userId,
+      gameDate  
+    } = req.body;
+    const userDetails = await findOne("Users", { _id: userId });
+    if (!userDetails) return BadRequestResponse(res, HTTP_MESSAGE.USER_NOT_FND);
+    const data=await starline_game_Result.find({resultDate:gameDate},{providerName:1,providerId:1,winningDigit:1});
+    return res.status(200).send({
+      status: 200,
+      message: "Show Game Result Successfully",
+      data: data,
+    });
+
+    //Bids Add Successfully
+  } catch (error) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
 export {
   allGames,
   starLineAllGames,
@@ -292,4 +369,7 @@ export {
   getNumber,
   cardList,
   addGameBids,
+  gameResult,
+  starGameResult,
+  anderBaharGameResult
 };

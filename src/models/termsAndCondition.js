@@ -1,4 +1,4 @@
-const mongoose =require("mongoose");
+import mongoose from "mongoose";
 const termsCondition = new mongoose.Schema({
     text:{
         type:String
@@ -6,4 +6,6 @@ const termsCondition = new mongoose.Schema({
 },{
     timestamps:true
 });
-export default mongoose.model("TermCond", termsCondition);
+
+const TermCond= mongoose.model("TermCond", termsCondition);
+export { TermCond };
