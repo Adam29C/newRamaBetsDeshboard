@@ -25,6 +25,9 @@ import { insertBidHistory } from "../../../../helpers/insertBid.js";
 import { gameBid } from "../../../../models/gameBid.js";
 import { GameResult } from "../../../../models/GameResult.js";
 import { starline_game_Result } from "../../../../models/starline_game_Result.js";
+import { UserIdea } from "../../../../models/userIdia.js";
+import { HowToPlay } from "../../../../models/howToPlay.js";
+
 
 const allGames = async (req, res) => {
   try {
@@ -359,6 +362,248 @@ const anderBaharGameResult =async (req, res) => {
   }
 };
 
+const bidsHistory = async (req, res) => {
+  try {
+    const {
+      userId,
+    } = req.body;
+
+    // const user = await Users.findOne({ _id: userId });
+    // if (!user) {
+    //   return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FND)
+    // }
+    
+    const info = await gameBid.find({userId:userId});
+    return res.status(200).send({
+      status: 200,
+      message: "Bids Info Find Successfully",
+      info:info
+    });
+  } catch (error) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const mainGameBidsHistory = async (req, res) => {
+  try {
+    const {
+      userId,
+    } = req.body;
+
+    // const user = await Users.findOne({ _id: userId });
+    // if (!user) {
+    //   return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FND)
+    // }
+    
+    const info = await gameBid.find({userId:userId});
+    return res.status(200).send({
+      status: 200,
+      message: "Bids Info Find Successfully",
+      info:info
+    });
+  } catch (error) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const starLineBidsHistory = async (req, res) => {
+  try {
+    const {
+      userId,
+    } = req.body;
+
+    // const user = await Users.findOne({ _id: userId });
+    // if (!user) {
+    //   return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FND)
+    // }
+    
+    const info = await gameBid.find({userId:userId});
+    return res.status(200).send({
+      status: 200,
+      message: "Bids Info Find Successfully",
+      info:info
+    });
+  } catch (error) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const anderBaharBidsHistory = async (req, res) => {
+  try {
+    const {
+      userId,
+    } = req.body;
+
+    // const user = await Users.findOne({ _id: userId });
+    // if (!user) {
+    //   return BadRequestResponse(res,HTTP_MESSAGE.USER_NOT_FND)
+    // }
+    
+    const info = await gameBid.find({userId:userId});
+    return res.status(200).send({
+      status: 200,
+      message: "Bids Info Find Successfully",
+      info:info
+    });
+  } catch (error) {
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      err
+    );
+  }
+};
+
+const addIdia = async (req, res) => {
+  try {
+    const {
+      text
+    } = req.body;    
+    const info = await UserIdea.insertMany({
+      idea:text
+    })
+    return res.status(200).send({
+      status: 200,
+      message: "User Idia Asdd Successfully",
+      info:info
+    });
+  } catch (error) {
+    console.log(error,"error")
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      error
+    );
+  }
+};
+
+const updateUserIdia = async (req, res) => {
+  try {
+    const { id } = req.params;  // Idea ka unique ID (URL mein diya gaya)
+    const { text } = req.body;  // New idea text (body mein diya gaya)
+
+    // Idea ko update karne ke liye, find by id aur update karo
+    const updatedIdea = await UserIdea.findByIdAndUpdate(
+      id, 
+      { idea: text },  // New idea text
+      { new: true }  // Return updated document
+    );
+
+    // Agar idea nahi milta, to error return karenge
+    if (!updatedIdea) {
+      return res.status(404).send({
+        status: 404,
+        message: "User Idea not found"
+      });
+    }
+
+    // Success response
+    return res.status(200).send({
+      status: 200,
+      message: "User Idea updated successfully",
+      info: updatedIdea
+    });
+  } catch (error) {
+    console.log(error, "error");
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      error
+    );
+  }
+};
+
+const deleteUserIdia = async (req, res) => {
+  try {
+    const { id } = req.params; 
+    const deletedIdea = await UserIdea.findByIdAndDelete(id);
+    if (!deletedIdea) {
+      return res.status(404).send({
+        status: 404,
+        message: "User Idea not found"
+      });
+    }
+
+    return res.status(200).send({
+      status: 200,
+      message: "User Idea deleted successfully",
+      info: deletedIdea
+    });
+  } catch (error) {
+    console.log(error, "error");
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      error
+    );
+  }
+};
+
+const userIdiaList = async (req, res) => {
+  try {
+    const ideas = await UserIdea.find();
+    if (ideas.length === 0) {
+      return res.status(404).send({
+        status: 404,
+        message: "No user ideas found"
+      });
+    }
+
+    return res.status(200).send({
+      status: 200,
+      message: "User Ideas fetched successfully",
+      data: ideas  
+    });
+  } catch (error) {
+    console.log(error, "error");
+    return InternalServerErrorResponse(
+      res,
+      HTTP_MESSAGE.INTERNAL_SERVER_ERROR,
+      error
+    );
+  }
+};
+
+const htpList = async (req,res)=>{
+  try{
+  //   const {userId}=req.body;
+  //   const userInfo =await Users.findOne({_id:userId});
+  //   if(!userInfo){
+  //     return res.json({
+  //       status:false,
+  //       statusCode:400,
+  //       message:"User Not Found"
+  //   });
+  // }
+  const info = await HowToPlay.find({})
+  return res.json({
+    status:false,
+    statusCode:200,
+    message:"How to play successfully ",
+    data:info
+  })
+
+  }catch(err){
+    return res.json({
+      status:false,
+      statusCode:400,
+      message:err.message
+    })
+  }
+}
+
 export {
   allGames,
   starLineAllGames,
@@ -371,5 +616,11 @@ export {
   addGameBids,
   gameResult,
   starGameResult,
-  anderBaharGameResult
+  anderBaharGameResult,
+  bidsHistory,
+  starLineBidsHistory,
+  anderBaharBidsHistory,
+  mainGameBidsHistory,
+  addIdia,
+  htpList
 };

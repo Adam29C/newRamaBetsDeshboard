@@ -1,5 +1,5 @@
 import express from "express";
-import {  gameById, allGames, gamesRates, gamesRatesById, starLineAllGames, getNumber, jackPotAllGames, cardList, addGameBids, gameResult, starGameResult } from "./game.controller.js";
+import {  gameById, allGames, gamesRates, gamesRatesById, starLineAllGames, getNumber, jackPotAllGames, cardList, addGameBids, gameResult, starGameResult, bidsHistory, anderBaharBidsHistory, starLineBidsHistory, mainGameBidsHistory, addIdia, htpList } from "./game.controller.js";
 import { roleList } from "../../../../consts/authorization.js";
 import { verifyRoles } from "../../../../middlewares/verifyRoles.js";
 import { ValidationSource, validator } from "../../../../middlewares/validator.js";
@@ -81,5 +81,42 @@ gameRouters.post(
   verifyToken,
   starGameResult
 );
+
+gameRouters.post(
+  "/bidsHistory",
+  verifyToken,
+  bidsHistory
+);
+
+gameRouters.post(
+  "/anderBaharBidsHistory",
+  verifyToken,
+  anderBaharBidsHistory
+);
+
+gameRouters.post(
+  "/starLineBidsHistory",
+  verifyToken,
+  starLineBidsHistory
+);
+
+gameRouters.post(
+  "/mainGameBidsHistory",
+  verifyToken,
+  mainGameBidsHistory
+);
+
+gameRouters.post(
+  "/addIdia",
+  verifyToken,
+  addIdia
+);
+
+gameRouters.post(
+  "/htpList",
+  verifyToken,
+  htpList
+);
+
 
 export {gameRouters}

@@ -3,24 +3,24 @@ import mongoose from "mongoose";
 const newIdeasSchema = new mongoose.Schema({
     userid: {
         type: String,
-        required: true
+        //required: true
     },
     username: {
         type: String,
-        required: true
+        //required: true
     },
     idea: {
         type: String,
-        required: false
+        //required: false
     },
     createdAt: {
         type: Date,
         default: Date.now,
-        required: true
+        //required: true
     },
     approveIdea: {
         type: Boolean,
-        required: true
+        //required: true
     }
 }, {
     timestamps: true
